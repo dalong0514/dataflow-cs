@@ -1,0 +1,6 @@
+D:\dataflow.code\dataflow-cs\CommonUtils\bin\Debug\CommonUtils.dll
+D:\dataflow.code\dataflow-cs\CommonUtils\bin\Debug\CommonUtils.pdb
+D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.csproj.AssemblyReference.cache
+D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.csproj.CoreCompileInputs.cache
+D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.dll
+D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.pdb
