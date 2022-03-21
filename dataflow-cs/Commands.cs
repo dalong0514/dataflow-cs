@@ -27,7 +27,7 @@ namespace dataflow_cs
             Document document = Application.DocumentManager.MdiActiveDocument;
             Database database = document.Database;
             // Create a new transaction
-            Autodesk.AutoCAD.DatabaseServices.Transaction tr = database.TransactionManager.StartTransaction();
+            Transaction tr = database.TransactionManager.StartTransaction();
             using (tr)
             {
                 // Get the block table for the current database
