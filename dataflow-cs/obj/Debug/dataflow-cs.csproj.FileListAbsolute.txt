@@ -1,0 +1,16 @@
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csprojAssemblyReference.cache
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.CoreCompileInputs.cache
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\bin\Debug\dataflow-cs.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\bin\Debug\dataflow-cs.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\bin\Debug\accoremgd.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\bin\Debug\Acdbmgd.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\bin\Debug\zh-CN\Acdbmgd.resources.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.CopyComplete
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\bin\Debug\dataflow-cs.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\bin\Debug\dataflow-cs.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.CoreCompileInputs.cache
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.AssemblyReference.cache
