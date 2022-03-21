@@ -9,15 +9,16 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>dataflow_cs</RootNamespace>
     <AssemblyName>dataflow-cs</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\TargetDLL\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,16 +33,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
-      <HintPath>..\..\CADDLL\CAD2013\accoremgd.dll</HintPath>
+      <HintPath>..\CADDLL\CAD2013\accoremgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgd">
-      <HintPath>..\..\CADDLL\CAD2013\acdbmgd.dll</HintPath>
+      <HintPath>..\CADDLL\CAD2013\acdbmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acmgd">
-      <HintPath>..\..\CADDLL\CAD2013\acmgd.dll</HintPath>
+      <HintPath>..\CADDLL\CAD2013\acmgd.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="CommonUtils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\TargetDLL\CommonUtils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
