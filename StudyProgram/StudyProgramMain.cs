@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using CommonUtils.CADUtils;
 
@@ -41,6 +42,23 @@ namespace StudyProgram
                         }
                     }
                 }
+                tr.Commit();
+            }
+        }
+
+        public static void CreateOneLine()
+        {
+            using (var tr = CADActive.Database.TransactionManager.StartTransaction())
+            {
+                // Get the block table for the current database
+                var blockTable = (BlockTable)tr.GetObject(CADActive.Database.BlockTableId, OpenMode.ForRead);
+                // Get the model space block table record
+                var modelSpace = (BlockTableRecord)tr.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+                Point3d firstInspt = new Point3d(0, 0, 0);
+                Point3d secondInspt = new Point3d(10, 10, 0);
+                Line lineObj = new Line(firstInspt, secondInspt);
+                modelSpace.AppendEntity(lineObj);
+                tr.AddNewlyCreatedDBObject(lineObj, true);
                 tr.Commit();
             }
         }

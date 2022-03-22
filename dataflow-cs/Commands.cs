@@ -20,5 +20,11 @@ namespace dataflow_cs
         {
             StudyProgram.StudyProgramMain.ChangeEntityColor();
         }
+
+        [CommandMethod("CreateOneLine")]
+        public void CreateOneLine()
+        {
+            StudyProgram.StudyProgramMain.CreateOneLine();
+        }
     }
 }
