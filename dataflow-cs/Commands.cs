@@ -1,53 +1,24 @@
-﻿// using Autodesk.AutoCAD.ApplicationServices.Core;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
-using CommonUtils.CADUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autodesk.AutoCAD.Runtime;
 
 namespace dataflow_cs
 {
     public class Commands
     {
-        [CommandMethod("Hello")] 
+        [CommandMethod("Hello")]
         public void Hello()
         {
-            Editor editor = CADActive.Editor;
-            editor.WriteMessage("Hello, dalong");
+            StudyProgram.StudyProgramMain.Hello();
         }
 
         [CommandMethod("ENTCOLOR")]
         public void ChangeEntityColor()
         {
-
-            using (var tr = CADActive.Database.TransactionManager.StartTransaction())
-            {
-                // Get the block table for the current database
-                var blockTable = (BlockTable)tr.GetObject(CADActive.Database.BlockTableId, OpenMode.ForRead);
-                // Get the model space block table record
-                var modelSpace = (BlockTableRecord)tr.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForRead);
-                RXClass circleClass = RXObject.GetClass(typeof(Circle));
-                // Loop through the entities in model space
-                foreach (ObjectId objectId in modelSpace)
-                {
-                    // Look for circles
-                    if (objectId.ObjectClass.IsDerivedFrom(circleClass))
-                    {
-                        var circle = (Circle)tr.GetObject(objectId, OpenMode.ForRead);
-                        if (circle.Radius < 1.0)
-                        {
-                            circle.UpgradeOpen();
-                            circle.ColorIndex = 1;
-                        }
-                    }
-                }
-                tr.Commit();
-            }
+            StudyProgram.StudyProgramMain.ChangeEntityColor();
         }
     }
 }
