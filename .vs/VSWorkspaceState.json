@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\dataflow-cs"
+    "\\CommonUtils",
+    "\\CommonUtils\\CADUtils",
+    "\\dataflow-cs",
+    "\\StudyProgram"
   ],
   "SelectedNode": "\\dataflow-cs.sln",
   "PreviewInSolutionExplorer": false

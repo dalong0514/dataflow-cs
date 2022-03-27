@@ -4,3 +4,4 @@ D:\dataflow.code\dataflow-cs\StudyProgram\obj\Debug\StudyProgram.csproj.Assembly
 D:\dataflow.code\dataflow-cs\StudyProgram\obj\Debug\StudyProgram.csproj.CoreCompileInputs.cache
 D:\dataflow.code\dataflow-cs\StudyProgram\obj\Debug\StudyProgram.dll
 D:\dataflow.code\dataflow-cs\StudyProgram\obj\Debug\StudyProgram.pdb
+D:\dataflow.code\dataflow-cs\StudyProgram\obj\Debug\StudyProgram.csproj.CopyComplete
