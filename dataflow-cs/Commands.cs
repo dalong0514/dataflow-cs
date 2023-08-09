@@ -26,5 +26,11 @@ namespace dataflow_cs
         {
             StudyProgram.StudyProgramMain.CreateOneLine();
         }
+
+        [CommandMethod("CsTestGetMTextContent")]
+        public void CsTestGetMTextContent()
+        {
+            StudyProgram.StudyProgramMain.CsTestGetMTextContent();
+        }
     }
 }
