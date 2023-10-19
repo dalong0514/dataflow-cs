@@ -3,3 +3,12 @@
 *.vsidx
 TargetDLL/*
 CommonUtils/obj/Debug/*
+*.pdb
+*.dll
+*.pdb
+*.pdb
+*.dll
+TargetDLL/StudyProgram.pdb
+TargetDLL/StudyProgram.pdb
+TargetDLL/StudyProgram.dll
+TargetDLL/dataflow-cs.pdb

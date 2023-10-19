@@ -9,11 +9,6 @@ namespace dataflow_cs
 {
     public class Commands
     {
-        [CommandMethod("Hello")]
-        public void Hello()
-        {
-            StudyProgram.StudyProgramMain.Hello();
-        }
 
         [CommandMethod("ENTCOLOR")]
         public void ChangeEntityColor()
@@ -27,15 +22,13 @@ namespace dataflow_cs
             StudyProgram.StudyProgramMain.CreateOneLine();
         }
 
-        [CommandMethod("CsTestGetMTextContent")]
+        [CommandMethod("TempCsTestGetMTextContent")]
         public void CsTestGetMTextContent()
         {
             StudyProgram.StudyProgramMain.CsTestGetMTextContent();
         }
 
-        // 任务1: 生成命令{CsTestGetAllBlockAttributes}
-        // 任务2: 调用StudyProgramMain下的CsTestGetAllBlockAttributes方法
-        [CommandMethod("CsTestGetAllBlockAttributes")]
+        [CommandMethod("CsTest")]
         public void CsTestGetAllBlockAttributes()
         {
             StudyProgram.StudyProgramMain.CsTestGetAllBlockAttributes();

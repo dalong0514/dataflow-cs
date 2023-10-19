@@ -15,11 +15,6 @@ namespace StudyProgram
 {
     public static class StudyProgramMain
     {
-        public static void Hello()
-        {
-            Editor editor = UtilsCADActive.Editor;
-            editor.WriteMessage("Hello, dalong");
-        }
 
         public static void ChangeEntityColor()
         {
@@ -105,55 +100,47 @@ namespace StudyProgram
                 Database db = UtilsCADActive.Database;
                 Editor ed = UtilsCADActive.Editor;
 
-                // 批量选择块实体对象
+                // 任务1: 在AutoCAD中获得块实体对象的选择集
+                SelectionSet selSet =  UtilsSelectionSet.UtilsGetBlockSelectionSet();
 
 
-
-
-                // 任务1: 在AutoCAD中选择一个块实体对象
-                PromptEntityOptions entOptions = new PromptEntityOptions("\n选择一个块对象:");
-                // 框选块对象
-
-
-                entOptions.SetRejectMessage("\n该实体不是块对象。");
-                entOptions.AddAllowedClass(typeof(BlockReference), true);
-                PromptEntityResult entResult = ed.GetEntity(entOptions);
-
-                if (entResult.Status != PromptStatus.OK) return;
-
-                BlockReference blockRef = tr.GetObject(entResult.ObjectId, OpenMode.ForRead) as BlockReference;
-
-                // 任务2: 获取块实体对象的所有属性值并打印到控制台
-                if (blockRef != null)
+                // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
+                if (selSet != null)
                 {
-                    // 获取块定义
-                    BlockTableRecord btr = tr.GetObject(blockRef.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
-                    // 获取块定义中的所有属性定义
-                    IEnumerable<ObjectId> attDefIds = btr.Cast<ObjectId>().Where(id => id.ObjectClass.Name == "AcDbAttributeDefinition");
-                    // 获取块实体对象中的所有属性
-                    IEnumerable<ObjectId> attIds = blockRef.AttributeCollection.Cast<ObjectId>();
-                    // 获取块实体对象中的所有属性值
-                    IEnumerable<AttributeReference> attRefs = attIds.Select(id => tr.GetObject(id, OpenMode.ForRead) as AttributeReference);
-
-                    // 打印属性值
-                    foreach (AttributeReference attRef in attRefs)
+                    // 获取块选择集中的所有块实体对象的属性值
+                    List<Dictionary<string, string>> blockAttributes = new List<Dictionary<string, string>>();
+                    foreach (ObjectId objectId in selSet.GetObjectIds())
                     {
-                        //Console.WriteLine(attRef.TextString);
-                        ed.WriteMessage(attRef.TextString);
+                        BlockReference blockRef = tr.GetObject(objectId, OpenMode.ForRead) as BlockReference;
+                        if (blockRef != null)
+                        {
+                            // 过滤掉没有属性的块实体对象
+                            if (blockRef.AttributeCollection.Count == 0) continue;
+                            // 获取块实体对象的属性值
+                            Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
+
+                            foreach (ObjectId attId in blockRef.AttributeCollection)
+                            {
+                                AttributeReference attRef = tr.GetObject(attId, OpenMode.ForRead) as AttributeReference;
+                                if (attRef != null)
+                                {
+                                    blockAttribute.Add(attRef.Tag, attRef.TextString);
+                                }
+                            }
+                            blockAttributes.Add(blockAttribute);
+                        }
                     }
 
-                    // 任务3: 将属性值保存到JSON文件
-                    var attributes = attRefs.Select(attRef => new { attRef.Tag, attRef.TextString });
-                    var json = JsonConvert.SerializeObject(attributes, Newtonsoft.Json.Formatting.Indented);
-                    var filePath = "D:\\testdata.json";
-                    File.WriteAllText(filePath, json);
+                    // 任务3: 所有属性值写到json文件中
+                    string json = JsonConvert.SerializeObject(blockAttributes);
+                    string path = "D:\\testdata.json";
+                    File.WriteAllText(path, json);
+
                 }
 
                 tr.Commit();
             }
         }   
-
-
 
     }
 }
