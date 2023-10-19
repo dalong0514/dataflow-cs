@@ -69,21 +69,20 @@ namespace StudyProgram
                 Database db = UtilsCADActive.Database;
                 Editor ed = UtilsCADActive.Editor;
 
-                // 任务1: 在AutoCAD中选择一个多行文本(mtext)实体对象
-                PromptEntityOptions entOptions = new PromptEntityOptions("\n选择一个多行文本对象:");
-                entOptions.SetRejectMessage("\n该实体不是多行文本对象。");
-                entOptions.AddAllowedClass(typeof(MText), true);
-                PromptEntityResult entResult = ed.GetEntity(entOptions);
+                SelectionSet selSet = UtilsSelectionSet.UtilsGetMTextSelectionSet();
 
-                if (entResult.Status != PromptStatus.OK) return;
-
-                MText mtext = tr.GetObject(entResult.ObjectId, OpenMode.ForRead) as MText;
-
-                // 任务2: 获取多行文本的内容并打印到控制台
-                if (mtext != null)
+                // 任务: 根据块实体对象的选择集获取所有多行文字实体对象的文字内容
+                if (selSet != null)
                 {
-                    //Console.WriteLine(mtext.Contents);
-                    ed.WriteMessage(mtext.Contents);
+                    foreach (ObjectId objectId in selSet.GetObjectIds())
+                    {
+                        MText mtext = tr.GetObject(objectId, OpenMode.ForRead) as MText;
+                        if (mtext != null)
+                        {
+                            //Console.WriteLine(mtext.Contents);
+                            ed.WriteMessage(mtext.Contents);
+                        }
+                    }
                 }
 
                 tr.Commit();

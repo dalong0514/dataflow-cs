@@ -11,12 +11,22 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsSelectionSet
     {
-        public static SelectionSet UtilsGetBlockSelectionSet()
+        // AutoCAD中获得所有块实体对象的选择集
+        public static SelectionSet UtilsGetAllBlockSelectionSet() => UtilsGetAllSelectionSetByEntityType("INSERT");
+        public static SelectionSet UtilsGetAllMTextSelectionSet() => UtilsGetAllSelectionSetByEntityType("MText");
+        public static SelectionSet UtilsGetAllTextSelectionSet() => UtilsGetAllSelectionSetByEntityType("Text");
+
+        // AutoCAD中获得所有块实体对象的选择集
+        public static SelectionSet UtilsGetBlockSelectionSet() => UtilsGetSelectionSetByEntityType("INSERT");
+        public static SelectionSet UtilsGetMTextSelectionSet() => UtilsGetSelectionSetByEntityType("MText");
+        public static SelectionSet UtilsGetTextSelectionSet() => UtilsGetSelectionSetByEntityType("Text");
+
+        public static SelectionSet UtilsGetSelectionSetByEntityType(string entityType)
         {
             // Create a new selection filter for block references
             TypedValue[] filterList = new TypedValue[]
             {
-                new TypedValue((int)DxfCode.Start, "INSERT")
+                new TypedValue((int)DxfCode.Start, entityType)
             };
             SelectionFilter filter = new SelectionFilter(filterList);
 
@@ -48,13 +58,13 @@ namespace CommonUtils.CADUtils
             return selSet;
         }
 
-        // AutoCAD中获得所有块实体对象的选择集，无需用户选择
-        public static SelectionSet UtilsGetAllBlockSelectionSet()
+        // AutoCAD中通过实体类型获得所有实体对象的选择集，无需用户选择
+        public static SelectionSet UtilsGetAllSelectionSetByEntityType(string entityType)
         {
             // Create a new selection filter for block references
             TypedValue[] filterList = new TypedValue[]
             {
-                new TypedValue((int)DxfCode.Start, "INSERT")
+                new TypedValue((int)DxfCode.Start, entityType)
             };
             SelectionFilter filter = new SelectionFilter(filterList);
 
@@ -66,8 +76,6 @@ namespace CommonUtils.CADUtils
 
             return selSet;
         }
-
-
 
     }
 }
