@@ -1,0 +1,5 @@
+
+.vs/dataflow-cs
+*.vsidx
+TargetDLL/*
+CommonUtils/obj/Debug/*

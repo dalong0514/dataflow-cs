@@ -32,5 +32,13 @@ namespace dataflow_cs
         {
             StudyProgram.StudyProgramMain.CsTestGetMTextContent();
         }
+
+        // 任务1: 生成命令{CsTestGetAllBlockAttributes}
+        // 任务2: 调用StudyProgramMain下的CsTestGetAllBlockAttributes方法
+        [CommandMethod("CsTestGetAllBlockAttributes")]
+        public void CsTestGetAllBlockAttributes()
+        {
+            StudyProgram.StudyProgramMain.CsTestGetAllBlockAttributes();
+        }
     }
 }

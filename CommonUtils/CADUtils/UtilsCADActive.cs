@@ -12,7 +12,7 @@ namespace CommonUtils.CADUtils
 {
     /// runtime environment.
     /// </summary>
-    public static class CADActive
+    public static class UtilsCADActive
     {
         /// <summary>
         /// Returns the active Editor object.
