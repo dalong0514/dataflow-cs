@@ -15,11 +15,13 @@ namespace CommonUtils.CADUtils
         public static SelectionSet UtilsGetAllBlockSelectionSet() => UtilsGetAllSelectionSetByEntityType("INSERT");
         public static SelectionSet UtilsGetAllMTextSelectionSet() => UtilsGetAllSelectionSetByEntityType("MText");
         public static SelectionSet UtilsGetAllTextSelectionSet() => UtilsGetAllSelectionSetByEntityType("Text");
+        public static SelectionSet UtilsGetAllPolylineSelectionSet() => UtilsGetAllSelectionSetByEntityType("LWPOLYLINE");
 
         // AutoCAD中获得所有块实体对象的选择集
         public static SelectionSet UtilsGetBlockSelectionSet() => UtilsGetSelectionSetByEntityType("INSERT");
         public static SelectionSet UtilsGetMTextSelectionSet() => UtilsGetSelectionSetByEntityType("MText");
         public static SelectionSet UtilsGetTextSelectionSet() => UtilsGetSelectionSetByEntityType("Text");
+        public static SelectionSet UtilsGetPolylineSelectionSet() => UtilsGetSelectionSetByEntityType("LWPOLYLINE");
 
         public static SelectionSet UtilsGetSelectionSetByEntityType(string entityType)
         {

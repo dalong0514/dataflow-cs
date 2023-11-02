@@ -28,10 +28,6 @@ namespace dataflow_cs
             StudyProgram.StudyProgramMain.CsTestGetMTextContent();
         }
 
-        [CommandMethod("CsTest")]
-        public void CsTestGetAllBlockAttributes()
-        {
-            StudyProgram.StudyProgramMain.CsTestGetAllBlockAttributes();
-        }
+
     }
 }

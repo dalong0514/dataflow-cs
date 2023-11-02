@@ -4,21 +4,20 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C59C4916-9579-4BC0-AE90-9E36F1C299D1}</ProjectGuid>
+    <ProjectGuid>{CF169B6C-5830-4E6A-B84E-9115183DD1D8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>dataflow_cs</RootNamespace>
-    <AssemblyName>dataflow-cs</AssemblyName>
+    <RootNamespace>GsLcDataFlow</RootNamespace>
+    <AssemblyName>GsLcDataFlow</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\TargetDLL\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,22 +49,18 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GsLcCommands.cs" />
-    <Compile Include="Commands.cs" />
+    <Compile Include="GenerateManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToolManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
       <Project>{2c439b03-ad51-4bd7-8fa0-30e32481afb7}</Project>
       <Name>CommonUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StudyProgram\StudyProgram.csproj">
-      <Project>{21789726-d0f9-48f7-8301-167a2e4c5cd5}</Project>
-      <Name>StudyProgram</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
