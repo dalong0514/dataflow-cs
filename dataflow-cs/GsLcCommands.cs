@@ -11,9 +11,9 @@ namespace dataflow_cs
     {
 
         [CommandMethod("CsTest")]
-        public void CsTestGetAllBlockAttributes()
+        public void DLGetAllPolyline()
         {
-            StudyProgram.StudyProgramMain.CsTestGetAllBlockAttributes();
+            GsLcDataFlow.GenerateManager.DLGetAllPolyline();
         }
     }
 }

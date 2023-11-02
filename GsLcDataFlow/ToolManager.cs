@@ -24,6 +24,8 @@ namespace GsLcDataFlow
                     Entity entity = tr.GetObject(objectId, OpenMode.ForWrite) as Entity;
                     entity.Erase();
                 }
+                // 打印字符串“删除成功”
+                UtilsCADActive.Editor.WriteMessage("\n删除成功");
 
                 tr.Commit();
             }
