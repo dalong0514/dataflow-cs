@@ -8,10 +8,10 @@ namespace GsLcDataFlow
 {
     public class GenerateManager
     {
-        public static void DLGetAllPolyline()
+        public static void DLGsLcUpdateInstrumentLocationOnPipe()
         {
 
-            ToolManager.DLGetAllPolyline();
+            ToolManager.DLGsLcUpdateInstrumentLocationOnPipe();
         }
     }
 }

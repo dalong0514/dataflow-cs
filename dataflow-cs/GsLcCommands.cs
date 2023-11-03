@@ -11,9 +11,9 @@ namespace dataflow_cs
     {
 
         [CommandMethod("CsTest")]
-        public void DLGetAllPolyline()
+        public void DLGsLcUpdateInstrumentLocationOnPipe()
         {
-            GsLcDataFlow.GenerateManager.DLGetAllPolyline();
+            GsLcDataFlow.GenerateManager.DLGsLcUpdateInstrumentLocationOnPipe();
         }
     }
 }

@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CADUtils\UtilsCADActive.cs" />
+    <Compile Include="CADUtils\UtilsBlock.cs" />
     <Compile Include="CADUtils\UtilsSelectionSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

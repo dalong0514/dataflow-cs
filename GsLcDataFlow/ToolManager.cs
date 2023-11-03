@@ -30,5 +30,18 @@ namespace GsLcDataFlow
                 tr.Commit();
             }
         }
+
+        public static void DLGsLcUpdateInstrumentLocationOnPipe()
+        {
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
+            {
+                Editor ed = UtilsCADActive.Editor;
+                //UtilsBlock.UtilsGetBlockBySelectByBlockName("PipeArrowLeft");
+                List<ObjectId> blockIds = UtilsBlock.UtilsGetAllBlockIdsByBlockName("PipeArrowLeft");
+                blockIds.ForEach(blockId => ed.WriteMessage("\n" + blockId.ToString()));
+
+                tr.Commit();
+            }
+        }
     }
 }
