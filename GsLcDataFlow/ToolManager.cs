@@ -50,7 +50,7 @@ namespace GsLcDataFlow
 
                 List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsGetAllPolylineObjectIds();
 
-                List<BlockReference> blockReferences = UtilsBlock.UtilsGetBlockObjectIdsBySelectByBlockName("PipeArrowLeft")
+                List<BlockReference> blockReferences = UtilsBlock.UtilsBlockGetObjectIdsBySelectByBlockName("PipeArrowLeft")
                     .Select(x => x.GetObject(OpenMode.ForRead) as BlockReference)
                     .ToList();
                 // 根据blockId获得块的基点
@@ -75,13 +75,18 @@ namespace GsLcDataFlow
 
 
 
-                // 通过拾取获得一个多段线的ObjectId
-                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
-                // 根据多段线的ObjectId获得多段线的对象
-                Polyline polyline = tr.GetObject(polylineId, OpenMode.ForWrite) as Polyline;
+                //// 通过拾取获得一个多段线的ObjectId
+                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                //// 根据多段线的ObjectId获得多段线的对象
+                //Polyline polyline = tr.GetObject(polylineId, OpenMode.ForWrite) as Polyline;
 
-                UtilsCADActive.UtilsAddXData(polylineId, "pipeNum", "PL1101");
-                ed.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeNum"));
+                //UtilsCADActive.UtilsAddXData(polylineId, "pipeNum", "PL1101");
+                //ed.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeNum"));
+
+                // 通过拾取获得一个块的ObjectId
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                string propertyValue = UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(blockId, "pipeNum");
+                ed.WriteMessage("\n" + propertyValue);
 
                 tr.Commit();
             }
