@@ -44,6 +44,11 @@
       <HintPath>..\CADDLL\CAD2013\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="CommonUtils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\TargetDLL\CommonUtils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="GsLcDataFlow, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\TargetDLL\GsLcDataFlow.dll</HintPath>
@@ -69,10 +74,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
-      <Project>{2c439b03-ad51-4bd7-8fa0-30e32481afb7}</Project>
-      <Name>CommonUtils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\StudyProgram\StudyProgram.csproj">
       <Project>{21789726-d0f9-48f7-8301-167a2e4c5cd5}</Project>
       <Name>StudyProgram</Name>

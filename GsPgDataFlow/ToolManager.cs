@@ -1,9 +1,11 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 using CommonUtils.CADUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 
 namespace GsPgDataFlow
@@ -15,7 +17,7 @@ namespace GsPgDataFlow
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
                 Editor ed = UtilsCADActive.Editor;
-
+                Database db = UtilsCADActive.Database;
 
 
                 //// 通过拾取获得一个多段线的ObjectId
@@ -26,10 +28,15 @@ namespace GsPgDataFlow
                 //UtilsCADActive.UtilsAddXData(polylineId, "pipeNum", "PL1101");
                 //ed.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeNum"));
 
+                //// 通过拾取获得一个块的ObjectId
+                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                //string propertyValue = UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(blockId, "pipeNum");
+                //ed.WriteMessage("\n" + propertyValue);
+
                 // 通过拾取获得一个块的ObjectId
                 ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
-                string propertyValue = UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(blockId, "pipeNum");
-                ed.WriteMessage("\n" + propertyValue);
+                ed.WriteMessage("\n" + UtilsBlock.UtilsBlockGetBlockName(blockId));
+
 
                 tr.Commit();
             }

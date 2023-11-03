@@ -17,7 +17,7 @@ namespace dataflow_cs
         }
 
         [CommandMethod("CsFuncitonTest")]
-        public void DLGsLcUpdateInstrumentLocationOnPipe()
+        public void GsPgSynPipeData()
         {
             GsPgDataFlow.GenerateManager.GsPgSynPipeData();
         }

@@ -12,6 +12,48 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsBlock
     {
+        public static string UtilsBlockGetBlockName(ObjectId objectId)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            if (blockRef != null)
+            {
+                if (blockRef.IsDynamicBlock)
+                {
+                    BlockTableRecord btr = blockRef.DynamicBlockTableRecord.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                    return btr.Name;
+                }
+                else
+                {
+                    return blockRef.Name;
+                }
+            }
+            return string.Empty;
+
+        }
+
+        public static string UtilsBlockGetBlockName(BlockReference blockRef)
+        {
+            if (blockRef != null)
+            {
+                if (blockRef.IsDynamicBlock)
+                {
+                    BlockTableRecord btr = blockRef.DynamicBlockTableRecord.GetObject(OpenMode.ForRead) as BlockTableRecord;
+                    return btr.Name;
+                }
+                else
+                {
+                    return blockRef.Name;
+                }
+            }
+            return string.Empty;
+
+        }
+
+        /// <summary>
+        /// 获得块的属性值字典对象
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <returns></returns>
         public static List<Dictionary<string, string>> UtilsBlockGetPropertyDictList(ObjectId objectId)
         {
             // 获取块选择集中的所有块实体对象的属性值
@@ -69,7 +111,7 @@ namespace CommonUtils.CADUtils
             {
                 blockIds = selSet.GetObjectIds()
                     .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                    .Where(blockRef => blockRef != null && blockRef.Name == blockName)
+                    .Where(blockRef => blockRef != null && UtilsBlockGetBlockName(blockRef) == blockName)
                     .Select(blockRef => blockRef.ObjectId)
                     .ToList();
             }
@@ -88,7 +130,7 @@ namespace CommonUtils.CADUtils
             {
                 blockIds = selSet.GetObjectIds()
                     .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                    .Where(blockRef => blockRef != null && blockRef.Name == blockName)
+                    .Where(blockRef => blockRef != null && UtilsBlockGetBlockName(blockRef) == blockName)
                     .Select(blockRef => blockRef.ObjectId)
                     .ToList();
             }

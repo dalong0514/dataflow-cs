@@ -11,6 +11,14 @@ namespace GsPgDataFlow
 {
     public class GsPgBatchProcessPipeData
     {
+
+        public static void GsLcBindXDatatoPipe(Point3d basePoint, List<ObjectId> ObjectIds)
+        {
+            ObjectIds.Where(x => UtilsGeometric.UtilsGetPointToPolylineShortestDistance(basePoint, x) < 5)
+                .ToList()
+                .ForEach(x => UtilsCADActive.UtilsAddXData(x, "pipeNum", "PL1102"));
+
+        }
         public static void GsPgSynPipeData()
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
@@ -27,7 +35,7 @@ namespace GsPgDataFlow
                     .Select(blockRef => blockRef.Position)
                     .ToList();
 
-                //basePoints.ForEach(x => GsLcBindXDatatoPipe(x, polylineObjectIds));
+                basePoints.ForEach(x => GsLcBindXDatatoPipe(x, polylineObjectIds));
 
                 ed.WriteMessage("\n完成任务...");
 

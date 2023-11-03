@@ -43,10 +43,6 @@
       <HintPath>..\CADDLL\CAD2013\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="CommonUtils">
-      <HintPath>..\TargetDLL\CommonUtils.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,6 +56,13 @@
     <Compile Include="GsPgBatchProcessPipeData.cs" />
     <Compile Include="ToolManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
+      <Project>{2c439b03-ad51-4bd7-8fa0-30e32481afb7}</Project>
+      <Name>CommonUtils</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
