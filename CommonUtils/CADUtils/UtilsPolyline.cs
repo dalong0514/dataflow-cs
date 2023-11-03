@@ -60,11 +60,7 @@ namespace CommonUtils.CADUtils
             if (selSet != null)
             {
                 // 通过选择集获取所有块实体对象的ObjectId
-                polylineObjectIds = selSet.GetObjectIds()
-                    .Select(objectId => objectId.GetObject(OpenMode.ForWrite) as Polyline)
-                    .Where(polyline => polyline != null)
-                    .Select(polyline => polyline.ObjectId)
-                    .ToList();
+                polylineObjectIds = selSet.GetObjectIds().ToList();
             }
             return polylineObjectIds;
         }
@@ -78,11 +74,7 @@ namespace CommonUtils.CADUtils
             if (selSet != null)
             {
                 // 通过选择集获取所有块实体对象的ObjectId
-                polylineObjectIds = selSet.GetObjectIds()
-                    .Select(objectId => objectId.GetObject(OpenMode.ForWrite) as Polyline)
-                    .Where(polyline => polyline != null)
-                    .Select(polyline => polyline.ObjectId)
-                    .ToList();
+                polylineObjectIds = selSet.GetObjectIds().ToList();
             }
             return polylineObjectIds;
         }

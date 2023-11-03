@@ -95,6 +95,40 @@ namespace CommonUtils.CADUtils
             rb.Dispose();
         }
 
+        public static void UtilsAddXData(ObjectId objectId, string regAppName, string xdataContent)
+        {
+
+            AddRegAppTableRecord(regAppName);
+
+            ResultBuffer rb = new ResultBuffer(new TypedValue(1001, regAppName), new TypedValue(1000, xdataContent));
+            Entity ent = objectId.GetObject(OpenMode.ForWrite) as Entity;
+            ent.XData = rb;
+            rb.Dispose();
+        }
+
+        public static string UtilsGetXData(ObjectId objectId, string regAppName)
+        {
+            string result = string.Empty;
+            Entity ent = objectId.GetObject(OpenMode.ForRead) as Entity;
+            ResultBuffer rb = ent.GetXDataForApplication(regAppName);
+            if (rb == null)
+            {
+                WriteMessage("\nNo XData found for the application {0}.", regAppName);
+                return string.Empty;
+            }
+
+            foreach (TypedValue tv in rb)
+            {
+                if (tv.TypeCode == 1001)
+                {
+                    result = tv.Value.ToString();
+                }
+            }
+
+            rb.Dispose();
+            return result;
+        }
+
         public static string UtilsGetXData(Entity ent, string regAppName)
         {
             string result = string.Empty;

@@ -13,5 +13,11 @@ namespace GsLcDataFlow
 
             ToolManager.GsLcUpdateInstrumentLocationOnPipe();
         }
+
+        public static void CsTest()
+        {
+
+            ToolManager.CsTest();
+        }
     }
 }

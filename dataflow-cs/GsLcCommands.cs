@@ -11,6 +11,12 @@ namespace dataflow_cs
     {
 
         [CommandMethod("CsTest")]
+        public void CsTest()
+        {
+            GsLcDataFlow.GenerateManager.CsTest();
+        }
+
+        [CommandMethod("CsFuncitonTest")]
         public void DLGsLcUpdateInstrumentLocationOnPipe()
         {
             GsLcDataFlow.GenerateManager.DLGsLcUpdateInstrumentLocationOnPipe();

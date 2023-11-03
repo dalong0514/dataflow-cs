@@ -26,5 +26,13 @@ namespace CommonUtils.CADUtils
             return point.DistanceTo(closestPoint);
         }
 
+        public static double UtilsGetPointToPolylineShortestDistance(Point3d point, ObjectId polylineObjectId)
+        {
+            // 获得 basePoint 与该多段线的最近点的距离
+            Polyline polyline = polylineObjectId.GetObject(OpenMode.ForRead) as Polyline;
+            Point3d closestPoint = polyline.GetClosestPointTo(point, false);
+            return point.DistanceTo(closestPoint);
+        }
+
     }
 }
