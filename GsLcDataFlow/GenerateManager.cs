@@ -11,7 +11,7 @@ namespace GsLcDataFlow
         public static void DLGsLcUpdateInstrumentLocationOnPipe()
         {
 
-            ToolManager.DLGsLcUpdateInstrumentLocationOnPipe();
+            ToolManager.GsLcUpdateInstrumentLocationOnPipe();
         }
     }
 }

@@ -54,6 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CADUtils\UtilsPolyline.cs" />
+    <Compile Include="CADUtils\UtilsGeometric.cs" />
     <Compile Include="CADUtils\UtilsCADActive.cs" />
     <Compile Include="CADUtils\UtilsBlock.cs" />
     <Compile Include="CADUtils\UtilsSelectionSet.cs" />
