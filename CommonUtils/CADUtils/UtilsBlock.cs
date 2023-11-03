@@ -12,6 +12,34 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsBlock
     {
+        public static List<Dictionary<string, string>> UtilsBlockGetPropertyDictList(ObjectId objectId)
+        {
+            // 获取块选择集中的所有块实体对象的属性值
+            List<Dictionary<string, string>> blockAttributes = new List<Dictionary<string, string>>();
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            // 过滤掉没有属性的块实体对象
+            if (blockRef.AttributeCollection.Count == 0) return blockAttributes;
+            // 获取块实体对象的属性值
+            Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
+
+            foreach (ObjectId attId in blockRef.AttributeCollection)
+            {
+                AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
+                if (attRef != null)
+                {
+                    blockAttribute.Add(attRef.Tag, attRef.TextString);
+                }
+            }
+            blockAttributes.Add(blockAttribute);
+            return blockAttributes;
+        }
+
+        /// <summary>
+        /// 根据块的ObjectId和属性名获取属性值
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         public static string UtilsBlockGetPropertyValueByPropertyName(ObjectId objectId, string propertyName)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
