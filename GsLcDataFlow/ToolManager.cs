@@ -36,9 +36,31 @@ namespace GsLcDataFlow
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
                 Editor ed = UtilsCADActive.Editor;
-                //UtilsBlock.UtilsGetBlockBySelectByBlockName("PipeArrowLeft");
-                List<ObjectId> blockIds = UtilsBlock.UtilsGetAllBlockIdsByBlockName("PipeArrowLeft");
-                blockIds.ForEach(blockId => ed.WriteMessage("\n" + blockId.ToString()));
+                List<BlockReference> blockReferences = UtilsBlock.UtilsGetBlockReferencesBySelectByBlockName("PipeArrowLeft");
+                // 根据blockId获得块的基点
+                List<Point3d> basePoints = blockReferences.Where(blockRef => blockRef != null)
+                    .Select(blockRef => blockRef.Position)
+                    .ToList();
+
+                basePoints.ForEach(x => ed.WriteMessage("\n" + x.ToString()));
+
+
+                // 取basePoints的第一个点
+                Point3d basePoint = basePoints[0];
+
+                // 通过拾取获得一个多段线的ObjectId
+                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                // 根据多段线的ObjectId获得多段线的对象
+                Polyline polyline = tr.GetObject(polylineId, OpenMode.ForRead) as Polyline;
+                // 获得 basePoint 与该多段线的最近点的距离
+
+                double distance = UtilsGeometric.UtilsGetPointToPolylineShortestDistance(basePoint, polyline);
+
+                ed.WriteMessage("\n" + distance.ToString());
+
+                // 获得模块空间里所有多段线的对象
+
+
 
                 tr.Commit();
             }

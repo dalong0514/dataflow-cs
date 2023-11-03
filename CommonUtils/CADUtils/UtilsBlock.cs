@@ -12,8 +12,24 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsBlock
     {
+        public static List<BlockReference> UtilsGetBlockReferencesBySelectByBlockName(string blockName)
+        {
+            // 任务1: 在AutoCAD中获得块实体对象的选择集
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetBlockSelectionSet();
+            List<BlockReference> blockReferences = new List<BlockReference>();
 
-        public static  List<ObjectId> UtilsGetBlockBySelectByBlockName(string blockName)
+            // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
+            if (selSet != null)
+            {
+                blockReferences = selSet.GetObjectIds()
+                    .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                    .Where(blockRef => blockRef != null && blockRef.Name == blockName)
+                    .ToList();
+            }
+            return blockReferences;
+        }
+
+        public static  List<ObjectId> UtilsGetBlockObjectIdsBySelectByBlockName(string blockName)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
             SelectionSet selSet = UtilsSelectionSet.UtilsGetBlockSelectionSet();
@@ -32,7 +48,7 @@ namespace CommonUtils.CADUtils
         }
 
         // AutoCAD中获得所有块名为{Instrument}的ObjectId
-        public static List<ObjectId> UtilsGetAllBlockIdsByBlockName(string blockName)
+        public static List<ObjectId> UtilsGetAllBlockObjectIdsByBlockName(string blockName)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
