@@ -12,12 +12,17 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsPolyline
     {
+        public static void UtilsPolylineChangeColor(ObjectId objectId, int colorIndex)
+        {
+            Polyline polyline = objectId.GetObject(OpenMode.ForWrite) as Polyline;
+            polyline.ColorIndex = colorIndex;
+        }
 
         /// 获得所有的多段线对象 <summary>
         /// 获得所有的多段线对象
         /// </summary>
         /// <returns></returns>
-        public static List<Polyline> UtilsGetAllPolylineObjects()
+        public static List<Polyline> UtilsPolylineGetAllObjects()
         {
 
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
@@ -34,7 +39,7 @@ namespace CommonUtils.CADUtils
             return polylineObjects;
         }
 
-        public static List<Polyline> UtilsGetPolylineObjectsBySelect()
+        public static List<Polyline> UtilsPolylineGetObjectsBySelect()
         {
 
             SelectionSet selSet = UtilsSelectionSet.UtilsGetPolylineSelectionSet();
@@ -51,9 +56,8 @@ namespace CommonUtils.CADUtils
             return polylineObjects;
         }
 
-        public static List<ObjectId> UtilsGetPolylineObjectIdsBySelect()
+        public static List<ObjectId> UtilsPolylineGetObjectIdsBySelect()
         {
-
             SelectionSet selSet = UtilsSelectionSet.UtilsGetPolylineSelectionSet();
             List<ObjectId> polylineObjectIds = new List<ObjectId>();
 
@@ -65,9 +69,8 @@ namespace CommonUtils.CADUtils
             return polylineObjectIds;
         }
 
-        public static List<ObjectId> UtilsGetAllPolylineObjectIds()
+        public static List<ObjectId> UtilsPolylineGetAllObjectIds()
         {
-
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
             List<ObjectId> polylineObjectIds = new List<ObjectId>();
 

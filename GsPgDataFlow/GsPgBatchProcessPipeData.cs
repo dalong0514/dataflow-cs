@@ -11,12 +11,21 @@ namespace GsPgDataFlow
 {
     public class GsPgBatchProcessPipeData
     {
+        public static bool IsPipeNumOnPipeLine(Point3d basePoint, ObjectId objectId)
+        {
+            return UtilsGeometric.UtilsGetPointToPolylineShortestDistance(basePoint, objectId) < 5;
+
+        }
 
         public static void GsLcBindXDatatoPipe(Point3d basePoint, List<ObjectId> ObjectIds)
         {
-            ObjectIds.Where(x => UtilsGeometric.UtilsGetPointToPolylineShortestDistance(basePoint, x) < 5)
+            //ObjectIds.Where(x => IsPipeNumOnPipeLine(basePoint, x))
+            //    .ToList()
+            //    .ForEach(x => UtilsCADActive.UtilsAddXData(x, "pipeNum", "PL1102"));
+
+            ObjectIds.Where(x => IsPipeNumOnPipeLine(basePoint, x))
                 .ToList()
-                .ForEach(x => UtilsCADActive.UtilsAddXData(x, "pipeNum", "PL1102"));
+                .ForEach(x => UtilsPolyline.UtilsPolylineChangeColor(x, 1));
 
         }
         public static void GsPgSynPipeData()
@@ -25,12 +34,12 @@ namespace GsPgDataFlow
             {
                 Editor ed = UtilsCADActive.Editor;
 
-                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsGetAllPolylineObjectIds();
+                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsPolylineGetAllObjectIds();
 
                 List<BlockReference> blockReferences = UtilsBlock.UtilsBlockGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist")
                     .Select(x => x.GetObject(OpenMode.ForRead) as BlockReference)
                     .ToList();
-                // 根据blockId获得块的基点
+                // Retrieve the base point of the block according to its ObectId
                 List<Point3d> basePoints = blockReferences.Where(blockRef => blockRef != null)
                     .Select(blockRef => blockRef.Position)
                     .ToList();
