@@ -6,12 +6,19 @@ using System.Linq;
 using System.Text;
 using CommonUtils.CADUtils;
 using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace CommonUtils.CADUtils
 {
 
     public static class UtilsBlock
     {
+        public static Point3d UtilsBlockGetBlockBasePoint(ObjectId objectId)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            return blockRef.Position;
+        }
+
         public static string UtilsBlockGetBlockName(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
