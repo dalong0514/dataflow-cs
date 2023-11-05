@@ -11,25 +11,41 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsSelectionSet
     {
-        // AutoCAD中获得所有块实体对象的选择集
-        public static SelectionSet UtilsGetAllBlockSelectionSet() => UtilsGetAllSelectionSetByEntityType("INSERT");
-        public static SelectionSet UtilsGetAllMTextSelectionSet() => UtilsGetAllSelectionSetByEntityType("MText");
-        public static SelectionSet UtilsGetAllTextSelectionSet() => UtilsGetAllSelectionSetByEntityType("Text");
-        public static SelectionSet UtilsGetAllPolylineSelectionSet() => UtilsGetAllSelectionSetByEntityType("LWPOLYLINE");
+        // get all entity selection set by filter
+        public static SelectionSet UtilsGetAllBlockSelectionSet() => UtilsGetAllSelectionSetByFilter("INSERT");
+        public static SelectionSet UtilsGetAllBlockSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("INSERT", layerName);
+        public static SelectionSet UtilsGetAllMTextSelectionSet() => UtilsGetAllSelectionSetByFilter("MText");
+        public static SelectionSet UtilsGetAllMTextSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("MText", layerName);
+        public static SelectionSet UtilsGetAllTextSelectionSet() => UtilsGetAllSelectionSetByFilter("Text");
+        public static SelectionSet UtilsGetAllTextSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("Text", layerName);
+        public static SelectionSet UtilsGetAllPolylineSelectionSet() => UtilsGetAllSelectionSetByFilter("LWPOLYLINE");
+        public static SelectionSet UtilsGetAllPolylineSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("LWPOLYLINE", layerName);
 
-        // AutoCAD中获得所有块实体对象的选择集
-        public static SelectionSet UtilsGetBlockSelectionSet() => UtilsGetSelectionSetByEntityType("INSERT");
-        public static SelectionSet UtilsGetMTextSelectionSet() => UtilsGetSelectionSetByEntityType("MText");
-        public static SelectionSet UtilsGetTextSelectionSet() => UtilsGetSelectionSetByEntityType("Text");
-        public static SelectionSet UtilsGetPolylineSelectionSet() => UtilsGetSelectionSetByEntityType("LWPOLYLINE");
+        // get entity selection set by filter
+        public static SelectionSet UtilsGetBlockSelectionSet() => UtilsGetSelectionSetByFilter("INSERT");
+        public static SelectionSet UtilsGetBlockSelectionSetByLayerName(string layerName) => UtilsGetSelectionSetByFilter("INSERT", layerName);
+        public static SelectionSet UtilsGetMTextSelectionSet() => UtilsGetSelectionSetByFilter("MText");
+        public static SelectionSet UtilsGetMTextSelectionSetByLayerName(string layerName) => UtilsGetSelectionSetByFilter("MText", layerName);
+        public static SelectionSet UtilsGetTextSelectionSet() => UtilsGetSelectionSetByFilter("Text");
+        public static SelectionSet UtilsGetTextSelectionSetByLayerName(string layerName) => UtilsGetSelectionSetByFilter("Text", layerName);
+        public static SelectionSet UtilsGetPolylineSelectionSet() => UtilsGetSelectionSetByFilter("LWPOLYLINE");
+        public static SelectionSet UtilsGetPolylineSelectionSetByLayerName(string layerName) => UtilsGetSelectionSetByFilter("LWPOLYLINE", layerName);
 
-        public static SelectionSet UtilsGetSelectionSetByEntityType(string entityType)
+        public static SelectionSet UtilsGetSelectionSetByFilter(string entityType, string layerName = null)
         {
-            // Create a new selection filter for block references
-            TypedValue[] filterList = new TypedValue[]
+            // Create a new list for filter values
+            List<TypedValue> filterValues = new List<TypedValue>
             {
+                // Add entity type filter
                 new TypedValue((int)DxfCode.Start, entityType)
             };
+            // Add layer name filter if layerName is not null
+            if (layerName != null)
+            {
+                filterValues.Add(new TypedValue((int)DxfCode.LayerName, layerName));
+            }
+            // Convert the list to an array
+            TypedValue[] filterList = filterValues.ToArray();
             SelectionFilter filter = new SelectionFilter(filterList);
 
             // Prompt the user to select block references
@@ -61,13 +77,21 @@ namespace CommonUtils.CADUtils
         }
 
         // AutoCAD中通过实体类型获得所有实体对象的选择集，无需用户选择
-        public static SelectionSet UtilsGetAllSelectionSetByEntityType(string entityType)
+        public static SelectionSet UtilsGetAllSelectionSetByFilter(string entityType, string layerName = null)
         {
-            // Create a new selection filter for block references
-            TypedValue[] filterList = new TypedValue[]
+            // Create a new list for filter values
+            List<TypedValue> filterValues = new List<TypedValue>
             {
+                // Add entity type filter
                 new TypedValue((int)DxfCode.Start, entityType)
             };
+            // Add layer name filter if layerName is not null
+            if (layerName != null)
+            {
+                filterValues.Add(new TypedValue((int)DxfCode.LayerName, layerName));
+            }
+            // Convert the list to an array
+            TypedValue[] filterList = filterValues.ToArray();
             SelectionFilter filter = new SelectionFilter(filterList);
 
             PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);

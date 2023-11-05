@@ -12,7 +12,7 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsPolyline
     {
-        public static void UtilsPolylineChangeColor(ObjectId objectId, int colorIndex)
+        public static void UtilsChangeColor(ObjectId objectId, int colorIndex)
         {
             Polyline polyline = objectId.GetObject(OpenMode.ForWrite) as Polyline;
             polyline.ColorIndex = colorIndex;
@@ -22,7 +22,7 @@ namespace CommonUtils.CADUtils
         /// 获得所有的多段线对象
         /// </summary>
         /// <returns></returns>
-        public static List<Polyline> UtilsPolylineGetAllObjects()
+        public static List<Polyline> UtilsGetAllObjects()
         {
 
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
@@ -39,7 +39,7 @@ namespace CommonUtils.CADUtils
             return polylineObjects;
         }
 
-        public static List<Polyline> UtilsPolylineGetObjectsBySelect()
+        public static List<Polyline> UtilsGetObjectsBySelect()
         {
 
             SelectionSet selSet = UtilsSelectionSet.UtilsGetPolylineSelectionSet();
@@ -56,7 +56,7 @@ namespace CommonUtils.CADUtils
             return polylineObjects;
         }
 
-        public static List<ObjectId> UtilsPolylineGetObjectIdsBySelect()
+        public static List<ObjectId> UtilsGetObjectIdsBySelect()
         {
             SelectionSet selSet = UtilsSelectionSet.UtilsGetPolylineSelectionSet();
             List<ObjectId> polylineObjectIds = new List<ObjectId>();
@@ -69,7 +69,33 @@ namespace CommonUtils.CADUtils
             return polylineObjectIds;
         }
 
-        public static List<ObjectId> UtilsPolylineGetAllObjectIds()
+        public static List<ObjectId> UtilsGetObjectIdsBySelectByLayerName(string layerName)
+        {
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetPolylineSelectionSetByLayerName(layerName);
+            List<ObjectId> polylineObjectIds = new List<ObjectId>();
+
+            if (selSet != null)
+            {
+                // 通过选择集获取所有块实体对象的ObjectId
+                polylineObjectIds = selSet.GetObjectIds().ToList();
+            }
+            return polylineObjectIds;
+        }
+
+        public static List<ObjectId> UtilsGetAllObjectIdsByLayerName(string layerName)
+        {
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSetByLayerName(layerName);
+            List<ObjectId> polylineObjectIds = new List<ObjectId>();
+
+            if (selSet != null)
+            {
+                // 通过选择集获取所有块实体对象的ObjectId
+                polylineObjectIds = selSet.GetObjectIds().ToList();
+            }
+            return polylineObjectIds;
+        }
+
+        public static List<ObjectId> UtilsGetAllObjectIds()
         {
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
             List<ObjectId> polylineObjectIds = new List<ObjectId>();

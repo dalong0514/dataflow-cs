@@ -48,7 +48,7 @@ namespace GsLcDataFlow
             {
                 Editor ed = UtilsCADActive.Editor;
 
-                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsPolylineGetAllObjectIds();
+                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsGetAllObjectIds();
 
                 List<BlockReference> blockReferences = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("PipeArrowLeft")
                     .Select(x => x.GetObject(OpenMode.ForRead) as BlockReference)

@@ -31,13 +31,13 @@ namespace GsPgDataFlow
 
         public static void GsPgSynOnePipeData(ObjectId pipeNumObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
         {
-            pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
-                .ToList()
-                .ForEach(x => GsPgBindXDatatoPipe(pipeNumObjectId, x));
-
             //pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
             //    .ToList()
-            //    .ForEach(x => UtilsPolyline.UtilsPolylineChangeColor(x, 1));
+            //    .ForEach(x => GsPgBindXDatatoPipe(pipeNumObjectId, x));
+
+            pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
+                .ToList()
+                .ForEach(x => UtilsPolyline.UtilsChangeColor(x, 1));
 
         }
         public static void GsPgBatchSynPipeData()
@@ -46,13 +46,13 @@ namespace GsPgDataFlow
             {
                 Editor ed = UtilsCADActive.Editor;
 
-                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsPolylineGetAllObjectIds();
+                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
                 List<ObjectId> pipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
 
                 pipeNumObjectIds.ForEach(x => GsPgSynOnePipeData(x, polylineObjectIds, pipeElbowObjectIds));
 
-                ed.WriteMessage("\n完成任务...");
+                ed.WriteMessage("\n同步数据成功...");
 
                 tr.Commit();
             }
