@@ -17,27 +17,28 @@ namespace GsPgDataFlow
 
         }
 
-        public static void GsLcBindXDatatoPipe(ObjectId objectId, List<ObjectId> ObjectIds)
+        public static void GsLcBindXDatatoPipe(ObjectId pipeNumObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
         {
-            ObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsBlockGetBlockBasePoint(objectId), x))
-                .ToList()
-                .ForEach(x => UtilsCADActive.UtilsAddXData(x, "pipeNum", UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(objectId, "pipeNum")));
-
-            //ObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsBlockGetBlockBasePoint(objectId), x))
+            //pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsBlockGetBlockBasePoint(pipeNumObjectId), x))
             //    .ToList()
-            //    .ForEach(x => UtilsPolyline.UtilsPolylineChangeColor(x, 1));
+            //    .ForEach(x => UtilsCADActive.UtilsAddXData(x, "pipeNum", UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(objectId, "pipeNum")));
+
+            pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.GetBlockBasePoint(pipeNumObjectId), x))
+                .ToList()
+                .ForEach(x => UtilsPolyline.UtilsPolylineChangeColor(x, 1));
 
         }
-        public static void GsPgSynPipeData()
+        public static void GsPgBatchSynPipeData()
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
                 Editor ed = UtilsCADActive.Editor;
 
                 List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsPolylineGetAllObjectIds();
-                List<ObjectId> blockObjectIds = UtilsBlock.UtilsBlockGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
+                List<ObjectId> pipeNumObjectIds = UtilsBlock.GetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
+                List<ObjectId> pipeElbowObjectIds = UtilsBlock.GetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
 
-                blockObjectIds.ForEach(x => GsLcBindXDatatoPipe(x, polylineObjectIds));
+                pipeNumObjectIds.ForEach(x => GsLcBindXDatatoPipe(x, polylineObjectIds, pipeElbowObjectIds));
 
                 ed.WriteMessage("\n完成任务...");
 

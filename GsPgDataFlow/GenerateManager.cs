@@ -7,10 +7,10 @@ namespace GsPgDataFlow
 {
     public class GenerateManager
     {
-        public static void GsPgSynPipeData()
+        public static void GsPgBatchSynPipeData()
         {
 
-            GsPgBatchProcessPipeData.GsPgSynPipeData();
+            GsPgBatchProcessPipeData.GsPgBatchSynPipeData();
         }
 
         public static void CsTest()

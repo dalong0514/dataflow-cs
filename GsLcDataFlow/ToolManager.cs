@@ -50,7 +50,7 @@ namespace GsLcDataFlow
 
                 List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsPolylineGetAllObjectIds();
 
-                List<BlockReference> blockReferences = UtilsBlock.UtilsBlockGetObjectIdsBySelectByBlockName("PipeArrowLeft")
+                List<BlockReference> blockReferences = UtilsBlock.GetObjectIdsBySelectByBlockName("PipeArrowLeft")
                     .Select(x => x.GetObject(OpenMode.ForRead) as BlockReference)
                     .ToList();
                 // 根据blockId获得块的基点
@@ -85,7 +85,7 @@ namespace GsLcDataFlow
 
                 // 通过拾取获得一个块的ObjectId
                 ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
-                string propertyValue = UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(blockId, "pipeNum");
+                string propertyValue = UtilsBlock.GetPropertyValueByPropertyName(blockId, "pipeNum");
                 ed.WriteMessage("\n" + propertyValue);
 
                 tr.Commit();

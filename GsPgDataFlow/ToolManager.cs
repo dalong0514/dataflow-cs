@@ -35,7 +35,7 @@ namespace GsPgDataFlow
 
                 // 通过拾取获得一个块的ObjectId
                 ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
-                ed.WriteMessage("\n" + UtilsBlock.UtilsBlockGetBlockName(blockId));
+                ed.WriteMessage("\n" + UtilsBlock.GetBlockName(blockId));
 
 
                 tr.Commit();

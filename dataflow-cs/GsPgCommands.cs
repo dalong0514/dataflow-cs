@@ -17,9 +17,9 @@ namespace dataflow_cs
         }
 
         [CommandMethod("CsFuncitonTest")]
-        public void GsPgSynPipeData()
+        public void GsPgBatchSynPipeData()
         {
-            GsPgDataFlow.GenerateManager.GsPgSynPipeData();
+            GsPgDataFlow.GenerateManager.GsPgBatchSynPipeData();
         }
     }
 }
