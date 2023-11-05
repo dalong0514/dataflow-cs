@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
@@ -79,25 +80,28 @@ namespace CommonUtils.CADUtils
             }
         }
 
-        /// <summary>
-        /// 绑定扩展数据XData
-        /// </summary>
-        /// <param name="ent"></param>
-        /// <param name="regAppName"></param>
-        /// <param name="xdataContent"></param>
-        public static void UtilsAddXData(Entity ent, string regAppName, string xdataContent)
+        public static void UtilsAddXData(ObjectId objectId, Dictionary<string, string> xdataDictList)
         {
+            foreach (KeyValuePair<string, string> xdataDict in xdataDictList)
+            {
+                UtilsAddOneXData(objectId, xdataDict);
+            }
+        }
 
+        public static void UtilsAddOneXData(ObjectId objectId, KeyValuePair<string, string> xdataDict)
+        {
+            string regAppName = xdataDict.Key;
+            string xdataContent = xdataDict.Value;
             AddRegAppTableRecord(regAppName);
 
             ResultBuffer rb = new ResultBuffer(new TypedValue(1001, regAppName), new TypedValue(1000, xdataContent));
+            Entity ent = objectId.GetObject(OpenMode.ForWrite) as Entity;
             ent.XData = rb;
             rb.Dispose();
         }
 
-        public static void UtilsAddXData(ObjectId objectId, string regAppName, string xdataContent)
+        public static void UtilsAddOneXData(ObjectId objectId, string regAppName, string xdataContent)
         {
-
             AddRegAppTableRecord(regAppName);
 
             ResultBuffer rb = new ResultBuffer(new TypedValue(1001, regAppName), new TypedValue(1000, xdataContent));

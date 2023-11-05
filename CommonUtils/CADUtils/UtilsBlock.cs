@@ -13,13 +13,13 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsBlock
     {
-        public static Point3d GetBlockBasePoint(ObjectId objectId)
+        public static Point3d UtilsGetBlockBasePoint(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
             return blockRef.Position;
         }
 
-        public static string GetBlockName(ObjectId objectId)
+        public static string UtilsGetBlockName(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
             if (blockRef != null)
@@ -38,7 +38,7 @@ namespace CommonUtils.CADUtils
 
         }
 
-        public static string GetBlockName(BlockReference blockRef)
+        public static string UtilsGetBlockName(BlockReference blockRef)
         {
             if (blockRef != null)
             {
@@ -61,16 +61,15 @@ namespace CommonUtils.CADUtils
         /// </summary>
         /// <param name="objectId"></param>
         /// <returns></returns>
-        public static List<Dictionary<string, string>> GetPropertyDictList(ObjectId objectId)
+        public static List<Dictionary<string, string>> UtilsGetPropertyDictList(ObjectId objectId)
         {
             // 获取块选择集中的所有块实体对象的属性值
             List<Dictionary<string, string>> blockAttributes = new List<Dictionary<string, string>>();
-            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
-            // 过滤掉没有属性的块实体对象
-            if (blockRef.AttributeCollection.Count == 0) return blockAttributes;
-            // 获取块实体对象的属性值
             Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
-
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            // Filter out block entity objects that has no attributes
+            if (blockRef.AttributeCollection.Count == 0) return blockAttributes;
+            // get the property value of the block entity
             foreach (ObjectId attId in blockRef.AttributeCollection)
             {
                 AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
@@ -83,13 +82,31 @@ namespace CommonUtils.CADUtils
             return blockAttributes;
         }
 
+        public static Dictionary<string, string> UtilsGetPropertyDictListByPropertyNameList(ObjectId objectId, List<string> propertyNameList)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
+            // filter out block entity objects that has no attributes
+            if (blockRef.AttributeCollection.Count == 0) return blockAttribute;
+            // get the property value of the block entity
+            foreach (ObjectId attId in blockRef.AttributeCollection)
+            {
+                AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
+                if (attRef != null && propertyNameList.Any(s => s.Equals(attRef.Tag, StringComparison.OrdinalIgnoreCase)))
+                {
+                    blockAttribute.Add(attRef.Tag, attRef.TextString);
+                }
+            }
+            return blockAttribute;
+        }
+
         /// <summary>
         /// 根据块的ObjectId和属性名获取属性值
         /// </summary>
         /// <param name="objectId"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public static string GetPropertyValueByPropertyName(ObjectId objectId, string propertyName)
+        public static string UtilsGetPropertyValueByPropertyName(ObjectId objectId, string propertyName)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
 
@@ -107,7 +124,7 @@ namespace CommonUtils.CADUtils
             return string.Empty;
         }
 
-        public static List<ObjectId> GetObjectIdsBySelectByBlockName(string blockName)
+        public static List<ObjectId> UtilsGetObjectIdsBySelectByBlockName(string blockName)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
             SelectionSet selSet = UtilsSelectionSet.UtilsGetBlockSelectionSet();
@@ -118,7 +135,7 @@ namespace CommonUtils.CADUtils
             {
                 blockIds = selSet.GetObjectIds()
                     .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                    .Where(blockRef => blockRef != null && GetBlockName(blockRef) == blockName)
+                    .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
                     .Select(blockRef => blockRef.ObjectId)
                     .ToList();
             }
@@ -126,7 +143,7 @@ namespace CommonUtils.CADUtils
         }
 
         // AutoCAD中获得所有块名为{Instrument}的ObjectId
-        public static List<ObjectId> GetAllObjectIdsByBlockName(string blockName)
+        public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(string blockName)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
@@ -137,7 +154,7 @@ namespace CommonUtils.CADUtils
             {
                 blockIds = selSet.GetObjectIds()
                     .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                    .Where(blockRef => blockRef != null && GetBlockName(blockRef) == blockName)
+                    .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
                     .Select(blockRef => blockRef.ObjectId)
                     .ToList();
             }

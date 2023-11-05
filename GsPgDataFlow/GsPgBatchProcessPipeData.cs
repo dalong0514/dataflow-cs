@@ -17,15 +17,27 @@ namespace GsPgDataFlow
 
         }
 
-        public static void GsLcBindXDatatoPipe(ObjectId pipeNumObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
+        public static void GsPgBindXDatatoPipe(ObjectId pipeNumObjectId, ObjectId pipeLineObjectId)
         {
-            //pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsBlockGetBlockBasePoint(pipeNumObjectId), x))
-            //    .ToList()
-            //    .ForEach(x => UtilsCADActive.UtilsAddXData(x, "pipeNum", UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(objectId, "pipeNum")));
+            List<string> propertyNameList = new List<string> { "pipeNum", "elevation" };
+            Dictionary<string, string> probertyValueDictList = UtilsBlock.UtilsGetPropertyDictListByPropertyNameList(pipeNumObjectId, propertyNameList);
+            Dictionary<string, string> xdataDictList = new Dictionary<string, string>
+            {
+                { "pipeNum", probertyValueDictList["PIPENUM"] },
+                { "pipeElevation", probertyValueDictList["ELEVATION"] }
+            };
+            UtilsCADActive.UtilsAddXData(pipeLineObjectId, xdataDictList);
+        }
 
-            pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.GetBlockBasePoint(pipeNumObjectId), x))
+        public static void GsPgSynOnePipeData(ObjectId pipeNumObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
+        {
+            pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
                 .ToList()
-                .ForEach(x => UtilsPolyline.UtilsPolylineChangeColor(x, 1));
+                .ForEach(x => GsPgBindXDatatoPipe(pipeNumObjectId, x));
+
+            //pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
+            //    .ToList()
+            //    .ForEach(x => UtilsPolyline.UtilsPolylineChangeColor(x, 1));
 
         }
         public static void GsPgBatchSynPipeData()
@@ -35,15 +47,46 @@ namespace GsPgDataFlow
                 Editor ed = UtilsCADActive.Editor;
 
                 List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsPolylineGetAllObjectIds();
-                List<ObjectId> pipeNumObjectIds = UtilsBlock.GetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
-                List<ObjectId> pipeElbowObjectIds = UtilsBlock.GetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
+                List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
+                List<ObjectId> pipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
 
-                pipeNumObjectIds.ForEach(x => GsLcBindXDatatoPipe(x, polylineObjectIds, pipeElbowObjectIds));
+                pipeNumObjectIds.ForEach(x => GsPgSynOnePipeData(x, polylineObjectIds, pipeElbowObjectIds));
 
                 ed.WriteMessage("\n完成任务...");
 
                 tr.Commit();
             }
+        }
+
+        public static void CsTest()
+        {
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
+            {
+                Editor ed = UtilsCADActive.Editor;
+                Database db = UtilsCADActive.Database;
+
+
+                //// 通过拾取获得一个多段线的ObjectId
+                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                //// 根据多段线的ObjectId获得多段线的对象
+                //Polyline polyline = tr.GetObject(polylineId, OpenMode.ForWrite) as Polyline;
+
+                //UtilsCADActive.UtilsAddXData(polylineId, "pipeNum", "PL1101");
+                //ed.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeNum"));
+
+                //// 通过拾取获得一个块的ObjectId
+                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                //string propertyValue = UtilsBlock.UtilsBlockGetPropertyValueByPropertyName(blockId, "pipeNum");
+                //ed.WriteMessage("\n" + propertyValue);
+
+                // 通过拾取获得一个块的ObjectId
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
+
+
+                tr.Commit();
+            }
+
         }
 
     }

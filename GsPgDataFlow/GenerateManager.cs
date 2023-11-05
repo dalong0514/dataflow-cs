@@ -16,7 +16,7 @@ namespace GsPgDataFlow
         public static void CsTest()
         {
 
-            ToolManager.CsTest();
+            GsPgBatchProcessPipeData.CsTest();
         }
     }
 }
