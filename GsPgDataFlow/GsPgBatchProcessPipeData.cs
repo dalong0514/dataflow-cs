@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.GraphicsInterface;
 using CommonUtils.CADUtils;
 using System;
 using System.Collections.Generic;
@@ -11,34 +12,73 @@ namespace GsPgDataFlow
 {
     public class GsPgBatchProcessPipeData
     {
-        public static bool IsPipeNumOnPipeLine(Point3d basePoint, ObjectId objectId)
+        public static bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
         {
-            return UtilsGeometric.UtilsGetPointToPolylineShortestDistance(basePoint, objectId) < 5;
+            return UtilsGeometric.UtilsIsPointOnPolyline(basePoint, pipeLineObjectId, 5);
 
         }
 
-        public static void GsPgBindXDatatoPipe(ObjectId pipeNumObjectId, ObjectId pipeLineObjectId)
+        public static bool IsPipeElementOnPipeLineEnds(Point3d basePoint, ObjectId pipeLineObjectId)
         {
-            List<string> propertyNameList = new List<string> { "pipeNum", "elevation" };
-            Dictionary<string, string> probertyValueDictList = UtilsBlock.UtilsGetPropertyDictListByPropertyNameList(pipeNumObjectId, propertyNameList);
-            Dictionary<string, string> xdataDictList = new Dictionary<string, string>
+            return UtilsGeometric.UtilsIsPointOnPolylineEnds(basePoint, pipeLineObjectId, 5);
+
+        }
+
+        public static Dictionary<string, string> GsPgGetPipeData(ObjectId pipeNumObjectId)
+        {
+            Dictionary<string, string> propertyValueDictList = UtilsBlock.UtilsGetAllPropertyDictList(pipeNumObjectId);
+            return new Dictionary<string, string>
             {
-                { "pipeNum", probertyValueDictList["PIPENUM"] },
-                { "pipeElevation", probertyValueDictList["ELEVATION"] }
+                { "pipeNum", propertyValueDictList["PIPENUM"] },
+                { "pipeElevation", propertyValueDictList["ELEVATION"] }
             };
-            UtilsCADActive.UtilsAddXData(pipeLineObjectId, xdataDictList);
+        }
+
+        public static ObjectId GsPgGetPipeLineByOnPL(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
+        {
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            if (pipeLineObjectIds.Count != 0)
+            {
+                return pipeLineObjectIds[0];
+            }
+            return ObjectId.Null;
+        }
+
+        public static ObjectId GsPgGetPipeLineByOnPLEnd(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
+        {
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            if (pipeLineObjectIds.Count != 0)
+            {
+                return pipeLineObjectIds[0];
+            }
+            return ObjectId.Null;
         }
 
         public static void GsPgSynOnePipeData(ObjectId pipeNumObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
         {
-            //pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
-            //    .ToList()
-            //    .ForEach(x => GsPgBindXDatatoPipe(pipeNumObjectId, x));
+            ObjectId pipeLineObjectId = GsPgGetPipeLineByOnPL(pipeNumObjectId, pipeLineObjectIds);
+            if (pipeLineObjectId != ObjectId.Null)
+            {
+                UtilsCADActive.UtilsAddXData(pipeLineObjectId, GsPgGetPipeData(pipeNumObjectId));
+                // for test
+                UtilsPolyline.UtilsChangeColor(pipeLineObjectId, 1);
+                // the key logic: remove the current polyline
+                pipeLineObjectIds = pipeLineObjectIds.Where(x => x != pipeLineObjectId).ToList();
 
-            pipeLineObjectIds.Where(x => IsPipeNumOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectId), x))
-                .ToList()
-                .ForEach(x => UtilsPolyline.UtilsChangeColor(x, 1));
+                ElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                    .ToList()
+                    .ForEach(x => UtilsBlock.UtilsChangeBlockLayerName(x, "0"));
 
+
+
+
+                ElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                    .ToList()
+                    .ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(x)));
+
+                //ElbowObjectIds.ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(x)));
+                UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetPropertyValueByPropertyName(pipeNumObjectId, "pipeNum") + "数据已同步...");
+            }
         }
         public static void GsPgBatchSynPipeData()
         {
@@ -52,7 +92,7 @@ namespace GsPgDataFlow
 
                 pipeNumObjectIds.ForEach(x => GsPgSynOnePipeData(x, polylineObjectIds, pipeElbowObjectIds));
 
-                ed.WriteMessage("\n同步数据成功...");
+                ed.WriteMessage("\n同步数据完成...");
 
                 tr.Commit();
             }
@@ -66,8 +106,6 @@ namespace GsPgDataFlow
                 Database db = UtilsCADActive.Database;
 
 
-                //// 通过拾取获得一个多段线的ObjectId
-                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
                 //// 根据多段线的ObjectId获得多段线的对象
                 //Polyline polyline = tr.GetObject(polylineId, OpenMode.ForWrite) as Polyline;
 
@@ -81,7 +119,9 @@ namespace GsPgDataFlow
 
                 // 通过拾取获得一个块的ObjectId
                 ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
-                ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
+                // 通过拾取获得一个多段线的ObjectId
+                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                ed.WriteMessage("\n" + IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(blockId), polylineId));
 
 
                 tr.Commit();

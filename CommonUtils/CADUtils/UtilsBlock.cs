@@ -19,6 +19,12 @@ namespace CommonUtils.CADUtils
             return blockRef.Position;
         }
 
+        public static void UtilsChangeBlockLayerName(ObjectId objectId, string layerName)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
+            blockRef.Layer = layerName;
+        }
+
         public static string UtilsGetBlockName(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -57,18 +63,16 @@ namespace CommonUtils.CADUtils
         }
 
         /// <summary>
-        /// 获得块的属性值字典对象
+        /// // get all proerty dict list of the block entity
         /// </summary>
         /// <param name="objectId"></param>
         /// <returns></returns>
-        public static List<Dictionary<string, string>> UtilsGetPropertyDictList(ObjectId objectId)
+        public static Dictionary<string, string> UtilsGetAllPropertyDictList(ObjectId objectId)
         {
-            // 获取块选择集中的所有块实体对象的属性值
-            List<Dictionary<string, string>> blockAttributes = new List<Dictionary<string, string>>();
-            Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
             // Filter out block entity objects that has no attributes
-            if (blockRef.AttributeCollection.Count == 0) return blockAttributes;
+            if (blockRef.AttributeCollection.Count == 0) return blockAttribute;
             // get the property value of the block entity
             foreach (ObjectId attId in blockRef.AttributeCollection)
             {
@@ -78,8 +82,7 @@ namespace CommonUtils.CADUtils
                     blockAttribute.Add(attRef.Tag, attRef.TextString);
                 }
             }
-            blockAttributes.Add(blockAttribute);
-            return blockAttributes;
+            return blockAttribute;
         }
 
         public static Dictionary<string, string> UtilsGetPropertyDictListByPropertyNameList(ObjectId objectId, List<string> propertyNameList)

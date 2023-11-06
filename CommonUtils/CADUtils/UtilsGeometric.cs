@@ -13,25 +13,38 @@ namespace CommonUtils.CADUtils
 
     public static class UtilsGeometric
     {
-        /// 一个点到多段线的最短距离 <summary>
-        /// 一个点到多段线的最短距离
+        /// <summary>
+        /// get the closest distance from the basePoint to the polyline
         /// </summary>
         /// <param name="point"></param>
-        /// <param name="polyline"></param>
+        /// <param name="polylineObjectId"></param>
         /// <returns></returns>
-        public static double UtilsGetPointToPolylineShortestDistance(Point3d point, Polyline polyline)
+        public static double UtilsGetPointToPolylineShortestDistance(Point3d point, ObjectId polylineObjectId)
         {
-            // 获得 basePoint 与该多段线的最近点的距离
+            // 获get the closest distance from the basePoint to the polyline
+            Polyline polyline = polylineObjectId.GetObject(OpenMode.ForRead) as Polyline;
             Point3d closestPoint = polyline.GetClosestPointTo(point, false);
             return point.DistanceTo(closestPoint);
         }
 
-        public static double UtilsGetPointToPolylineShortestDistance(Point3d point, ObjectId polylineObjectId)
+        public static bool UtilsIsPointOnPolyline(Point3d point, ObjectId polylineObjectId, double tolerance)
         {
-            // 获得 basePoint 与该多段线的最近点的距离
+            return UtilsGetPointToPolylineShortestDistance(point, polylineObjectId) < tolerance;
+        }
+
+        public static bool UtilsIsPointOnPolylineEnds(Point3d point, ObjectId polylineObjectId, double tolerance)
+        {
             Polyline polyline = polylineObjectId.GetObject(OpenMode.ForRead) as Polyline;
-            Point3d closestPoint = polyline.GetClosestPointTo(point, false);
-            return point.DistanceTo(closestPoint);
+            // Get the start and end points of the polyline
+            Point3d startPoint = polyline.StartPoint;
+            Point3d endPoint = polyline.EndPoint;
+
+            // Check if the closest point is the same as the start or end point
+            // Use a small tolerance for comparison because of potential floating point errors
+            bool isOnStart = startPoint.DistanceTo(point) < tolerance;
+            bool isOnEnd = endPoint.DistanceTo(point) < tolerance;
+
+            return isOnStart || isOnEnd;
         }
 
     }
