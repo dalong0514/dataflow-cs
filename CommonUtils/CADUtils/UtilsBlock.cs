@@ -199,7 +199,7 @@ namespace CommonUtils.CADUtils
             }
         }
 
-        public static List<ObjectId> UtilsGetObjectIdsBySelectByBlockName(string blockName)
+        public static List<ObjectId> UtilsGetObjectIdsBySelectByBlockName(string blockName, bool isIdentical = true)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
             SelectionSet selSet = UtilsSelectionSet.UtilsGetBlockSelectionSet();
@@ -208,17 +208,28 @@ namespace CommonUtils.CADUtils
             // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
             if (selSet != null)
             {
-                blockIds = selSet.GetObjectIds()
-                    .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                    .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
-                    .Select(blockRef => blockRef.ObjectId)
-                    .ToList();
+                if (isIdentical)
+                {
+                    blockIds = selSet.GetObjectIds()
+                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
+                        .Select(blockRef => blockRef.ObjectId)
+                        .ToList();
+                }
+                else
+                {
+                    blockIds = selSet.GetObjectIds()
+                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef).Contains(blockName))
+                        .Select(blockRef => blockRef.ObjectId)
+                        .ToList();
+                }
             }
             return blockIds;
         }
-
+        
         // AutoCAD中获得所有块名为{Instrument}的ObjectId
-        public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(string blockName)
+        public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(string blockName, bool isIdentical = true)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
@@ -227,11 +238,53 @@ namespace CommonUtils.CADUtils
             // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
             if (selSet != null)
             {
-                blockIds = selSet.GetObjectIds()
-                    .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                    .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
-                    .Select(blockRef => blockRef.ObjectId)
-                    .ToList();
+                if (isIdentical)
+                {
+                    blockIds = selSet.GetObjectIds()
+                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
+                        .Select(blockRef => blockRef.ObjectId)
+                        .ToList();
+                }
+                else
+                {
+                    blockIds = selSet.GetObjectIds()
+                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef).Contains(blockName))
+                        .Select(blockRef => blockRef.ObjectId)
+                        .ToList();
+                }
+
+            }
+            return blockIds;
+        }
+
+        public static List<ObjectId> UtilsGetAllObjectIdsByBlockNameByCrossingWindow(Extents3d extents, string blockName, bool isIdentical = true)
+        {
+            // 任务1: 在AutoCAD中获得块实体对象的选择集
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSetByCrossingWindow(extents);
+            List<ObjectId> blockIds = new List<ObjectId>();
+
+            // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
+            if (selSet != null)
+            {
+                if (isIdentical)
+                {
+                    blockIds = selSet.GetObjectIds()
+                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
+                        .Select(blockRef => blockRef.ObjectId)
+                        .ToList();
+                }
+                else
+                {
+                    blockIds = selSet.GetObjectIds()
+                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
+                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef).Contains(blockName))
+                        .Select(blockRef => blockRef.ObjectId)
+                        .ToList();
+                }
+
             }
             return blockIds;
         }

@@ -125,21 +125,33 @@ namespace GsPgDataFlow
             {
                 Editor ed = UtilsCADActive.Editor;
 
-                List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
-                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
-                List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementArrowAssist").ToList();
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
+                List<ObjectId> allGeYuanFrameObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GeYuanFrame", false).ToList();
+                allGeYuanFrameObjectIds = allGeYuanFrameObjectIds.Where(x => UtilsGeometric.UtilsIsPointWithRectangleBlock(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectIds[0]), x)).ToList();
 
-                
-                pipeNumObjectIds.ForEach(x =>
+                if (allGeYuanFrameObjectIds.Count != 0)
                 {
-                    List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
-                    Dictionary<string, string> pipeData = GsPgGetPipeData(x);
-                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds);
-                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
-                });
+                    BlockReference blockRef = allGeYuanFrameObjectIds[0].GetObject(OpenMode.ForRead) as BlockReference;
+                    Extents3d geYuanFrameExtents = blockRef.GeometricExtents;
 
-                ed.WriteMessage("\n同步数据完成...");
+                    List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerNameByCrossingWindow(geYuanFrameExtents, "0DataFlow-GsPgPipeLine*");
+                    List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(geYuanFrameExtents, "GsPgPipeElementElbow").ToList();
+                    List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(geYuanFrameExtents, "GsPgPipeElementArrowAssist").ToList();
+
+                    pipeNumObjectIds.ForEach(x =>
+                    {
+                        List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
+                        Dictionary<string, string> pipeData = GsPgGetPipeData(x);
+                        GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds);
+                        UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
+                    });
+
+                    ed.WriteMessage("\n同步数据完成...");
+                }
+                else
+                {
+                    ed.WriteMessage("\n请确保图纸中有新版格原图签...");
+                }
 
                 tr.Commit();
             }
@@ -155,17 +167,18 @@ namespace GsPgDataFlow
 
                 // 通过拾取获得一个块的ObjectId
                 ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
 
-                Dictionary<string, string> propertyDict = new Dictionary<string, string>()
-                {
-                    { "pipeNum", "PL1101-50-2J5" },
-                    { "elevation", "9.5" },
-                    { "topview-DN", "100" },
-                    { "sideview-DN", "100" },
-                    { "key3", "value3" }
-                };
-                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(blockId, propertyDict);
-                
+                //Dictionary<string, string> propertyDict = new Dictionary<string, string>()
+                //{
+                //    { "pipeNum", "PL1101-50-2J5" },
+                //    { "elevation", "9.5" },
+                //    { "topview-DN", "100" },
+                //    { "sideview-DN", "100" },
+                //    { "key3", "value3" }
+                //};
+                //UtilsBlock.UtilsSetDynamicPropertyValueByDictData(blockId, propertyDict);
+
 
                 //// 通过拾取获得一个多段线的ObjectId
                 //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;

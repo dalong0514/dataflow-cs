@@ -47,5 +47,14 @@ namespace CommonUtils.CADUtils
             return isOnStart || isOnEnd;
         }
 
+        public static bool UtilsIsPointWithRectangleBlock(Point3d point, ObjectId blockObjectId)
+        {
+            BlockReference blockRef = blockObjectId.GetObject(OpenMode.ForRead) as BlockReference;
+            Extents3d geYuanFrameExtents = blockRef.GeometricExtents;
+            // Check if the position of pipeNum is within the extents of the rectangle
+            return geYuanFrameExtents.MinPoint.X <= point.X && point.X <= geYuanFrameExtents.MaxPoint.X &&
+                geYuanFrameExtents.MinPoint.Y <= point.Y && point.Y <= geYuanFrameExtents.MaxPoint.Y;
+        }
+
     }
 }

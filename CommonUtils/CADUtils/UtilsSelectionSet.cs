@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CommonUtils.CADUtils;
+using Autodesk.AutoCAD.Geometry;
 
 namespace CommonUtils.CADUtils
 {
@@ -20,6 +21,16 @@ namespace CommonUtils.CADUtils
         public static SelectionSet UtilsGetAllTextSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("Text", layerName);
         public static SelectionSet UtilsGetAllPolylineSelectionSet() => UtilsGetAllSelectionSetByFilter("LWPOLYLINE");
         public static SelectionSet UtilsGetAllPolylineSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("LWPOLYLINE", layerName);
+
+        // get all entity selection set by filter
+        public static SelectionSet UtilsGetAllBlockSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("INSERT", extents);
+        public static SelectionSet UtilsGetAllBlockSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("INSERT", extents, layerName);
+        public static SelectionSet UtilsGetAllMTextSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("MText", extents);
+        public static SelectionSet UtilsGetAllMTextSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("MText", extents, layerName);
+        public static SelectionSet UtilsGetAllTextSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("Text", extents);
+        public static SelectionSet UtilsGetAllTextSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("Text", extents, layerName);
+        public static SelectionSet UtilsGetAllPolylineSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("LWPOLYLINE", extents);
+        public static SelectionSet UtilsGetAllPolylineSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("LWPOLYLINE", extents, layerName);
 
         // get entity selection set by filter
         public static SelectionSet UtilsGetBlockSelectionSet() => UtilsGetSelectionSetByFilter("INSERT");
@@ -101,6 +112,60 @@ namespace CommonUtils.CADUtils
             if (selSet == null) return null;
 
             return selSet;
+        }
+
+        public static SelectionSet UtilsGeSelectionSetByFilterByCrossingWindow(string entityType, Extents3d extents, string layerName = null)
+        {
+            // Create a new list for filter values
+            List<TypedValue> filterValues = new List<TypedValue>
+            {
+                // Add entity type filter
+                new TypedValue((int)DxfCode.Start, entityType)
+            };
+            // Add layer name filter if layerName is not null
+            if (layerName != null)
+            {
+                filterValues.Add(new TypedValue((int)DxfCode.LayerName, layerName));
+            }
+            // Convert the list to an array
+            TypedValue[] filterList = filterValues.ToArray();
+            SelectionFilter filter = new SelectionFilter(filterList);
+
+
+            PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);
+            if (selRes.Status != PromptStatus.OK) return null;
+
+            // Now filter the selection set by the extents
+            ObjectIdCollection filteredObjects = new ObjectIdCollection();
+            foreach (SelectedObject obj in selRes.Value)
+            {
+                if (obj.ObjectId.ObjectClass.DxfName == entityType)
+                {
+                    Entity ent = (Entity)obj.ObjectId.GetObject(OpenMode.ForRead);
+                    if (ent.GeometricExtents.MinPoint.X >= extents.MinPoint.X &&
+                        ent.GeometricExtents.MinPoint.Y >= extents.MinPoint.Y &&
+                        ent.GeometricExtents.MaxPoint.X <= extents.MaxPoint.X &&
+                        ent.GeometricExtents.MaxPoint.Y <= extents.MaxPoint.Y)
+                    {
+                        filteredObjects.Add(obj.ObjectId);
+                    }
+                }
+            }
+
+            // Create a new SelectionSet from the ObjectIdCollection
+            return SelectionSet.FromObjectIds(filteredObjects.Cast<ObjectId>().ToArray());
+
+            //// Convert the extents to a Point3d array
+            //Point3d pt1 = new Point3d(extents.MinPoint.X, extents.MinPoint.Y, extents.MinPoint.Z);
+            //Point3d pt2 = new Point3d(extents.MaxPoint.X, extents.MaxPoint.Y, extents.MaxPoint.Z);
+
+            //PromptSelectionResult selRes = UtilsCADActive.Editor.SelectCrossingWindow(pt1, pt2, filter);
+            //if (selRes.Status != PromptStatus.OK) return null;
+
+            //SelectionSet selSet = selRes.Value;
+            //if (selSet == null) return null;
+
+            //return selSet;
         }
 
     }

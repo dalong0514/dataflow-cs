@@ -155,5 +155,11 @@ namespace CommonUtils.CADUtils
             return result;
         }
 
+        public static void UtilsDeleteEntity(ObjectId objectId)
+        {
+            DBObject obj = objectId.GetObject(OpenMode.ForWrite);
+            obj.Erase();
+        }
+
     }
 }

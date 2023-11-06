@@ -95,6 +95,19 @@ namespace CommonUtils.CADUtils
             return polylineObjectIds;
         }
 
+        public static List<ObjectId> UtilsGetAllObjectIdsByLayerNameByCrossingWindow(Extents3d extents, string layerName)
+        {
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSetByLayerNameByCrossingWindow(extents, layerName);
+            List<ObjectId> polylineObjectIds = new List<ObjectId>();
+
+            if (selSet != null)
+            {
+                // 通过选择集获取所有块实体对象的ObjectId
+                polylineObjectIds = selSet.GetObjectIds().ToList();
+            }
+            return polylineObjectIds;
+        }
+
         public static List<ObjectId> UtilsGetAllObjectIds()
         {
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
