@@ -88,7 +88,12 @@ namespace GsPgDataFlow
         {
             allPipeArrowAssistObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
                 .ToList()
-                .ForEach(x => UtilsBlock.UtilsSetPropertyValueByDict(x, pipeData));
+                .ForEach(x =>
+                {
+                    UtilsBlock.UtilsSetPropertyValueByDict(x, pipeData);
+                    // key logic: the other pipelines elevation should be based on the current auxiliary arrow block elevation
+                    UtilsCADActive.UtilsAddOneXData(pipeLineObjectId, "pipeElevation", UtilsBlock.UtilsGetPropertyValueByPropertyName(x,"elevation"));
+                });
         }
 
         public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds)
