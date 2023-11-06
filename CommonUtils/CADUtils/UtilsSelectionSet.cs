@@ -62,7 +62,7 @@ namespace CommonUtils.CADUtils
             // Prompt the user to select block references
             PromptSelectionOptions opts = new PromptSelectionOptions();
             // 当用户在选择对象时，这个字符串将作为提示信息显示
-            opts.MessageForAdding = "Select block references: ";
+            opts.MessageForAdding = "Select: ";
             // 如果设置为true，则允许在选择集中包含重复的对象。如果设置为false，则选择集中不会包含重复的对象
             opts.AllowDuplicates = false;
             // 如果设置为true，则用户只能选择一个对象。如果设置为false，则用户可以选择多个对象

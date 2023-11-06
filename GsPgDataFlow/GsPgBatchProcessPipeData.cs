@@ -123,35 +123,24 @@ namespace GsPgDataFlow
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
+
                 Editor ed = UtilsCADActive.Editor;
 
+                ed.WriteMessage("\n请选择绿色箭头辅助管道块");
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
-                List<ObjectId> allGeYuanFrameObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GeYuanFrame", false).ToList();
-                allGeYuanFrameObjectIds = allGeYuanFrameObjectIds.Where(x => UtilsGeometric.UtilsIsPointWithRectangleBlock(UtilsBlock.UtilsGetBlockBasePoint(pipeNumObjectIds[0]), x)).ToList();
+                List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
+                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
+                List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementArrowAssist").ToList();
 
-                if (allGeYuanFrameObjectIds.Count != 0)
+                pipeNumObjectIds.ForEach(x =>
                 {
-                    BlockReference blockRef = allGeYuanFrameObjectIds[0].GetObject(OpenMode.ForRead) as BlockReference;
-                    Extents3d geYuanFrameExtents = blockRef.GeometricExtents;
+                    List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
+                    Dictionary<string, string> pipeData = GsPgGetPipeData(x);
+                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds);
+                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
+                });
 
-                    List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerNameByCrossingWindow(geYuanFrameExtents, "0DataFlow-GsPgPipeLine*");
-                    List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(geYuanFrameExtents, "GsPgPipeElementElbow").ToList();
-                    List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(geYuanFrameExtents, "GsPgPipeElementArrowAssist").ToList();
-
-                    pipeNumObjectIds.ForEach(x =>
-                    {
-                        List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
-                        Dictionary<string, string> pipeData = GsPgGetPipeData(x);
-                        GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds);
-                        UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
-                    });
-
-                    ed.WriteMessage("\n同步数据完成...");
-                }
-                else
-                {
-                    ed.WriteMessage("\n请确保图纸中有新版格原图签...");
-                }
+                ed.WriteMessage("\n同步数据完成...");
 
                 tr.Commit();
             }
