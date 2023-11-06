@@ -74,7 +74,7 @@ namespace GsPgDataFlow
                 .ToList()
                 .ForEach(x =>
                 {
-                    UtilsBlock.UtilsSetPropertyValueByDict(x, pipeData);
+                    UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
                     ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
                     if (result != ObjectId.Null)
                     {
@@ -90,7 +90,7 @@ namespace GsPgDataFlow
                 .ToList()
                 .ForEach(x =>
                 {
-                    UtilsBlock.UtilsSetPropertyValueByDict(x, pipeData);
+                    UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
                     // key logic: the other pipelines elevation should be based on the current auxiliary arrow block elevation
                     UtilsCADActive.UtilsAddOneXData(pipeLineObjectId, "pipeElevation", UtilsBlock.UtilsGetPropertyValueByPropertyName(x,"elevation"));
                 });
@@ -160,9 +160,11 @@ namespace GsPgDataFlow
                 {
                     { "pipeNum", "PL1101-50-2J5" },
                     { "elevation", "9.5" },
+                    { "topview-DN", "100" },
+                    { "sideview-DN", "100" },
                     { "key3", "value3" }
                 };
-                UtilsBlock.UtilsSetPropertyValueByDict(blockId, propertyDict);
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(blockId, propertyDict);
                 
 
                 //// 通过拾取获得一个多段线的ObjectId

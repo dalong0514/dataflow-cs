@@ -146,7 +146,7 @@ namespace CommonUtils.CADUtils
             }
         }
 
-        public static void UtilsSetPropertyValueByDict(ObjectId objectId, Dictionary<string, string> propertyDict)
+        public static void UtilsSetPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
 
@@ -169,6 +169,33 @@ namespace CommonUtils.CADUtils
                 }
 
 
+            }
+        }
+
+        public static void UtilsSetDynamicPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+
+            if (blockRef == null || blockRef.DynamicBlockTableRecord == ObjectId.Null) return;
+
+            // Get dynamic block properties
+            DynamicBlockReferencePropertyCollection props = blockRef.DynamicBlockReferencePropertyCollection;
+
+            // set property value of the dynamic block entity
+            foreach (DynamicBlockReferenceProperty prop in props)
+            {
+                foreach (var item in propertyDict)
+                {
+                    if (string.Equals(prop.PropertyName, item.Key, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Upgrade the block reference to allow modification in the model of ForRead
+                        blockRef.UpgradeOpen();
+                        // Set the property value
+                        prop.Value = Convert.ChangeType(item.Value, prop.Value.GetType());
+                        // Downgrade the block reference to prevent further modifications
+                        blockRef.DowngradeOpen();
+                    }
+                }
             }
         }
 
