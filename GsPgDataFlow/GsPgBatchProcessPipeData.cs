@@ -54,30 +54,62 @@ namespace GsPgDataFlow
             return ObjectId.Null;
         }
 
-        public static void GsPgSynOnePipeData(ObjectId pipeNumObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
+        public static List<ObjectId> GsPgGetPipeLinesByOnPL(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
-            ObjectId pipeLineObjectId = GsPgGetPipeLineByOnPL(pipeNumObjectId, pipeLineObjectIds);
-            if (pipeLineObjectId != ObjectId.Null)
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            return pipeLineObjectIds;
+        }
+
+        public static List<ObjectId> GsPgGetPipeLinesByOnPLEnd(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
+        {
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            return pipeLineObjectIds;
+        }
+
+        public static List<ObjectId> GsPgGetOtherPipeLineByInterset(ObjectId pipeLineObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> ElbowObjectIds)
+        {
+            List<ObjectId> otherPipeLineObjectIds = new List<ObjectId>();
+            ElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                .ToList()
+                .ForEach(x =>
+                {
+                    ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
+                    if (result != ObjectId.Null)
+                    {
+                        otherPipeLineObjectIds.Add(result);
+                    }
+                });
+            return otherPipeLineObjectIds;
+        }
+
+        public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> ElbowObjectIds)
+        {
+            if (pipeLineObjectIds != null)
             {
-                UtilsCADActive.UtilsAddXData(pipeLineObjectId, GsPgGetPipeData(pipeNumObjectId));
-                // for test
-                UtilsPolyline.UtilsChangeColor(pipeLineObjectId, 1);
-                // the key logic: remove the current polyline
-                pipeLineObjectIds = pipeLineObjectIds.Where(x => x != pipeLineObjectId).ToList();
-
-                ElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
-                    .ToList()
-                    .ForEach(x => UtilsBlock.UtilsChangeBlockLayerName(x, "0"));
+                pipeLineObjectIds.ForEach(x =>
+                {
+                    UtilsCADActive.UtilsAddXData(x, pipeData);
+                    // for test
+                    UtilsPolyline.UtilsChangeColor(x, 1);
+                    // the key logic: remove the current polyline
+                    allPipeLineObjectIds = allPipeLineObjectIds.Where(xx => xx != x).ToList();
 
 
+                    ElbowObjectIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(xx), x))
+                        .ToList()
+                        .ForEach(xx => UtilsBlock.UtilsChangeBlockLayerName(xx, "0"));
 
+                    // for test
+                    ElbowObjectIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(xx), x))
+                        .ToList()
+                        .ForEach(xx => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(xx)));
 
-                ElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
-                    .ToList()
-                    .ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(x)));
+                    //ElbowObjectIds.ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(x)));
+                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
 
-                //ElbowObjectIds.ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(x)));
-                UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetPropertyValueByPropertyName(pipeNumObjectId, "pipeNum") + "数据已同步...");
+                });
+                
+
             }
         }
         public static void GsPgBatchSynPipeData()
@@ -86,11 +118,17 @@ namespace GsPgDataFlow
             {
                 Editor ed = UtilsCADActive.Editor;
 
-                List<ObjectId> polylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
+                List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
+                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
-                List<ObjectId> pipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
 
-                pipeNumObjectIds.ForEach(x => GsPgSynOnePipeData(x, polylineObjectIds, pipeElbowObjectIds));
+                
+                pipeNumObjectIds.ForEach(x =>
+                {
+                    List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
+                    Dictionary<string, string> pipeData = GsPgGetPipeData(x);
+                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds);
+                });
 
                 ed.WriteMessage("\n同步数据完成...");
 
