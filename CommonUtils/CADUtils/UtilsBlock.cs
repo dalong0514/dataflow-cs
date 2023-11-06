@@ -113,9 +113,8 @@ namespace CommonUtils.CADUtils
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
 
-            if (blockRef.AttributeCollection.Count == 0) return string.Empty;
-            // 获取块实体对象的属性值
-
+            if (blockRef == null || blockRef.AttributeCollection.Count == 0) return string.Empty;
+            // get property value of the block entity
             foreach (ObjectId attId in blockRef.AttributeCollection)
             {
                 AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
@@ -125,6 +124,52 @@ namespace CommonUtils.CADUtils
                 }
             }
             return string.Empty;
+        }
+
+        public static void UtilsSetPropertyValueByPropertyName(ObjectId objectId, string propertyName, string propertyValue)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+
+            if (blockRef == null || blockRef.AttributeCollection.Count == 0) return;
+            // set property value of the block entity
+            foreach (ObjectId attId in blockRef.AttributeCollection)
+            {
+                AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
+                if (attRef != null && string.Equals(attRef.Tag, propertyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Upgrade the attribute reference to allow modification in the model of ForRead
+                    attRef.UpgradeOpen();
+                    attRef.TextString = propertyValue;
+                    // Downgrade the attribute reference to prevent further modifications
+                    attRef.DowngradeOpen();
+                }
+            }
+        }
+
+        public static void UtilsSetPropertyValueByDict(ObjectId objectId, Dictionary<string, string> propertyDict)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+
+            if (blockRef == null || blockRef.AttributeCollection.Count == 0) return;
+            // set property value of the block entity
+            foreach (ObjectId attId in blockRef.AttributeCollection)
+            {
+                AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
+
+                foreach (var item in propertyDict)
+                {
+                    if (attRef != null && string.Equals(attRef.Tag, item.Key, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Upgrade the attribute reference to allow modification in the model of ForRead
+                        attRef.UpgradeOpen();
+                        attRef.TextString = item.Value;
+                        // Downgrade the attribute reference to prevent further modifications
+                        attRef.DowngradeOpen();
+                    }
+                }
+
+
+            }
         }
 
         public static List<ObjectId> UtilsGetObjectIdsBySelectByBlockName(string blockName)
