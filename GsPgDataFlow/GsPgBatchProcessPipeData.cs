@@ -27,6 +27,7 @@ namespace GsPgDataFlow
         public static Dictionary<string, string> GsPgGetPipeData(ObjectId pipeNumObjectId)
         {
             Dictionary<string, string> propertyValueDictList = UtilsBlock.UtilsGetAllPropertyDictList(pipeNumObjectId);
+            // Not setting the Elevation attribute value can conveniently avoid synchronously modifying the auxiliary arrow block elevation on other pipelines
             return new Dictionary<string, string>
             {
                 { "pipeNum", propertyValueDictList["PIPENUM"] },
@@ -66,13 +67,14 @@ namespace GsPgDataFlow
             return pipeLineObjectIds;
         }
 
-        public static List<ObjectId> GsPgGetOtherPipeLineByInterset(ObjectId pipeLineObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> allElbowObjectIds)
+        public static List<ObjectId> GsPgGetOtherPipeLineByInterset(ObjectId pipeLineObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> allElbowObjectIds, Dictionary<string, string> pipeData)
         {
             List<ObjectId> otherPipeLineObjectIds = new List<ObjectId>();
             allElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
                 .ToList()
                 .ForEach(x =>
                 {
+                    UtilsBlock.UtilsSetPropertyValueByDict(x, pipeData);
                     ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
                     if (result != ObjectId.Null)
                     {
@@ -82,7 +84,14 @@ namespace GsPgDataFlow
             return otherPipeLineObjectIds;
         }
 
-        public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds)
+        public static void GsPgChangePipeArrowAssistPropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allPipeArrowAssistObjectIds, Dictionary<string, string> pipeData)
+        {
+            allPipeArrowAssistObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                .ToList()
+                .ForEach(x => UtilsBlock.UtilsSetPropertyValueByDict(x, pipeData));
+        }
+
+        public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds)
         {
             if (pipeLineObjectIds != null)
             {
@@ -91,16 +100,15 @@ namespace GsPgDataFlow
                     UtilsCADActive.UtilsAddXData(x, pipeData);
                     // for test
                     UtilsPolyline.UtilsChangeColor(x, 1);
+                    GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
                     // the key logic: remove the current polyline
                     allPipeLineObjectIds = allPipeLineObjectIds.Where(xx => xx != x).ToList();
-                    List<ObjectId> otherPipeLineObjectIds = GsPgGetOtherPipeLineByInterset(x, allPipeLineObjectIds, allElbowObjectIds);
+                    List<ObjectId> otherPipeLineObjectIds = GsPgGetOtherPipeLineByInterset(x, allPipeLineObjectIds, allElbowObjectIds, pipeData);
 
                     if (otherPipeLineObjectIds != null)
                     {
-                        GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds);
+                        GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds, allPipeArrowAssistObjectIds);
                     }
-                    //ElbowObjectIds.ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(x)));
-                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
 
                 });
                 
@@ -114,6 +122,7 @@ namespace GsPgDataFlow
 
                 List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
                 List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
+                List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementArrowAssist").ToList();
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
 
                 
@@ -121,7 +130,8 @@ namespace GsPgDataFlow
                 {
                     List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
                     Dictionary<string, string> pipeData = GsPgGetPipeData(x);
-                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds);
+                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds);
+                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
                 });
 
                 ed.WriteMessage("\n同步数据完成...");
