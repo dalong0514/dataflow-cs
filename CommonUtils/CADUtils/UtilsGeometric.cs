@@ -56,5 +56,23 @@ namespace CommonUtils.CADUtils
                 geYuanFrameExtents.MinPoint.Y <= point.Y && point.Y <= geYuanFrameExtents.MaxPoint.Y;
         }
 
+        // 完成任务：1）已知直线的两端点A点和B点。1）以A点为原点计算该直线在图纸空间的角度
+        public static double UtilsGetAngleByTwoPoint(Point3d startPoint, Point3d endPoint)
+        {
+            double angle = Math.Atan2(endPoint.Y - startPoint.Y, endPoint.X - startPoint.X);
+            return angle * (180.0 / Math.PI);
+        }
+
+        // 完成任务：1）已知一个块的objectId和一个多段线（lwpolyline）的objectId。2）获取这个块和多段线的交点
+        public static Point3dCollection UtilsGetIntersectionPointsByBlockAndPolyLine(ObjectId blockObjectId, ObjectId polylineObjectId)
+        {
+            Point3dCollection intersectionPoints = new Point3dCollection();
+            BlockReference blockRef = blockObjectId.GetObject(OpenMode.ForRead) as BlockReference;
+            Polyline polyline = polylineObjectId.GetObject(OpenMode.ForRead) as Polyline;
+            // Get the intersection points between the polyline and the block
+            polyline.IntersectWith(blockRef, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
+            return intersectionPoints;
+        }
+
     }
 }

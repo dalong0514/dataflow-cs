@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 
 namespace CommonUtils.CADUtils
@@ -160,6 +161,24 @@ namespace CommonUtils.CADUtils
             DBObject obj = objectId.GetObject(OpenMode.ForWrite);
             obj.Erase();
         }
+
+        public static Point3d GetPointFromUser()
+        {
+            // Prompt the user to select a point
+            PromptPointResult result = Editor.GetPoint("\nSelect a point: ");
+
+            if (result.Status == PromptStatus.OK)
+            {
+                // If the user selected a point, return it
+                return result.Value;
+            }
+            else
+            {
+                // Otherwise, return a default point
+                return new Point3d();
+            }
+        }
+
 
     }
 }

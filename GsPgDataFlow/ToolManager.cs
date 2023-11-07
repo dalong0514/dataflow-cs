@@ -1,10 +1,12 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.GraphicsInterface;
 using CommonUtils.CADUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 
@@ -157,12 +159,39 @@ namespace GsPgDataFlow
             }
         }
 
+        public static void GsPgSetHorizontalElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
+        {
+            Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
+            Point3d firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1)[0];
+            Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[1];
+            double firstDegrees = UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, firstCrossPoint);
+            double secondDegrees = UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, secondCrossPoint);
+            if (firstDegrees == 0 || secondDegrees == 0)
+            {
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 0);
+                return;
+            }
+            if (firstDegrees == 0 || secondDegrees == 90)
+            {
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 90);
+                return;
+            }
+            if (firstDegrees == 0 || secondDegrees == 180)
+            {
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 180);
+                return;
+            }
+            if (firstDegrees == 0 || secondDegrees == 270)
+            {
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 270);
+                return;
+            }
+        }
+
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
         {
             processedPipeElbowObjectIds = processedPipeElbowObjectIds.Distinct().ToList();
             processedPolylineIds = processedPolylineIds.Distinct().ToList();
-            //processedPipeElbowObjectIds.Distinct().ToList().ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + x));
-            //processedPolylineIds.Distinct().ToList().ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + x));
 
             processedPipeElbowObjectIds.ForEach(x =>
                 {
@@ -171,16 +200,27 @@ namespace GsPgDataFlow
                     if (pipeLineObjectNum == 2)
                     {
                         //UtilsCADActive.Editor.WriteMessage("\n" + x);
-                        if (UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation") == UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"))
+                        double firstPipeElevation = double.Parse(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
+                        double secondPipeElevation = double.Parse(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
+                        Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
+                        if (firstPipeElevation == secondPipeElevation)
                         {
                             UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
-                            UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
-                            UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
-
+                            GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
                         }
                         else
                         {
                             UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbowdown" } });
+                            if (firstPipeElevation > secondPipeElevation)
+                            {
+                                Point3d crossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[0])[0];
+                                UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                            }
+                            else
+                            {
+                                Point3d crossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[1])[0];
+                                UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                            }
                         }
                     }
                 });
@@ -227,10 +267,9 @@ namespace GsPgDataFlow
 
 
                 // 通过拾取获得一个块的ObjectId
-                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
-                //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
-                ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
+                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
+                //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
 
                 //Dictionary<string, string> propertyDict = new Dictionary<string, string>()
                 //{
@@ -243,10 +282,16 @@ namespace GsPgDataFlow
                 //UtilsBlock.UtilsSetDynamicPropertyValueByDictData(blockId, propertyDict);
 
 
-                //// 通过拾取获得一个多段线的ObjectId
+                // 通过拾取获得一个多段线的ObjectId
                 //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
-                //ed.WriteMessage("\n" + IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(blockId), polylineId));
-                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeElevation"));
+                //ObjectId polylineId2 = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                //ed.WriteMessage("\n" + UtilsPolyline.GetTwoPolyLineIntersectionAngleInDegrees(polylineId, polylineId2));
+
+                // 完成任务：通过拾取获得一个Point3d
+                Point3d point1 = UtilsCADActive.GetPointFromUser();
+                Point3d point2 = UtilsCADActive.GetPointFromUser();
+                ed.WriteMessage("\n" + UtilsGeometric.UtilsGetAngleByTwoPoint(point1, point2));
+
 
                 tr.Commit();
             }
