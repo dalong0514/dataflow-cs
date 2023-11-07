@@ -10,13 +10,13 @@ namespace GsPgDataFlow
         public static void GsPgBatchSynPipeData()
         {
 
-            GsPgBatchProcessPipeData.GsPgBatchSynPipeData();
+            ToolManager.GsPgBatchSynPipeData();
         }
 
         public static void CsTest()
         {
 
-            GsPgBatchProcessPipeData.CsTest();
+            ToolManager.CsTest();
         }
     }
 }
