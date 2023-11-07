@@ -96,6 +96,20 @@ namespace GsPgDataFlow
                 });
         }
 
+        public static string GsPgGetPipeDiameter(string pipeNum)
+        {
+            string pipeDiameter = pipeNum.Split('-').ElementAtOrDefault(1);
+
+            if (pipeDiameter == null)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return pipeDiameter;
+            }
+        }
+
         public static void GsPgChangeValvePropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allValveObjectIds, Dictionary<string, string> pipeData)
         {
             allValveObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
@@ -103,8 +117,7 @@ namespace GsPgDataFlow
                 .ForEach(x =>
                 {
 
-                    // to do list: change the valve block property value by diameter
-                    string pipeDiater = "100";
+                    string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"]);
                     Dictionary<string, string> propertyDict = new Dictionary<string, string>()
                     {
                         { "sideview-DN", pipeDiater },
