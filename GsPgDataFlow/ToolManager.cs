@@ -161,27 +161,37 @@ namespace GsPgDataFlow
 
         public static void GsPgSetHorizontalElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
         {
+            Point3d horizontalPoint = new Point3d();
+            Point3d verticalPoint = new Point3d();
             Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
             Point3d firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1)[0];
-            Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[1];
-            double firstDegrees = UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, firstCrossPoint);
-            double secondDegrees = UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, secondCrossPoint);
-            if (firstDegrees == 0 || secondDegrees == 0)
+            Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[0];
+            if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
+            {
+                horizontalPoint = firstCrossPoint;
+                verticalPoint = secondCrossPoint;
+            }
+            else
+            {
+                horizontalPoint = secondCrossPoint;
+                verticalPoint = firstCrossPoint;
+            }
+            if (horizontalPoint.X - basePoint.X > 0 && verticalPoint.Y - basePoint.Y > 0)
             {
                 UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 0);
                 return;
             }
-            if (firstDegrees == 0 || secondDegrees == 90)
-            {
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 90);
-                return;
-            }
-            if (firstDegrees == 0 || secondDegrees == 180)
+            if (horizontalPoint.X - basePoint.X < 0 && verticalPoint.Y - basePoint.Y < 0)
             {
                 UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 180);
                 return;
             }
-            if (firstDegrees == 0 || secondDegrees == 270)
+            if (horizontalPoint.X - basePoint.X < 0 && verticalPoint.Y - basePoint.Y > 0)
+            {
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 90);
+                return;
+            }
+            if (horizontalPoint.X - basePoint.X > 0 && verticalPoint.Y - basePoint.Y < 0)
             {
                 UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 270);
                 return;
@@ -200,8 +210,8 @@ namespace GsPgDataFlow
                     if (pipeLineObjectNum == 2)
                     {
                         //UtilsCADActive.Editor.WriteMessage("\n" + x);
-                        double firstPipeElevation = double.Parse(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
-                        double secondPipeElevation = double.Parse(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
+                        double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
+                        double secondPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
                         Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
                         if (firstPipeElevation == secondPipeElevation)
                         {

@@ -7,6 +7,7 @@ using System.Text;
 using CommonUtils.CADUtils;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using System.Reflection;
 
 namespace CommonUtils.CADUtils
 {
@@ -72,6 +73,40 @@ namespace CommonUtils.CADUtils
             // Get the intersection points between the polyline and the block
             polyline.IntersectWith(blockRef, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
             return intersectionPoints;
+        }
+
+        // 完成任务：已知直线的两个点断，判断其是水平直线还是垂直直线
+        public static bool UtilsIsLineHorizontal(Point3d startPoint, Point3d endPoint)
+        {
+            return startPoint.Y == endPoint.Y;
+        }
+
+        public static double UtilsGetVectorAngleByTwoLineEnd(Point3d line1Start, Point3d line1End, Point3d line2Start, Point3d line2End)
+        {
+            Vector3d direction1 = line1End - line1Start; // 线段1的方向向量
+            Vector3d direction2 = line2End - line2Start; // 线段2的方向向量
+            if (direction1.Y > 0 && direction1.Y > 0)
+            {
+                return 0;
+            }
+            return 0;
+
+
+            ////double crossProduct = direction1.X * direction2.Y - direction1.Y * direction2.X;
+            ////return crossProduct;
+
+
+            //// Calculate the angle between the vector and the x-axis
+            //double angleInRadians = direction1.GetAngleTo(direction2, Vector3d.ZAxis);
+
+            //if (direction1.Y < 0)
+            //{
+            //    angleInRadians = -angleInRadians;
+            //}
+
+            //// Convert the angle to degrees
+            //double angleInDegrees = angleInRadians * (180.0 / Math.PI);
+            //return angleInDegrees;
         }
 
     }

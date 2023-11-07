@@ -18,5 +18,19 @@ namespace CommonUtils.CADUtils
             polyline.ColorIndex = colorIndex;
         }
 
+        public static double UtilsStringToDouble(string stringContent)
+        {
+            double result;
+            bool success = double.TryParse(stringContent, out result);
+
+            if (success)
+            {
+                return result;
+            }
+            else
+            {
+                return double.NaN;
+            }
+        }
     }
 }
