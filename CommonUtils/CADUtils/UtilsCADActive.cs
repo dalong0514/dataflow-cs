@@ -123,7 +123,7 @@ namespace CommonUtils.CADUtils
 
             foreach (TypedValue tv in rb)
             {
-                if (tv.TypeCode == 1001)
+                if (tv.TypeCode == 1000)
                 {
                     result = tv.Value.ToString();
                 }

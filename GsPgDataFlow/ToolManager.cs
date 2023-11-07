@@ -12,6 +12,9 @@ namespace GsPgDataFlow
 {
     public class ToolManager
     {
+        public static List<ObjectId> processedPolylineIds = new List<ObjectId>();
+        public static List<ObjectId> processedPipeElbowObjectIds = new List<ObjectId>();
+
         public static bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
         {
             return UtilsGeometric.UtilsIsPointOnPolyline(basePoint, pipeLineObjectId, 5);
@@ -75,6 +78,8 @@ namespace GsPgDataFlow
                 .ForEach(x =>
                 {
                     UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
+                    // The elbow that require synchronization have been incorporated into the global variables
+                    processedPipeElbowObjectIds.Add(x);
                     ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
                     if (result != ObjectId.Null)
                     {
@@ -146,11 +151,41 @@ namespace GsPgDataFlow
                     {
                         GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds);
                     }
-
+                    processedPolylineIds.Add(x);
                 });
 
             }
         }
+
+        public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
+        {
+            processedPipeElbowObjectIds = processedPipeElbowObjectIds.Distinct().ToList();
+            processedPolylineIds = processedPolylineIds.Distinct().ToList();
+            //processedPipeElbowObjectIds.Distinct().ToList().ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + x));
+            //processedPolylineIds.Distinct().ToList().ForEach(x => UtilsCADActive.Editor.WriteMessage("\n" + x));
+
+            processedPipeElbowObjectIds.ForEach(x =>
+                {
+                    List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                    int pipeLineObjectNum = pipeLineObjectIds.Count();
+                    if (pipeLineObjectNum == 2)
+                    {
+                        //UtilsCADActive.Editor.WriteMessage("\n" + x);
+                        if (UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation") == UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"))
+                        {
+                            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
+                            UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
+                            UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
+
+                        }
+                        else
+                        {
+                            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbowdown" } });
+                        }
+                    }
+                });
+        }
+
         public static void GsPgBatchSynPipeData()
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
@@ -170,10 +205,14 @@ namespace GsPgDataFlow
                     List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
                     Dictionary<string, string> pipeData = GsPgGetPipeData(x);
                     GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds);
+                    GsPgSynPipeElbowStatus(pipeData);
+
+                    processedPipeElbowObjectIds.Clear();
+                    processedPolylineIds.Clear();
                     UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
                 });
 
-                ed.WriteMessage("\n同步数据完成...");
+                UtilsCADActive.Editor.WriteMessage("\n同步数据完成...");
 
                 tr.Commit();
             }
@@ -188,8 +227,8 @@ namespace GsPgDataFlow
 
 
                 // 通过拾取获得一个块的ObjectId
-                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
-                ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
+                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
 
                 //Dictionary<string, string> propertyDict = new Dictionary<string, string>()
                 //{
@@ -203,9 +242,9 @@ namespace GsPgDataFlow
 
 
                 //// 通过拾取获得一个多段线的ObjectId
-                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
                 //ed.WriteMessage("\n" + IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(blockId), polylineId));
-
+                UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeElevation"));
 
                 tr.Commit();
             }
