@@ -227,8 +227,10 @@ namespace GsPgDataFlow
 
 
                 // 通过拾取获得一个块的ObjectId
-                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
                 //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(blockId));
+                ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
 
                 //Dictionary<string, string> propertyDict = new Dictionary<string, string>()
                 //{
@@ -242,9 +244,9 @@ namespace GsPgDataFlow
 
 
                 //// 通过拾取获得一个多段线的ObjectId
-                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
                 //ed.WriteMessage("\n" + IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(blockId), polylineId));
-                UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeElevation"));
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCADActive.UtilsGetXData(polylineId, "pipeElevation"));
 
                 tr.Commit();
             }

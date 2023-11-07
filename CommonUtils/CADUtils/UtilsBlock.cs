@@ -289,5 +289,37 @@ namespace CommonUtils.CADUtils
             return blockIds;
         }
 
+        public static double UtilsGetBlockRotaton(ObjectId objectId)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+
+            if (blockRef == null ) return 0.0;
+            return blockRef.Rotation;
+        }
+
+        public static double UtilsGetBlockRotatonInDegrees(ObjectId objectId)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+
+            if (blockRef == null) return 0.0;
+            return blockRef.Rotation * (180.0 / Math.PI);
+        }
+
+        public static void UtilsSetBlockRotaton(ObjectId objectId, double rotation)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
+
+            if (blockRef == null) return;
+            blockRef.Rotation = rotation;
+        }
+
+        public static void UtilsSetBlockRotatonInDegrees(ObjectId objectId, double rotationDegrees)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
+
+            if (blockRef == null) return;
+            blockRef.Rotation = rotationDegrees * (Math.PI / 180.0);
+        }
+
     }
 }
