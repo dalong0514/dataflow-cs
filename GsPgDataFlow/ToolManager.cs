@@ -147,7 +147,7 @@ namespace GsPgDataFlow
                 {
                     UtilsCADActive.UtilsAddXData(x, pipeData);
                     // for test
-                    //UtilsPolyline.UtilsChangeColor(x, 1);
+                    UtilsPolyline.UtilsChangeColor(x, 1);
                     GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
                     GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData);
                     // the key logic: remove the current polyline
@@ -164,13 +164,22 @@ namespace GsPgDataFlow
             }
         }
 
-        public static void GsPgSetHorizontalElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
+        private static int GetObliqueRotationBasedOnPointPosition(double xDiff, double yDiff)
+        {
+            if (xDiff > 0 && yDiff > 0) return 45;
+            if (xDiff < 0 && yDiff < 0) return 225;
+            if (xDiff < 0 && yDiff > 0) return 90;
+            return 275;
+        }
+
+        public static void GsPgSetObliqueElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
         {
             Point3d horizontalPoint = new Point3d();
             Point3d verticalPoint = new Point3d();
             Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
             Point3d firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1)[0];
             Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[0];
+
             if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
             {
                 horizontalPoint = firstCrossPoint;
@@ -181,26 +190,46 @@ namespace GsPgDataFlow
                 horizontalPoint = secondCrossPoint;
                 verticalPoint = firstCrossPoint;
             }
-            if (horizontalPoint.X - basePoint.X > 0 && verticalPoint.Y - basePoint.Y > 0)
+
+            double xDiff = horizontalPoint.X - basePoint.X;
+            double yDiff = verticalPoint.Y - basePoint.Y;
+            int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
+            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+
+        }
+
+        private static int GetRotationBasedOnPointPosition(double xDiff, double yDiff)
+        {
+            if (xDiff > 0 && yDiff > 0) return 0;
+            if (xDiff < 0 && yDiff < 0) return 180;
+            if (xDiff < 0 && yDiff > 0) return 90;
+            return 270;
+        }
+
+        public static void GsPgSetHorizontalElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
+        {
+            Point3d horizontalPoint = new Point3d();
+            Point3d verticalPoint = new Point3d();
+            Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
+            Point3d firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1)[0];
+            Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[0];
+
+            if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
             {
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 0);
-                return;
+                horizontalPoint = firstCrossPoint;
+                verticalPoint = secondCrossPoint;
             }
-            if (horizontalPoint.X - basePoint.X < 0 && verticalPoint.Y - basePoint.Y < 0)
+            else
             {
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 180);
-                return;
+                horizontalPoint = secondCrossPoint;
+                verticalPoint = firstCrossPoint;
             }
-            if (horizontalPoint.X - basePoint.X < 0 && verticalPoint.Y - basePoint.Y > 0)
-            {
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 90);
-                return;
-            }
-            if (horizontalPoint.X - basePoint.X > 0 && verticalPoint.Y - basePoint.Y < 0)
-            {
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, 270);
-                return;
-            }
+
+            double xDiff = horizontalPoint.X - basePoint.X;
+            double yDiff = verticalPoint.Y - basePoint.Y;
+            int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
+            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+
         }
 
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
@@ -215,7 +244,6 @@ namespace GsPgDataFlow
                     int pipeLineObjectNum = pipeLineObjectIds.Count();
                     if (pipeLineObjectNum == 2)
                     {
-                        //UtilsCADActive.Editor.WriteMessage("\n" + x);
                         double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
                         double secondPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
                         Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
@@ -231,7 +259,7 @@ namespace GsPgDataFlow
                             {
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow45" } });
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
-                                GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                                GsPgSetObliqueElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
                             }
                         }
                         else
