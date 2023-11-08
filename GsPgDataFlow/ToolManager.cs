@@ -147,7 +147,7 @@ namespace GsPgDataFlow
                 {
                     UtilsCADActive.UtilsAddXData(x, pipeData);
                     // for test
-                    UtilsPolyline.UtilsChangeColor(x, 1);
+                    //UtilsPolyline.UtilsChangeColor(x, 1);
                     GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
                     GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData);
                     // the key logic: remove the current polyline
@@ -254,12 +254,16 @@ namespace GsPgDataFlow
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
                                 GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                                // key logic: Initialize the mirror state, otherwise it remains incorrect even after rotation
+                                UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
                             }
                             else if (UtilsCommnon.UtilsIsTwoNumEqual(UtilsPolyline.UtilsGetIntersectionAngleByTwoPolyLine(pipeLineObjectIds[0], pipeLineObjectIds[1]), 135, 2))
                             {
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow45" } });
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
                                 GsPgSetObliqueElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                                // key logic: Initialize the mirror state, otherwise it remains incorrect even after rotation
+                                UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
                             }
                         }
                         else
@@ -321,16 +325,17 @@ namespace GsPgDataFlow
 
 
                 // 通过拾取获得一个块的ObjectId
-                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                UtilsBlock.UtilsSetBlockXYScale(blockId, 1, 1);
                 //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
 
 
                 // 通过拾取获得一个多段线的ObjectId
                 //Point3d point1 = UtilsCADActive.GetPointFromUser();
-                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
-                ObjectId polylineId2 = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
-                ed.WriteMessage("\n" + UtilsPolyline.UtilsGetIntersectionAngleByTwoPolyLine(polylineId, polylineId2));
+                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                //ObjectId polylineId2 = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                //ed.WriteMessage("\n" + UtilsPolyline.UtilsGetIntersectionAngleByTwoPolyLine(polylineId, polylineId2));
 
                 // 完成任务：通过拾取获得一个Point3d
                 //Point3d point1 = UtilsCADActive.GetPointFromUser();
@@ -341,6 +346,7 @@ namespace GsPgDataFlow
 
                 //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
 
+                ed.WriteMessage("\n测试完成...");
                 tr.Commit();
             }
 

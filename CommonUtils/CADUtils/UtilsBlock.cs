@@ -321,5 +321,13 @@ namespace CommonUtils.CADUtils
             blockRef.Rotation = rotationDegrees * (Math.PI / 180.0);
         }
 
+        public static void UtilsSetBlockXYScale(ObjectId objectId, double xScale, double yScale)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
+
+            if (blockRef == null) return;
+            blockRef.ScaleFactors = new Scale3d(xScale, yScale, 1.0);
+        }
+
     }
 }
