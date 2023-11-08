@@ -177,25 +177,28 @@ namespace GsPgDataFlow
             Point3d horizontalPoint = new Point3d();
             Point3d verticalPoint = new Point3d();
             Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
-            Point3d firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1)[0];
-            Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[0];
-
-            if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
+            List<Point3d> firstCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
+            List<Point3d> secondCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
+            if (firstCrossPoints.Count > 0 && secondCrossPoints.Count > 0)
             {
-                horizontalPoint = firstCrossPoint;
-                verticalPoint = secondCrossPoint;
-            }
-            else
-            {
-                horizontalPoint = secondCrossPoint;
-                verticalPoint = firstCrossPoint;
-            }
+                Point3d firstCrossPoint = firstCrossPoints[0];
+                Point3d secondCrossPoint = secondCrossPoints[0];
+                if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
+                {
+                    horizontalPoint = firstCrossPoint;
+                    verticalPoint = secondCrossPoint;
+                }
+                else
+                {
+                    horizontalPoint = secondCrossPoint;
+                    verticalPoint = firstCrossPoint;
+                }
 
-            double xDiff = horizontalPoint.X - basePoint.X;
-            double yDiff = verticalPoint.Y - basePoint.Y;
-            int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
-            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
-
+                double xDiff = horizontalPoint.X - basePoint.X;
+                double yDiff = verticalPoint.Y - basePoint.Y;
+                int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+            }
         }
 
         private static int GetRotationBasedOnPointPosition(double xDiff, double yDiff)
@@ -211,26 +214,32 @@ namespace GsPgDataFlow
             Point3d horizontalPoint = new Point3d();
             Point3d verticalPoint = new Point3d();
             Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
-            Point3d firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1)[0];
-            Point3d secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2)[0];
-
-            if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
+            List<Point3d> firstCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
+            List<Point3d> secondCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
+            if (firstCrossPoints.Count > 0 && secondCrossPoints.Count > 0)
             {
-                horizontalPoint = firstCrossPoint;
-                verticalPoint = secondCrossPoint;
-            }
-            else
-            {
-                horizontalPoint = secondCrossPoint;
-                verticalPoint = firstCrossPoint;
-            }
+                Point3d firstCrossPoint = firstCrossPoints[0];
+                Point3d secondCrossPoint = secondCrossPoints[0];
 
-            double xDiff = horizontalPoint.X - basePoint.X;
-            double yDiff = verticalPoint.Y - basePoint.Y;
-            int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
-            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+                if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
+                {
+                    horizontalPoint = firstCrossPoint;
+                    verticalPoint = secondCrossPoint;
+                }
+                else
+                {
+                    horizontalPoint = secondCrossPoint;
+                    verticalPoint = firstCrossPoint;
+                }
+
+                double xDiff = horizontalPoint.X - basePoint.X;
+                double yDiff = verticalPoint.Y - basePoint.Y;
+                int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+            }
 
         }
+
 
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
         {
@@ -271,13 +280,23 @@ namespace GsPgDataFlow
                             UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbowdown" } });
                             if (firstPipeElevation > secondPipeElevation)
                             {
-                                Point3d crossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[0])[0];
-                                UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                                List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[0]);
+                                if (crossPoints.Count > 0)
+                                {
+                                    Point3d crossPoint = crossPoints[0];
+                                    UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                                }
+
                             }
                             else
                             {
-                                Point3d crossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[1])[0];
-                                UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                                List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[1]);
+                                if (crossPoints.Count > 0)
+                                {
+                                    Point3d crossPoint = crossPoints[0];
+                                    UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                                }
+
                             }
                         }
                     }

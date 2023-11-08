@@ -142,24 +142,111 @@ namespace CommonUtils.CADUtils
                 }
                 else
                 {
-                    throw;
+                    //throw;
+                    return double.NaN;
                 }
             }
             if (intersectionPoints.Count > 0)
             {
                 // Get the intersection point
                 Point3d intersectionPoint = intersectionPoints[0];
+                try
+                {
+                    double param1 = polyline1.GetParameterAtPoint(intersectionPoint);
+                    double param2 = polyline2.GetParameterAtPoint(intersectionPoint);
 
-                // Get the tangent direction at the intersection point for each polyline
-                Vector3d tangent1 = polyline1.GetFirstDerivative(intersectionPoint);
-                Vector3d tangent2 = polyline2.GetFirstDerivative(intersectionPoint);
+                    // Check if the parameters are within the valid range
+                    if (param1 >= polyline1.StartParam && param1 <= polyline1.EndParam &&
+                        param2 >= polyline2.StartParam && param2 <= polyline2.EndParam)
+                    {
+                        // Get the tangent direction at the intersection point for each polyline
+                        Vector3d tangent1 = polyline1.GetFirstDerivative(param1);
+                        Vector3d tangent2 = polyline2.GetFirstDerivative(param2);
 
-                // Calculate the angle between the two tangent directions
-                double angle = tangent1.GetAngleTo(tangent2);
+                        // Calculate the angle between the two tangent directions
+                        double angle = tangent1.GetAngleTo(tangent2);
 
-                return angle * (180.0 / Math.PI);
+                        return angle * (180.0 / Math.PI);
+                    }
+                }
+                catch (Autodesk.AutoCAD.Runtime.Exception ex)
+                {
+                    if (ex.ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
+                    {
+                        // Handle the eNullExtents exception
+                        // You could log the error, fix or recreate the problematic entity, or continue processing other entities
+                    }
+                    else
+                    {
+                        //throw;
+                        return double.NaN;
+                    }
+                }
             }
             return double.NaN;
+
+        }
+
+        public static List<Point3d> UtilsGetIntersectionsByTwoPolyLine(ObjectId polyline1Id, ObjectId polyline2Id)
+        {
+            Polyline polyline1 = polyline1Id.GetObject(OpenMode.ForRead) as Polyline;
+            Polyline polyline2 = polyline2Id.GetObject(OpenMode.ForRead) as Polyline;
+
+            Point3dCollection intersectionPoints = new Point3dCollection();
+
+            try
+            {
+                polyline1.IntersectWith(polyline2, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
+            }
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                if (ex.ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
+                {
+                    // Handle the eNullExtents exception
+                    // You could log the error, fix or recreate the problematic entity, or continue processing other entities
+                    return null;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            if (intersectionPoints.Count > 0)
+            {
+                return intersectionPoints.OfType<Point3d>().ToList();
+            }
+            return intersectionPoints.OfType<Point3d>().ToList();
+
+        }
+
+        public static List<Point3d> UtilsGetIntersectionsByTwoPolyLine(ObjectId polyline1Id, Polyline polyline2)
+        {
+            Polyline polyline1 = polyline1Id.GetObject(OpenMode.ForRead) as Polyline;
+
+            Point3dCollection intersectionPoints = new Point3dCollection();
+
+            try
+            {
+                polyline1.IntersectWith(polyline2, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
+            }
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                if (ex.ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
+                {
+                    // Handle the eNullExtents exception
+                    // You could log the error, fix or recreate the problematic entity, or continue processing other entities
+                    return null;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            if (intersectionPoints.Count > 0)
+            {
+                return intersectionPoints.OfType<Point3d>().ToList();
+            }
+            return intersectionPoints.OfType<Point3d>().ToList();
 
         }
 
