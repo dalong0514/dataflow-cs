@@ -9,6 +9,11 @@ namespace dataflow_cs
 {
     public class GsPgCommands
     {
+        [CommandMethod("DPS")]
+        public void GsPgDPS()
+        {
+            GsPgDataFlow.GenerateManager.GsPgBatchSynPipeData();
+        }
 
         [CommandMethod("CsTest")]
         public void CsTest()
