@@ -32,5 +32,10 @@ namespace CommonUtils.CADUtils
                 return double.NaN;
             }
         }
+
+        public static bool UtilsIsTwoNumEqual(double num1, double num2, double tolerance)
+        {
+            return Math.Abs(num1 - num2) < tolerance;
+        }
     }
 }

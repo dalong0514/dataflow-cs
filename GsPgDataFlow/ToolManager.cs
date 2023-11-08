@@ -221,9 +221,18 @@ namespace GsPgDataFlow
                         Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
                         if (firstPipeElevation == secondPipeElevation)
                         {
-                            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
-                            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
-                            GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                            if (UtilsCommnon.UtilsIsTwoNumEqual(UtilsPolyline.UtilsGetIntersectionAngleByTwoPolyLine(pipeLineObjectIds[0], pipeLineObjectIds[1]), 90, 2))
+                            {
+                                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
+                                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
+                                GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                            }
+                            else if (UtilsCommnon.UtilsIsTwoNumEqual(UtilsPolyline.UtilsGetIntersectionAngleByTwoPolyLine(pipeLineObjectIds[0], pipeLineObjectIds[1]), 135, 2))
+                            {
+                                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow45" } });
+                                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
+                                GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                            }
                         }
                         else
                         {
