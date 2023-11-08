@@ -6,3 +6,5 @@ D:\dataflow.code\dataflow-cs\WsBzDataFlow\obj\Debug\WsBzDataFlow.csproj.Assembly
 D:\dataflow.code\dataflow-cs\WsBzDataFlow\obj\Debug\WsBzDataFlow.csproj.CoreCompileInputs.cache
 D:\dataflow.code\dataflow-cs\WsBzDataFlow\obj\Debug\WsBzDataFlow.dll
 D:\dataflow.code\dataflow-cs\WsBzDataFlow\obj\Debug\WsBzDataFlow.pdb
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\WsBzDataFlow.dll
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\WsBzDataFlow.pdb

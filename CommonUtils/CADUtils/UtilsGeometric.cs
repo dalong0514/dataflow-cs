@@ -64,15 +64,36 @@ namespace CommonUtils.CADUtils
             return angle * (180.0 / Math.PI);
         }
 
+        public static Polyline UtilsGetBoundary(this Extents3d extents, double exDis = 0, string layerName = "")
+        {
+            Polyline polyline = new Polyline();
+            polyline.AddVertexAt(0, extents.MinPoint.UtilsPoint3dToPoint2d() + new Vector2d(-exDis, -exDis), 0, 0, 0);
+            polyline.AddVertexAt(1, new Point2d(extents.MaxPoint.X, extents.MinPoint.Y) + new Vector2d(exDis, -exDis), 0, 0, 0);
+            polyline.AddVertexAt(2, extents.MaxPoint.UtilsPoint3dToPoint2d() + new Vector2d(exDis, exDis), 0, 0, 0);
+            polyline.AddVertexAt(3, new Point2d(extents.MinPoint.X, extents.MaxPoint.Y) + new Vector2d(-exDis, exDis), 0, 0, 0);
+            polyline.Closed = true;
+            if (!string.IsNullOrEmpty(layerName))
+                polyline.Layer = layerName;
+
+            return polyline;
+        }
+
+        public static Point2d UtilsPoint3dToPoint2d(this Point3d point)
+        {
+            return new Point2d(point.X, point.Y);
+        }
+
         // 完成任务：1）已知一个块的objectId和一个多段线（lwpolyline）的objectId。2）获取这个块和多段线的交点
-        public static Point3dCollection UtilsGetIntersectionPointsByBlockAndPolyLine(ObjectId blockObjectId, ObjectId polylineObjectId)
+        public static List<Point3d> UtilsGetIntersectionPointsByBlockAndPolyLine(ObjectId blockObjectId, ObjectId polylineObjectId)
         {
             Point3dCollection intersectionPoints = new Point3dCollection();
             BlockReference blockRef = blockObjectId.GetObject(OpenMode.ForRead) as BlockReference;
+            // the key logic: get the boundary of the block
+            Polyline p = UtilsGetBoundary(blockRef.GeometricExtents);
             Polyline polyline = polylineObjectId.GetObject(OpenMode.ForRead) as Polyline;
-            // Get the intersection points between the polyline and the block
-            polyline.IntersectWith(blockRef, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
-            return intersectionPoints;
+            // Get the intersection points between the polyline and the boundary of the block
+            polyline.IntersectWith(p, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
+            return intersectionPoints.OfType<Point3d>().ToList(); ;
         }
 
         // 完成任务：已知直线的两个点断，判断其是水平直线还是垂直直线

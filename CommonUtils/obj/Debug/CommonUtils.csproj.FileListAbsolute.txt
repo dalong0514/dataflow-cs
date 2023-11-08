@@ -6,3 +6,5 @@ D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.csproj.AssemblyRe
 D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.csproj.CoreCompileInputs.cache
 D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.dll
 D:\dataflow.code\dataflow-cs\CommonUtils\obj\Debug\CommonUtils.pdb
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\CommonUtils.dll
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\CommonUtils.pdb

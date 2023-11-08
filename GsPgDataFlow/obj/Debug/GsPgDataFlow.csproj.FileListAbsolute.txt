@@ -6,3 +6,5 @@ D:\dataflow.code\dataflow-cs\GsPgDataFlow\obj\Debug\GsPgDataFlow.dll
 D:\dataflow.code\dataflow-cs\GsPgDataFlow\obj\Debug\GsPgDataFlow.pdb
 D:\dataflow.code\dataflow-cs\TargetDLL\GsPgDataFlow.dll
 D:\dataflow.code\dataflow-cs\TargetDLL\GsPgDataFlow.pdb
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\GsPgDataFlow.dll
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\GsPgDataFlow.pdb

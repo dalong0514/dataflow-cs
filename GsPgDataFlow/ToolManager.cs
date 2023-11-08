@@ -1,7 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.GraphicsInterface;
 using CommonUtils.CADUtils;
 using System;
 using System.Collections.Generic;
@@ -117,6 +116,12 @@ namespace GsPgDataFlow
             }
         }
 
+        public static string GsPgGetPipeElbowDiameter(string pipeDiameter, double calMultiple)
+        {
+            double result = UtilsCommnon.UtilsStringToDouble(pipeDiameter) * calMultiple;
+            return result.ToString();
+        }
+
         public static void GsPgChangeValvePropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allValveObjectIds, Dictionary<string, string> pipeData)
         {
             allValveObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
@@ -200,6 +205,7 @@ namespace GsPgDataFlow
 
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
         {
+            string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"]);
             processedPipeElbowObjectIds = processedPipeElbowObjectIds.Distinct().ToList();
             processedPolylineIds = processedPolylineIds.Distinct().ToList();
 
@@ -216,6 +222,7 @@ namespace GsPgDataFlow
                         if (firstPipeElevation == secondPipeElevation)
                         {
                             UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
+                            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
                             GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
                         }
                         else
@@ -281,16 +288,6 @@ namespace GsPgDataFlow
                 //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
 
-                //Dictionary<string, string> propertyDict = new Dictionary<string, string>()
-                //{
-                //    { "pipeNum", "PL1101-50-2J5" },
-                //    { "elevation", "9.5" },
-                //    { "topview-DN", "100" },
-                //    { "sideview-DN", "100" },
-                //    { "key3", "value3" }
-                //};
-                //UtilsBlock.UtilsSetDynamicPropertyValueByDictData(blockId, propertyDict);
-
 
                 // 通过拾取获得一个多段线的ObjectId
                 //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
@@ -298,10 +295,14 @@ namespace GsPgDataFlow
                 //ed.WriteMessage("\n" + UtilsPolyline.GetTwoPolyLineIntersectionAngleInDegrees(polylineId, polylineId2));
 
                 // 完成任务：通过拾取获得一个Point3d
-                Point3d point1 = UtilsCADActive.GetPointFromUser();
-                Point3d point2 = UtilsCADActive.GetPointFromUser();
-                ed.WriteMessage("\n" + UtilsGeometric.UtilsGetAngleByTwoPoint(point1, point2));
+                //Point3d point1 = UtilsCADActive.GetPointFromUser();
+                //Point3d point2 = UtilsCADActive.GetPointFromUser();
+                //Polyline polyline = polylineId.GetObject(OpenMode.ForRead) as Polyline;
+                //Polyline polyline2 = polylineId2.GetObject(OpenMode.ForRead) as Polyline;
+                //List<Point3d> pts = UtilsGeometric.UtilsIntersectWith(polyline, polyline2, Intersect.OnBothOperands);
 
+                //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
+                ed.WriteMessage("\n" + "test");
 
                 tr.Commit();
             }

@@ -17,3 +17,5 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.CoreCompil
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.CopyComplete
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.pdb
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\dataflow-cs.dll
+D:\dataflowcad\dataflowcad\dataflowNet\DLNet\dataflow-cs.pdb
