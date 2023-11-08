@@ -122,42 +122,45 @@ namespace CommonUtils.CADUtils
             return polylineObjectIds;
         }
 
-        public static double GetTwoPolyLineIntersectionAngle(ObjectId polylineId1, ObjectId polylineId2)
+        public static double UtilsGetIntersectionAngleByTwoPolyLine(ObjectId polyline1Id, ObjectId polyline2Id)
         {
-            double angle = 0.0;
+            Polyline polyline1 = polyline1Id.GetObject(OpenMode.ForRead) as Polyline;
+            Polyline polyline2 = polyline2Id.GetObject(OpenMode.ForRead) as Polyline;
 
-            Polyline polyline1 = polylineId1.GetObject(OpenMode.ForRead) as Polyline;
-            Polyline polyline2 = polylineId2.GetObject(OpenMode.ForRead) as Polyline;
+            Point3dCollection intersectionPoints = new Point3dCollection();
 
-            if (polyline1 != null && polyline2 != null)
+            try
             {
-                // Find the intersection point(s)
-                Point3dCollection intersections = new Point3dCollection();
-                polyline1.IntersectWith(polyline2, Intersect.OnBothOperands, intersections, IntPtr.Zero, IntPtr.Zero);
-
-                if (intersections.Count > 0)
+                polyline1.IntersectWith(polyline2, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
+            }
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                if (ex.ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
                 {
-                    // Get the lines near the intersection point
-                    int index1 = UtilsGetSegmentIndexAtIntersection(polyline1, intersections[0]);
-                    int index2 = UtilsGetSegmentIndexAtIntersection(polyline2, intersections[0]);
-
-                    LineSegment2d line1 = polyline1.GetLineSegment2dAt(index1);
-                    LineSegment2d line2 = polyline2.GetLineSegment2dAt(index2);
-
-                    // Calculate the angle between the lines
-                    Vector2d vector1 = line1.EndPoint - line1.StartPoint;
-                    Vector2d vector2 = line2.EndPoint - line2.StartPoint;
-
-                    angle = vector1.GetAngleTo(vector2);
+                    // Handle the eNullExtents exception
+                    // You could log the error, fix or recreate the problematic entity, or continue processing other entities
+                }
+                else
+                {
+                    throw;
                 }
             }
+            if (intersectionPoints.Count > 0)
+            {
+                // Get the intersection point
+                Point3d intersectionPoint = intersectionPoints[0];
 
-            return angle;
-        }
+                // Get the tangent direction at the intersection point for each polyline
+                Vector3d tangent1 = polyline1.GetFirstDerivative(intersectionPoint);
+                Vector3d tangent2 = polyline2.GetFirstDerivative(intersectionPoint);
 
-        public static double GetTwoPolyLineIntersectionAngleInDegrees(ObjectId polylineId1, ObjectId polylineId2)
-        {
-            return GetTwoPolyLineIntersectionAngle(polylineId1, polylineId2) * (180.0 / Math.PI);
+                // Calculate the angle between the two tangent directions
+                double angle = tangent1.GetAngleTo(tangent2);
+
+                return angle * (180.0 / Math.PI);
+            }
+            return double.NaN;
+
         }
 
         public static int UtilsGetSegmentIndexAtIntersection(Polyline polyline, Point3d intersection)

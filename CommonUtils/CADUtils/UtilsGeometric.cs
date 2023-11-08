@@ -102,7 +102,7 @@ namespace CommonUtils.CADUtils
             return startPoint.Y == endPoint.Y;
         }
 
-        public static double UtilsGetVectorAngleByTwoLineEnd(Point3d line1Start, Point3d line1End, Point3d line2Start, Point3d line2End)
+        public static double UtilsGetIntersectionAngleByTwoLineEnd(Point3d line1Start, Point3d line1End, Point3d line2Start, Point3d line2End)
         {
             Vector3d direction1 = line1End - line1Start; // 线段1的方向向量
             Vector3d direction2 = line2End - line2Start; // 线段2的方向向量
@@ -111,24 +111,8 @@ namespace CommonUtils.CADUtils
                 return 0;
             }
             return 0;
-
-
-            ////double crossProduct = direction1.X * direction2.Y - direction1.Y * direction2.X;
-            ////return crossProduct;
-
-
-            //// Calculate the angle between the vector and the x-axis
-            //double angleInRadians = direction1.GetAngleTo(direction2, Vector3d.ZAxis);
-
-            //if (direction1.Y < 0)
-            //{
-            //    angleInRadians = -angleInRadians;
-            //}
-
-            //// Convert the angle to degrees
-            //double angleInDegrees = angleInRadians * (180.0 / Math.PI);
-            //return angleInDegrees;
         }
+
 
     }
 }

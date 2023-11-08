@@ -290,9 +290,10 @@ namespace GsPgDataFlow
 
 
                 // 通过拾取获得一个多段线的ObjectId
-                //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
-                //ObjectId polylineId2 = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
-                //ed.WriteMessage("\n" + UtilsPolyline.GetTwoPolyLineIntersectionAngleInDegrees(polylineId, polylineId2));
+                //Point3d point1 = UtilsCADActive.GetPointFromUser();
+                ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                ObjectId polylineId2 = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
+                ed.WriteMessage("\n" + UtilsPolyline.UtilsGetIntersectionAngleByTwoPolyLine(polylineId, polylineId2));
 
                 // 完成任务：通过拾取获得一个Point3d
                 //Point3d point1 = UtilsCADActive.GetPointFromUser();
@@ -302,7 +303,6 @@ namespace GsPgDataFlow
                 //List<Point3d> pts = UtilsGeometric.UtilsIntersectWith(polyline, polyline2, Intersect.OnBothOperands);
 
                 //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
-                ed.WriteMessage("\n" + "test");
 
                 tr.Commit();
             }
