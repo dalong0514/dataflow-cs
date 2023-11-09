@@ -180,41 +180,47 @@ namespace GsPgDataFlow
             return 270;
         }
 
+        private static (Point3d, Point3d) GetCrossPoints(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
+        {
+            var firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1).FirstOrDefault();
+            var secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2).FirstOrDefault();
+
+            return (firstCrossPoint, secondCrossPoint);
+        }
+
+        private static (Point3d, Point3d) GetHorizontalAndVerticalPoints(Point3d basePoint, Point3d firstCrossPoint, Point3d secondCrossPoint)
+        {
+            return UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint)
+                ? (firstCrossPoint, secondCrossPoint)
+                : (secondCrossPoint, firstCrossPoint);
+        }
+
+        private static void SetRotationBasedOnElbowType(ObjectId elbowObjectId, string elbowType, double xDiff, double yDiff)
+        {
+            if (elbowType == "elbow90")
+            {
+                int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+            }
+            else if (elbowType == "elbow45")
+            {
+                int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+            }
+        }
+
         public static void GsPgSynElbowRotation(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2, string elbowType)
         {
-            Point3d horizontalPoint = new Point3d();
-            Point3d verticalPoint = new Point3d();
-            Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
-            List<Point3d> firstCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
-            List<Point3d> secondCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
-            if (firstCrossPoints.Count > 0 && secondCrossPoints.Count > 0)
+            var basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
+            var (firstCrossPoint, secondCrossPoint) = GetCrossPoints(elbowObjectId, pipeLineObjectId1, pipeLineObjectId2);
+
+            if (firstCrossPoint != null && secondCrossPoint != null)
             {
-                Point3d firstCrossPoint = firstCrossPoints[0];
-                Point3d secondCrossPoint = secondCrossPoints[0];
+                var (horizontalPoint, verticalPoint) = GetHorizontalAndVerticalPoints(basePoint, firstCrossPoint, secondCrossPoint);
+                var xDiff = horizontalPoint.X - basePoint.X;
+                var yDiff = verticalPoint.Y - basePoint.Y;
 
-                if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
-                {
-                    horizontalPoint = firstCrossPoint;
-                    verticalPoint = secondCrossPoint;
-                }
-                else
-                {
-                    horizontalPoint = secondCrossPoint;
-                    verticalPoint = firstCrossPoint;
-                }
-
-                double xDiff = horizontalPoint.X - basePoint.X;
-                double yDiff = verticalPoint.Y - basePoint.Y;
-                if (elbowType == "elbow90")
-                {
-                    int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
-                    UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
-                }
-                else if (elbowType == "elbow45")
-                {
-                    int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
-                    UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
-                }
+                SetRotationBasedOnElbowType(elbowObjectId, elbowType, xDiff, yDiff);
             }
         }
 
