@@ -172,35 +172,6 @@ namespace GsPgDataFlow
             return 275;
         }
 
-        public static void GsPgSetObliqueElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
-        {
-            Point3d horizontalPoint = new Point3d();
-            Point3d verticalPoint = new Point3d();
-            Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
-            List<Point3d> firstCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
-            List<Point3d> secondCrossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
-            if (firstCrossPoints.Count > 0 && secondCrossPoints.Count > 0)
-            {
-                Point3d firstCrossPoint = firstCrossPoints[0];
-                Point3d secondCrossPoint = secondCrossPoints[0];
-                if (UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint))
-                {
-                    horizontalPoint = firstCrossPoint;
-                    verticalPoint = secondCrossPoint;
-                }
-                else
-                {
-                    horizontalPoint = secondCrossPoint;
-                    verticalPoint = firstCrossPoint;
-                }
-
-                double xDiff = horizontalPoint.X - basePoint.X;
-                double yDiff = verticalPoint.Y - basePoint.Y;
-                int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
-            }
-        }
-
         private static int GetRotationBasedOnPointPosition(double xDiff, double yDiff)
         {
             if (xDiff > 0 && yDiff > 0) return 0;
@@ -209,7 +180,7 @@ namespace GsPgDataFlow
             return 270;
         }
 
-        public static void GsPgSetHorizontalElbow(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
+        public static void GsPgSynElbowRotation(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2, string elbowType)
         {
             Point3d horizontalPoint = new Point3d();
             Point3d verticalPoint = new Point3d();
@@ -234,10 +205,17 @@ namespace GsPgDataFlow
 
                 double xDiff = horizontalPoint.X - basePoint.X;
                 double yDiff = verticalPoint.Y - basePoint.Y;
-                int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+                if (elbowType == "elbow90")
+                {
+                    int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
+                    UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+                }
+                else if (elbowType == "elbow45")
+                {
+                    int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
+                    UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+                }
             }
-
         }
 
 
@@ -262,7 +240,7 @@ namespace GsPgDataFlow
                             {
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
-                                GsPgSetHorizontalElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                                GsPgSynElbowRotation(x, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
                                 // key logic: Initialize the mirror state, otherwise it remains incorrect even after rotation
                                 UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
                             }
@@ -270,7 +248,7 @@ namespace GsPgDataFlow
                             {
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow45" } });
                                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
-                                GsPgSetObliqueElbow(x, pipeLineObjectIds[0], pipeLineObjectIds[1]);
+                                GsPgSynElbowRotation(x, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow45");
                                 // key logic: Initialize the mirror state, otherwise it remains incorrect even after rotation
                                 UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
                             }
