@@ -11,7 +11,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 
-namespace CommonUtils.CADUtils
+namespace DLCommonUtils.CADUtils
 {
     /// runtime environment.
     /// </summary>

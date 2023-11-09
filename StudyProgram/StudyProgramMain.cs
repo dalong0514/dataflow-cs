@@ -8,7 +8,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
-using CommonUtils.CADUtils;
+using DLCommonUtils.CADUtils;
 using Newtonsoft.Json;
 
 namespace StudyProgram

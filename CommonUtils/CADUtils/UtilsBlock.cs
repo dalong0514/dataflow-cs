@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CommonUtils.CADUtils;
+using DLCommonUtils.CADUtils;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace CommonUtils.CADUtils
+namespace DLCommonUtils.CADUtils
 {
 
     public static class UtilsBlock

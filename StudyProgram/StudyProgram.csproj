@@ -60,9 +60,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
+    <ProjectReference Include="..\CommonUtils\DLCommonUtils.csproj">
       <Project>{2c439b03-ad51-4bd7-8fa0-30e32481afb7}</Project>
-      <Name>CommonUtils</Name>
+      <Name>DLCommonUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

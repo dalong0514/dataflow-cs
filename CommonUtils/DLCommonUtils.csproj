@@ -7,8 +7,8 @@
     <ProjectGuid>{2C439B03-AD51-4BD7-8FA0-30E32481AFB7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommonUtils</RootNamespace>
-    <AssemblyName>CommonUtils</AssemblyName>
+    <RootNamespace>DLCommonUtils</RootNamespace>
+    <AssemblyName>DLCommonUtils</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
