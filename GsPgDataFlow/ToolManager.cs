@@ -218,6 +218,56 @@ namespace GsPgDataFlow
             }
         }
 
+        private static (double, double, List<Point3d>, List<Point3d>) GetPipeElevationAndIntersectionPoints(ObjectId elbowObjectId, List<ObjectId> pipeLineObjectIds)
+        {
+            double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
+            double secondPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
+            List<Point3d> firstIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[0]);
+            List<Point3d> secondIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[1]);
+            return (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints);
+        }
+
+        private static void HandleElbowWithDifferentAngles(ObjectId elbowObjectId, string pipeDiater, List<ObjectId> pipeLineObjectIds, double intersectionAngle)
+        {
+            if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow90" } });
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
+                GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
+                UtilsBlock.UtilsSetBlockXYScale(elbowObjectId, 1, 1);
+            }
+            else if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow45" } });
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
+                GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow45");
+                UtilsBlock.UtilsSetBlockXYScale(elbowObjectId, 1, 1);
+            }
+        }
+
+        private static void HandleElbowWithDifferentElevation(ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds)
+        {
+            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbowdown" } });
+            if (firstPipeElevation > secondPipeElevation)
+            {
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[0]);
+            }
+            else
+            {
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[1]);
+            }
+        }
+
+        private static void SetBlockRotationByIntersectionPoint(ObjectId elbowObjectId, ObjectId pipeLineObjectId)
+        {
+            List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId);
+            if (crossPoints.Count > 0)
+            {
+                Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
+                Point3d crossPoint = crossPoints[0];
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+            }
+        }
 
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
         {
@@ -226,70 +276,29 @@ namespace GsPgDataFlow
             processedPolylineIds = processedPolylineIds.Distinct().ToList();
 
             processedPipeElbowObjectIds.ForEach(x =>
+            {
+                List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                if (pipeLineObjectIds.Count() == 2)
                 {
-                    List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
-                    if (pipeLineObjectIds.Count() == 2)
+                    var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = GetPipeElevationAndIntersectionPoints(x, pipeLineObjectIds);
+                    if (firstIntersectionPoints != null && secondIntersectionPoints != null)
                     {
-                        double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
-                        double secondPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
                         Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
-                        List<Point3d> firstIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[0]);
-                        List<Point3d> secondIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[1]);
-                        if (firstIntersectionPoints != null && secondIntersectionPoints != null)
+                        Point3d firstIntersectionPoint = firstIntersectionPoints[0];
+                        Point3d secondIntersectionPoint = secondIntersectionPoints[0];
+
+                        double intersectionAngle = UtilsGeometric.UtilsGetAngleByThreePoint(basePoint, firstIntersectionPoint, secondIntersectionPoint);
+                        if (firstPipeElevation == secondPipeElevation)
                         {
-                            Point3d firstIntersectionPoint = firstIntersectionPoints[0];
-                            Point3d secondIntersectionPoint = secondIntersectionPoints[0];
-
-                            double intersectionAngle = UtilsGeometric.UtilsGetAngleByThreePoint(basePoint, firstIntersectionPoint, secondIntersectionPoint);
-                            if (firstPipeElevation == secondPipeElevation)
-                            {
-
-                                if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
-                                {
-                                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow90" } });
-                                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
-                                    GsPgSynElbowRotation(x, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
-                                    // key logic: Initialize the mirror state, otherwise it remains incorrect even after rotation
-                                    UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
-                                }
-                                else if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
-                                {
-                                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbow45" } });
-                                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
-                                    GsPgSynElbowRotation(x, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow45");
-                                    // key logic: Initialize the mirror state, otherwise it remains incorrect even after rotation
-                                    UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
-                                }
-                            }
-                            else
-                            {
-                                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, new Dictionary<string, string>() { { "status", "elbowdown" } });
-                                if (firstPipeElevation > secondPipeElevation)
-                                {
-                                    List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[0]);
-                                    if (crossPoints.Count > 0)
-                                    {
-                                        Point3d crossPoint = crossPoints[0];
-                                        UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
-                                    }
-
-                                }
-                                else
-                                {
-                                    List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(x, pipeLineObjectIds[1]);
-                                    if (crossPoints.Count > 0)
-                                    {
-                                        Point3d crossPoint = crossPoints[0];
-                                        UtilsBlock.UtilsSetBlockRotatonInDegrees(x, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
-                                    }
-
-                                }
-                            }
+                            HandleElbowWithDifferentAngles(x, pipeDiater, pipeLineObjectIds, intersectionAngle);
                         }
-
-
+                        else
+                        {
+                            HandleElbowWithDifferentElevation(x, firstPipeElevation, secondPipeElevation, pipeLineObjectIds);
+                        }
                     }
-                });
+                }
+            });
         }
 
         public static void GsPgBatchSynPipeData()
