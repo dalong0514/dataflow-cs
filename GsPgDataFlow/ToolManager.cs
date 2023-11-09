@@ -264,6 +264,30 @@ namespace GsPgDataFlow
             }
         }
 
+        private static void HandleTeeWithDifferentElevation(ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds, int firstIntersectionPointsNum)
+        {
+            if (firstPipeElevation > secondPipeElevation && firstIntersectionPointsNum == 2)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teeup" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[0]);
+            }
+            else if (firstPipeElevation < secondPipeElevation && firstIntersectionPointsNum == 2)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teedown" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[1]);
+            }
+            else if (firstPipeElevation < secondPipeElevation && firstIntersectionPointsNum == 1)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teeup" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[1]);
+            }
+            else if (firstPipeElevation > secondPipeElevation && firstIntersectionPointsNum == 1)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teedown" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[0]);
+            }
+        }
+
         private static void SetBlockRotationByIntersectionPoint(ObjectId elbowObjectId, ObjectId pipeLineObjectId)
         {
             List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId);
@@ -284,6 +308,7 @@ namespace GsPgDataFlow
             processedPipeElbowObjectIds.ForEach(x =>
             {
                 List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                List<ObjectId> teePipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
                 if (pipeLineObjectIds.Count() == 2)
                 {
                     var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = GetPipeElevationAndIntersectionPoints(x, pipeLineObjectIds);
@@ -302,6 +327,22 @@ namespace GsPgDataFlow
                         {
                             HandleElbowWithDifferentElevation(x, firstPipeElevation, secondPipeElevation, pipeLineObjectIds);
                         }
+                    }
+                }
+                else if (teePipeLineObjectIds.Count() == 2)
+                {
+                    var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = GetPipeElevationAndIntersectionPoints(x, teePipeLineObjectIds);
+                    if (firstIntersectionPoints != null && secondIntersectionPoints != null)
+                    {
+                        Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
+                        Point3d firstIntersectionPoint = firstIntersectionPoints[0];
+                        Point3d secondIntersectionPoint = secondIntersectionPoints[0];
+
+                        if (firstIntersectionPoints.Count + secondIntersectionPoints.Count == 3)
+                        {
+                            HandleTeeWithDifferentElevation(x, firstPipeElevation, secondPipeElevation, teePipeLineObjectIds, firstIntersectionPoints.Count);
+                        }
+
                     }
                 }
             });
@@ -326,12 +367,11 @@ namespace GsPgDataFlow
                     List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
                     Dictionary<string, string> pipeData = GsPgGetPipeData(x);
                     GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds);
-                    GsPgSynPipeElbowStatus(pipeData);
-
-                    processedPipeElbowObjectIds.Clear();
-                    processedPolylineIds.Clear();
                     UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
+                    GsPgSynPipeElbowStatus(pipeData);
                 });
+                processedPipeElbowObjectIds.Clear();
+                processedPolylineIds.Clear();
 
                 UtilsCADActive.Editor.WriteMessage("\n同步数据完成...");
 
