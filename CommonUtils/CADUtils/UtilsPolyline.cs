@@ -187,16 +187,29 @@ namespace DLCommonUtils.CADUtils
 
         }
 
-        public static List<Point3d> UtilsGetIntersectionsByTwoPolyLine(ObjectId polyline1Id, ObjectId polyline2Id)
+        public static double UtilsGetIntersectionAngleByTwoPolyLine(Point3d intersectionPoint, ObjectId polyline1Id, ObjectId polyline2Id)
         {
             Polyline polyline1 = polyline1Id.GetObject(OpenMode.ForRead) as Polyline;
             Polyline polyline2 = polyline2Id.GetObject(OpenMode.ForRead) as Polyline;
 
-            Point3dCollection intersectionPoints = new Point3dCollection();
-
             try
             {
-                polyline1.IntersectWith(polyline2, Intersect.OnBothOperands, intersectionPoints, IntPtr.Zero, IntPtr.Zero);
+                double param1 = polyline1.GetParameterAtPoint(intersectionPoint);
+                double param2 = polyline2.GetParameterAtPoint(intersectionPoint);
+
+                // Check if the parameters are within the valid range
+                if (param1 >= polyline1.StartParam && param1 <= polyline1.EndParam &&
+                    param2 >= polyline2.StartParam && param2 <= polyline2.EndParam)
+                {
+                    // Get the tangent direction at the intersection point for each polyline
+                    Vector3d tangent1 = polyline1.GetFirstDerivative(param1);
+                    Vector3d tangent2 = polyline2.GetFirstDerivative(param2);
+
+                    // Calculate the angle between the two tangent directions
+                    double angle = tangent1.GetAngleTo(tangent2);
+
+                    return angle * (180.0 / Math.PI);
+                }
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
@@ -204,18 +217,14 @@ namespace DLCommonUtils.CADUtils
                 {
                     // Handle the eNullExtents exception
                     // You could log the error, fix or recreate the problematic entity, or continue processing other entities
-                    return null;
                 }
                 else
                 {
-                    throw;
+                    //throw;
+                    return double.NaN;
                 }
             }
-            if (intersectionPoints.Count > 0)
-            {
-                return intersectionPoints.OfType<Point3d>().ToList();
-            }
-            return intersectionPoints.OfType<Point3d>().ToList();
+            return double.NaN;
 
         }
 
@@ -239,14 +248,15 @@ namespace DLCommonUtils.CADUtils
                 }
                 else
                 {
-                    throw;
+                    //throw;
+                    return null;
                 }
             }
             if (intersectionPoints.Count > 0)
             {
                 return intersectionPoints.OfType<Point3d>().ToList();
             }
-            return intersectionPoints.OfType<Point3d>().ToList();
+            return null;
 
         }
 

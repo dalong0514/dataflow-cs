@@ -64,6 +64,14 @@ namespace DLCommonUtils.CADUtils
             return angle * (180.0 / Math.PI);
         }
 
+        public static double UtilsGetAngleByThreePoint(Point3d basePoint, Point3d startPoint, Point3d endPoint)
+        {
+            // 完成任务：1）已知三个点A点、B点和C点。1）计算AB和AC的夹角
+            double angle1 = UtilsGetAngleByTwoPoint(basePoint, startPoint);
+            double angle2 = UtilsGetAngleByTwoPoint(basePoint, endPoint);
+            return Math.Abs(angle2 - angle1);
+        }
+
         public static Polyline UtilsGetBoundary(this Extents3d extents, double exDis = 0, string layerName = "")
         {
             Polyline polyline = new Polyline();
