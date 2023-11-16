@@ -28,12 +28,6 @@ namespace DLCommonUtils.CADUtils
         public static string UtilsGetBlockName(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
-            return UtilsGetBlockName(blockRef);
-
-        }
-
-        public static string UtilsGetBlockName(BlockReference blockRef)
-        {
             if (blockRef == null)
             {
                 return string.Empty;
@@ -48,6 +42,7 @@ namespace DLCommonUtils.CADUtils
 
             BlockTableRecord btr = blockId.GetObject(OpenMode.ForRead) as BlockTableRecord;
             return btr?.Name ?? string.Empty;
+
         }
 
         /// <summary>
@@ -199,17 +194,13 @@ namespace DLCommonUtils.CADUtils
                 if (isIdentical)
                 {
                     blockIds = selSet.GetObjectIds()
-                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
-                        .Select(blockRef => blockRef.ObjectId)
+                        .Where(ObjectId => ObjectId != null && UtilsGetBlockName(ObjectId) == blockName)
                         .ToList();
                 }
                 else
                 {
                     blockIds = selSet.GetObjectIds()
-                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef).Contains(blockName))
-                        .Select(blockRef => blockRef.ObjectId)
+                        .Where(ObjectId => ObjectId != null && UtilsGetBlockName(ObjectId).Contains(blockName))
                         .ToList();
                 }
             }
@@ -229,17 +220,13 @@ namespace DLCommonUtils.CADUtils
                 if (isIdentical)
                 {
                     blockIds = selSet.GetObjectIds()
-                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
-                        .Select(blockRef => blockRef.ObjectId)
+                        .Where(objectId => objectId != null && UtilsGetBlockName(objectId) == blockName)
                         .ToList();
                 }
                 else
                 {
                     blockIds = selSet.GetObjectIds()
-                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef).Contains(blockName))
-                        .Select(blockRef => blockRef.ObjectId)
+                        .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
 
@@ -259,17 +246,13 @@ namespace DLCommonUtils.CADUtils
                 if (isIdentical)
                 {
                     blockIds = selSet.GetObjectIds()
-                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef) == blockName)
-                        .Select(blockRef => blockRef.ObjectId)
+                        .Where(objectId => objectId != null && UtilsGetBlockName(objectId) == blockName)
                         .ToList();
                 }
                 else
                 {
                     blockIds = selSet.GetObjectIds()
-                        .Select(objectId => objectId.GetObject(OpenMode.ForRead) as BlockReference)
-                        .Where(blockRef => blockRef != null && UtilsGetBlockName(blockRef).Contains(blockName))
-                        .Select(blockRef => blockRef.ObjectId)
+                        .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
 
