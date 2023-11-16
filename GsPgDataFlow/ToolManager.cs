@@ -412,15 +412,27 @@ namespace GsPgDataFlow
 
                 //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
 
+                PromptStringOptions stringOptions = new PromptStringOptions("\nEnter blockName: ");
+                stringOptions.AllowSpaces = true; // 如果你希望允许用户输入空格，设置这个属性为true
 
-                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
-                allPipeElbowObjectIds.ForEach(x =>
+                PromptResult stringResult = UtilsCADActive.Editor.GetString(stringOptions);
+
+                if (stringResult.Status == PromptStatus.OK)
                 {
-                    BlockReference blockRef = x.GetObject(OpenMode.ForRead) as BlockReference;
-                    // the key logic: get the boundary of the block
-                    Polyline p = UtilsGeometric.UtilsGetBoundary(blockRef.GeometricExtents);
-                    UtilsCADActive.Editor.WriteMessage("\n" + p);
-                });
+                    List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(stringResult.StringResult).ToList();
+                    ObjectId objectId = allPipeElbowObjectIds[0];
+                    UtilsCADActive.Editor.WriteMessage("\n" + objectId);
+                    UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(objectId));
+                }
+
+                //List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
+                //allPipeElbowObjectIds.ForEach(x =>
+                //{
+                //    BlockReference blockRef = x.GetObject(OpenMode.ForRead) as BlockReference;
+                //    // the key logic: get the boundary of the block
+                //    Polyline p = UtilsGeometric.UtilsGetBoundary(blockRef.GeometricExtents);
+                //    UtilsCADActive.Editor.WriteMessage("\n" + p);
+                //});
 
                 UtilsCADActive.Editor.WriteMessage("\n测试完成...");
                 tr.Commit();
