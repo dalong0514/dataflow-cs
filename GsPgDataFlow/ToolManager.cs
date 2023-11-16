@@ -147,7 +147,7 @@ namespace GsPgDataFlow
                 {
                     UtilsCADActive.UtilsAddXData(x, pipeData);
                     // for test
-                    //UtilsPolyline.UtilsChangeColor(x, 1);
+                    UtilsPolyline.UtilsChangeColor(x, 1);
                     GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
                     GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData);
                     // the key logic: remove the current polyline

@@ -34,31 +34,20 @@ namespace DLCommonUtils.CADUtils
 
         public static string UtilsGetBlockName(BlockReference blockRef)
         {
-            if (blockRef != null)
+            if (blockRef == null)
             {
-                if (blockRef.IsDynamicBlock)
-                {
-                    ObjectId dynamicBlockId = blockRef.DynamicBlockTableRecord;
-
-                    if (dynamicBlockId.IsValid && !dynamicBlockId.IsErased)
-                    {
-                        BlockTableRecord btr = dynamicBlockId.GetObject(OpenMode.ForRead) as BlockTableRecord;
-                        return btr.Name;
-                    }
-                }
-                else
-                {
-                    ObjectId blockId = blockRef.BlockTableRecord;
-
-                    if (blockId.IsValid && !blockId.IsErased)
-                    {
-                        BlockTableRecord btr = blockId.GetObject(OpenMode.ForRead) as BlockTableRecord;
-                        return btr.Name;
-                    }
-                }
+                return string.Empty;
             }
 
-            return string.Empty;
+            ObjectId blockId = blockRef.IsDynamicBlock ? blockRef.DynamicBlockTableRecord : blockRef.BlockTableRecord;
+
+            if (!blockId.IsValid || blockId.IsErased)
+            {
+                return string.Empty;
+            }
+
+            BlockTableRecord btr = blockId.GetObject(OpenMode.ForRead) as BlockTableRecord;
+            return btr?.Name ?? string.Empty;
         }
 
         /// <summary>
