@@ -102,18 +102,19 @@ namespace GsPgDataFlow
                 });
         }
 
-        public static string GsPgGetPipeDiameter(string pipeNum)
+        public static string GsPgGetPipeDiameter(string pipeNum, PipeInfoHelper pipeInfo)
         {
-            string pipeDiameter = pipeNum.Split('-').ElementAtOrDefault(1);
+            //string pipeDiameter = pipeNum.Split('-').ElementAtOrDefault(1);
 
-            if (pipeDiameter == null)
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return pipeDiameter;
-            }
+            //if (pipeDiameter == null)
+            //{
+            //    return string.Empty;
+            //}
+            //else
+            //{
+            //    return pipeDiameter;
+            //}
+            return pipeInfo.GetPipeDiameter(pipeNum);
         }
 
         public static string GsPgGetPipeElbowDiameter(string pipeDiameter, double calMultiple)
@@ -122,14 +123,14 @@ namespace GsPgDataFlow
             return result.ToString();
         }
 
-        public static void GsPgChangeValvePropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allValveObjectIds, Dictionary<string, string> pipeData)
+        public static void GsPgChangeValvePropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allValveObjectIds, Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
         {
             allValveObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
                 .ToList()
                 .ForEach(x =>
                 {
 
-                    string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"]);
+                    string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
                     Dictionary<string, string> propertyDict = new Dictionary<string, string>()
                     {
                         { "sideview-DN", pipeDiater },
@@ -139,7 +140,7 @@ namespace GsPgDataFlow
                 });
         }
 
-        public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds, List<ObjectId> allValveObjectIds)
+        public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds, List<ObjectId> allValveObjectIds, PipeInfoHelper pipeInfo)
         {
             if (pipeLineObjectIds != null)
             {
@@ -149,14 +150,14 @@ namespace GsPgDataFlow
                     // for test
                     //UtilsPolyline.UtilsChangeColor(x, 1);
                     GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
-                    GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData);
+                    GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData, pipeInfo);
                     // the key logic: remove the current polyline
                     allPipeLineObjectIds = allPipeLineObjectIds.Where(xx => xx != x).ToList();
                     List<ObjectId> otherPipeLineObjectIds = GsPgGetOtherPipeLineByInterset(x, allPipeLineObjectIds, allElbowObjectIds, pipeData);
 
                     if (otherPipeLineObjectIds != null)
                     {
-                        GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds);
+                        GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
                     }
                     processedPolylineIds.Add(x);
                 });
@@ -299,9 +300,9 @@ namespace GsPgDataFlow
             }
         }
 
-        public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData)
+        public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
         {
-            string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"]);
+            string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
             processedPipeElbowObjectIds = processedPipeElbowObjectIds.Distinct().ToList();
             processedPolylineIds = processedPolylineIds.Distinct().ToList();
 
@@ -348,14 +349,29 @@ namespace GsPgDataFlow
             });
         }
 
+        public static string GsPgGetProjectNum()
+        {
+            string projectNum = string.Empty;
+            List<ObjectId> allGeYuanDrawObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GeYuanFrame", false).ToList();
+            allGeYuanDrawObjectIds.ForEach(x =>
+            {
+                string result = UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(x).UtilsGetStrValue("projectnum");
+                if (result != string.Empty)
+                {
+                    projectNum = result;
+                }
+            });
+            return projectNum;
+        }
+
         public static void GsPgBatchSynPipeData()
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
+                string projectNum = GsPgGetProjectNum();
+                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
 
-                Editor ed = UtilsCADActive.Editor;
-
-                ed.WriteMessage("\n请选择绿色箭头辅助管道块");
+                UtilsCADActive.Editor.WriteMessage("\n请选择绿色箭头辅助管道块");
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
                 List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
                 List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
@@ -366,9 +382,9 @@ namespace GsPgDataFlow
                 {
                     List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
                     Dictionary<string, string> pipeData = GsPgGetPipeData(x);
-                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds);
+                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
                     UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
-                    GsPgSynPipeElbowStatus(pipeData);
+                    GsPgSynPipeElbowStatus(pipeData, pipeInfo);
                 });
                 processedPipeElbowObjectIds.Clear();
                 processedPolylineIds.Clear();
@@ -385,12 +401,12 @@ namespace GsPgDataFlow
             {
 
                 // 通过拾取获得一个块的ObjectId
-                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
                 //UtilsBlock.UtilsSetBlockXYScale(blockId, 1, 1);
                 //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId)["projectnum"].ToString());
-                UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId).UtilsGetStrValue("projectnum"));
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId).UtilsGetStrValue("projectnum"));
 
                 // 通过拾取获得一个多段线的ObjectId
                 //Point3d point1 = UtilsCADActive.GetPointFromUser();
@@ -414,6 +430,13 @@ namespace GsPgDataFlow
                 //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
 
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
+
+                
+                string projectNum = GsPgGetProjectNum();
+                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
+                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo);
+                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("PW030002-50-1M1-80"));
+                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("0209-PL-1101-65-2J1-H5"));
 
                 UtilsCADActive.Editor.WriteMessage("\n测试完成...");
                 tr.Commit();
