@@ -349,10 +349,10 @@ namespace GsPgDataFlow
             });
         }
 
-        public static string GsPgGetProjectNum()
+        public static string GsPgGetProjectNum(List<ObjectId> allBlockIds)
         {
             string projectNum = string.Empty;
-            List<ObjectId> allGeYuanDrawObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GeYuanFrame", false).ToList();
+            List<ObjectId> allGeYuanDrawObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GeYuanFrame", false).ToList();
             allGeYuanDrawObjectIds.ForEach(x =>
             {
                 string result = UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(x).UtilsGetStrValue("projectnum");
@@ -368,15 +368,17 @@ namespace GsPgDataFlow
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                string projectNum = GsPgGetProjectNum();
-                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
-
                 UtilsCADActive.Editor.WriteMessage("\n请选择绿色箭头辅助管道块");
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
+
+                List<ObjectId> allBlockIds = UtilsBlock.UtilsGetAllBlockObjectIds();
+                string projectNum = GsPgGetProjectNum(allBlockIds);
+                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
+
                 List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
-                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
-                List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementArrowAssist").ToList();
-                List<ObjectId> allValveObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgValve", false).ToList();
+                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GsPgPipeElementElbow").ToList();
+                List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GsPgPipeElementArrowAssist").ToList();
+                List<ObjectId> allValveObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GsPgValve", false).ToList();
 
                 pipeNumObjectIds.ForEach(x =>
                 {
@@ -431,9 +433,7 @@ namespace GsPgDataFlow
 
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
 
-                
-                string projectNum = GsPgGetProjectNum();
-                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
+                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo("S22A03");
                 UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo);
                 UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("PW030002-50-1M1-80"));
                 UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("0209-PL-1101-65-2J1-H5"));

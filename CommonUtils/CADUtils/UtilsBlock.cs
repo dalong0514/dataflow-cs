@@ -206,7 +206,13 @@ namespace DLCommonUtils.CADUtils
             }
             return blockIds;
         }
-        
+
+        public static List<ObjectId> UtilsGetAllBlockObjectIds()
+        {
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
+            return selSet.GetObjectIds().ToList();
+        }
+
         // AutoCAD中获得所有块名为{Instrument}的ObjectId
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(string blockName, bool isIdentical = true)
         {
@@ -227,6 +233,26 @@ namespace DLCommonUtils.CADUtils
                 {
                     blockIds = selSet.GetObjectIds()
                         .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
+                        .ToList();
+                }
+
+            }
+            return blockIds;
+        }
+
+        public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(List<ObjectId> blockIds, string blockName, bool isIdentical = true)
+        {
+            // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
+            if (blockIds != null)
+            {
+                if (isIdentical)
+                {
+                    blockIds = blockIds.Where(objectId => objectId != null && UtilsGetBlockName(objectId) == blockName)
+                        .ToList();
+                }
+                else
+                {
+                    blockIds = blockIds.Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
 

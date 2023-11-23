@@ -109,7 +109,7 @@ namespace DLCommonUtils.CADUtils
             return polylineObjectIds;
         }
 
-        public static List<ObjectId> UtilsGetAllObjectIds()
+        public static List<ObjectId> UtilsGetAllPolylineObjectIds()
         {
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
             List<ObjectId> polylineObjectIds = new List<ObjectId>();
