@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CADUtils\UtilsJson.cs" />
     <Compile Include="CADUtils\UtilsWeb.cs" />
     <Compile Include="CADUtils\UtilsCommon.cs" />
     <Compile Include="CADUtils\UtilsPolyline.cs" />
@@ -70,8 +71,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DesignUtils\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -385,11 +385,12 @@ namespace GsPgDataFlow
             {
 
                 // 通过拾取获得一个块的ObjectId
-                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
                 //UtilsBlock.UtilsSetBlockXYScale(blockId, 1, 1);
                 //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
-
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId)["projectnum"].ToString());
+                UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId).UtilsGetStrValue("projectnum"));
 
                 // 通过拾取获得一个多段线的ObjectId
                 //Point3d point1 = UtilsCADActive.GetPointFromUser();
@@ -412,15 +413,7 @@ namespace GsPgDataFlow
 
                 //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
 
-                UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
-                //List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
-                //allPipeElbowObjectIds.ForEach(x =>
-                //{
-                //    BlockReference blockRef = x.GetObject(OpenMode.ForRead) as BlockReference;
-                //    // the key logic: get the boundary of the block
-                //    Polyline p = UtilsGeometric.UtilsGetBoundary(blockRef.GeometricExtents);
-                //    UtilsCADActive.Editor.WriteMessage("\n" + p);
-                //});
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
 
                 UtilsCADActive.Editor.WriteMessage("\n测试完成...");
                 tr.Commit();
