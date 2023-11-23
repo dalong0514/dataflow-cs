@@ -412,19 +412,7 @@ namespace GsPgDataFlow
 
                 //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
 
-                PromptStringOptions stringOptions = new PromptStringOptions("\nEnter blockName: ");
-                stringOptions.AllowSpaces = true; // 如果你希望允许用户输入空格，设置这个属性为true
-
-                PromptResult stringResult = UtilsCADActive.Editor.GetString(stringOptions);
-
-                if (stringResult.Status == PromptStatus.OK)
-                {
-                    List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(stringResult.StringResult).ToList();
-                    ObjectId objectId = allPipeElbowObjectIds[0];
-                    UtilsCADActive.Editor.WriteMessage("\n" + objectId);
-                    UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockName(objectId));
-                }
-
+                UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
                 //List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName("GsPgPipeElementElbow").ToList();
                 //allPipeElbowObjectIds.ForEach(x =>
                 //{

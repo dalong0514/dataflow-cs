@@ -44,6 +44,9 @@
       <HintPath>..\CADDLL\CAD2013\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,13 +57,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CADUtils\UtilsWeb.cs" />
     <Compile Include="CADUtils\UtilsCommon.cs" />
     <Compile Include="CADUtils\UtilsPolyline.cs" />
     <Compile Include="CADUtils\UtilsGeometric.cs" />
     <Compile Include="CADUtils\UtilsCADActive.cs" />
     <Compile Include="CADUtils\UtilsBlock.cs" />
     <Compile Include="CADUtils\UtilsSelectionSet.cs" />
+    <Compile Include="ConstUtils\ConstURL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DesignUtils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
