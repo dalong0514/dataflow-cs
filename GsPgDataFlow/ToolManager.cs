@@ -121,12 +121,16 @@ namespace GsPgDataFlow
                 {
 
                     string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
-                    Dictionary<string, string> propertyDict = new Dictionary<string, string>()
+                    if (pipeDiater != string.Empty)
                     {
-                        { "sideview-DN", pipeDiater },
-                        { "topview-DN", pipeDiater }
-                    };
-                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, propertyDict);
+                        Dictionary<string, string> propertyDict = new Dictionary<string, string>()
+                        {
+                            { "sideview-DN", pipeDiater },
+                            { "topview-DN", pipeDiater }
+                        };
+                        UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, propertyDict);
+                    }
+
                 });
         }
 
@@ -339,10 +343,9 @@ namespace GsPgDataFlow
             });
         }
 
-        public static string GsPgGetProjectNum(List<ObjectId> allBlockIds)
+        public static string GsPgGetProjectNum(List<ObjectId> allGeYuanDrawObjectIds)
         {
             string projectNum = string.Empty;
-            List<ObjectId> allGeYuanDrawObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GeYuanFrame", false).ToList();
             allGeYuanDrawObjectIds.ForEach(x =>
             {
                 string result = UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(x).UtilsGetStrValue("projectnum");
@@ -362,16 +365,17 @@ namespace GsPgDataFlow
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
 
                 List<ObjectId> allBlockIds = UtilsBlock.UtilsGetAllBlockObjectIds();
-                string projectNum = GsPgGetProjectNum(allBlockIds);
-                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
-
                 List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
 
-                List<string> blockNameList = new List<string> { "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve" };
+                List<string> blockNameList = new List<string> { "GeYuanFrame", "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve" };
                 Dictionary<string, List<ObjectId>> allObjectIdsGroups = UtilsBlock.UtilsGetAllObjectIdsGroupsByBlockNameList(allBlockIds, blockNameList, false);
+                List<ObjectId> allGeYuanDrawObjectIds = allObjectIdsGroups["GeYuanFrame"];
                 List<ObjectId> allPipeElbowObjectIds = allObjectIdsGroups["GsPgPipeElementElbow"];
                 List<ObjectId> allPipeArrowAssistObjectIds = allObjectIdsGroups["GsPgPipeElementArrowAssist"];
                 List<ObjectId> allValveObjectIds = allObjectIdsGroups["GsPgValve"];
+
+                string projectNum = GsPgGetProjectNum(allGeYuanDrawObjectIds);
+                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
 
                 pipeNumObjectIds.ForEach(x =>
                 {

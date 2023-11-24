@@ -118,7 +118,7 @@ namespace DLCommonUtils.CADUtils
             ResultBuffer rb = ent.GetXDataForApplication(regAppName);
             if (rb == null)
             {
-                WriteMessage("\nNo XData found for the application {0}.", regAppName);
+                //WriteMessage("\nNo XData found for the application {0}.", regAppName);
                 return string.Empty;
             }
 
