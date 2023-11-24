@@ -104,16 +104,6 @@ namespace GsPgDataFlow
 
         public static string GsPgGetPipeDiameter(string pipeNum, PipeInfoHelper pipeInfo)
         {
-            //string pipeDiameter = pipeNum.Split('-').ElementAtOrDefault(1);
-
-            //if (pipeDiameter == null)
-            //{
-            //    return string.Empty;
-            //}
-            //else
-            //{
-            //    return pipeDiameter;
-            //}
             return pipeInfo.GetPipeDiameter(pipeNum);
         }
 

@@ -247,17 +247,54 @@ namespace DLCommonUtils.CADUtils
             {
                 if (isIdentical)
                 {
-                    blockIds = blockIds.Where(objectId => objectId != null && UtilsGetBlockName(objectId) == blockName)
+                    blockIds = blockIds.Where(objectId => UtilsGetBlockName(objectId) == blockName)
                         .ToList();
                 }
                 else
                 {
-                    blockIds = blockIds.Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
+                    blockIds = blockIds.Where(objectId => UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
 
             }
             return blockIds;
+        }
+
+        public static Dictionary<string, List<ObjectId>> UtilsGetAllObjectIdsGroupsByBlockNameList(List<ObjectId> blockIds, List<string> blockNameList, bool isIdentical = true)
+        {
+            Dictionary<string, List<ObjectId>> objectIdsGroups = new Dictionary<string, List<ObjectId>>();
+            // 检查blockIds是否为空
+            if (blockIds == null || blockIds.Count == 0)
+            {
+                return objectIdsGroups;
+            }
+
+            foreach (string blockName in blockNameList)
+            {
+                // 为当前块名创建ObjectId列表
+                List<ObjectId> objectIdList = new List<ObjectId>();
+
+                // 根据isIdentical标志，进行精确匹配或包含匹配
+                foreach (ObjectId objectId in blockIds)
+                {
+                    if (objectId == null) continue;
+
+                    string currentBlockName = UtilsGetBlockName(objectId);
+                    bool match = isIdentical ? currentBlockName == blockName : currentBlockName.Contains(blockName);
+
+                    if (match)
+                    {
+                        objectIdList.Add(objectId);
+                    }
+                }
+
+                // 如果当前块名有匹配的ObjectId，则加入到字典中
+                if (objectIdList.Count > 0)
+                {
+                    objectIdsGroups.Add(blockName, objectIdList);
+                }
+            }
+            return objectIdsGroups;
         }
 
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockNameByCrossingWindow(Extents3d extents, string blockName, bool isIdentical = true)
