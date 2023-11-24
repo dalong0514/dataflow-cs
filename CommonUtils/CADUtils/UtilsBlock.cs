@@ -263,37 +263,41 @@ namespace DLCommonUtils.CADUtils
         public static Dictionary<string, List<ObjectId>> UtilsGetAllObjectIdsGroupsByBlockNameList(List<ObjectId> blockIds, List<string> blockNameList, bool isIdentical = true)
         {
             Dictionary<string, List<ObjectId>> objectIdsGroups = new Dictionary<string, List<ObjectId>>();
+
+            // 初始化字典，为每个块名创建一个空列表
+            foreach (string blockName in blockNameList)
+            {
+                objectIdsGroups[blockName] = new List<ObjectId>();
+            }
+
             // 检查blockIds是否为空
             if (blockIds == null || blockIds.Count == 0)
             {
                 return objectIdsGroups;
             }
 
-            foreach (string blockName in blockNameList)
+            // 遍历所有的ObjectId
+            foreach (ObjectId objectId in blockIds)
             {
-                // 为当前块名创建ObjectId列表
-                List<ObjectId> objectIdList = new List<ObjectId>();
+                if (objectId == null) continue;
+
+                string currentBlockName = UtilsGetBlockName(objectId);
 
                 // 根据isIdentical标志，进行精确匹配或包含匹配
-                foreach (ObjectId objectId in blockIds)
+                foreach (var pair in objectIdsGroups)
                 {
-                    if (objectId == null) continue;
-
-                    string currentBlockName = UtilsGetBlockName(objectId);
-                    bool match = isIdentical ? currentBlockName == blockName : currentBlockName.Contains(blockName);
+                    bool match = isIdentical ? currentBlockName == pair.Key : currentBlockName.Contains(pair.Key);
 
                     if (match)
                     {
-                        objectIdList.Add(objectId);
+                        pair.Value.Add(objectId);
                     }
                 }
-
-                // 如果当前块名有匹配的ObjectId，则加入到字典中
-                if (objectIdList.Count > 0)
-                {
-                    objectIdsGroups.Add(blockName, objectIdList);
-                }
             }
+
+            // 删除没有匹配到ObjectId的块名
+            objectIdsGroups = objectIdsGroups.Where(pair => pair.Value.Count > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
+
             return objectIdsGroups;
         }
 
