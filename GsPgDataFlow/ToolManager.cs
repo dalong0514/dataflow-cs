@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GsPgDataFlow
 {
@@ -104,7 +105,17 @@ namespace GsPgDataFlow
 
         public static string GsPgGetPipeDiameter(string pipeNum, PipeInfoHelper pipeInfo)
         {
-            return pipeInfo.GetPipeDiameter(pipeNum);
+            string pipeDiameter = pipeInfo.GetPipeDiameter(pipeNum);
+            //string pipeDiameter = pipeNum.Split('-').ElementAtOrDefault(1);
+
+            if (pipeDiameter == null || !Regex.IsMatch(pipeDiameter, @"^\d+$"))
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return pipeDiameter;
+            }
         }
 
         public static string GsPgGetPipeElbowDiameter(string pipeDiameter, double calMultiple)
@@ -233,14 +244,20 @@ namespace GsPgDataFlow
             if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
             {
                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow90" } });
-                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
+                if (pipeDiater != string.Empty)
+                {
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } }); 
+                }
                 GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
                 UtilsBlock.UtilsSetBlockXYScale(elbowObjectId, 1, 1);
             }
             else if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
             {
                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow45" } });
-                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
+                if (pipeDiater != string.Empty)
+                {
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
+                }
                 GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow45");
                 UtilsBlock.UtilsSetBlockXYScale(elbowObjectId, 1, 1);
             }
