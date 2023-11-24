@@ -366,9 +366,12 @@ namespace GsPgDataFlow
                 PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
 
                 List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
-                List<ObjectId> allPipeElbowObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GsPgPipeElementElbow").ToList();
-                List<ObjectId> allPipeArrowAssistObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GsPgPipeElementArrowAssist").ToList();
-                List<ObjectId> allValveObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(allBlockIds, "GsPgValve", false).ToList();
+
+                List<string> blockNameList = new List<string> { "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve" };
+                Dictionary<string, List<ObjectId>> allObjectIdsGroups = UtilsBlock.UtilsGetAllObjectIdsGroupsByBlockNameList(allBlockIds, blockNameList, false);
+                List<ObjectId> allPipeElbowObjectIds = allObjectIdsGroups["GsPgPipeElementElbow"];
+                List<ObjectId> allPipeArrowAssistObjectIds = allObjectIdsGroups["GsPgPipeElementArrowAssist"];
+                List<ObjectId> allValveObjectIds = allObjectIdsGroups["GsPgValve"];
 
                 pipeNumObjectIds.ForEach(x =>
                 {
