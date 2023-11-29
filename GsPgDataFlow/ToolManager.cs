@@ -153,7 +153,7 @@ namespace GsPgDataFlow
                 {
                     UtilsCADActive.UtilsAddXData(x, pipeData);
                     // for test
-                    UtilsPolyline.UtilsChangeColor(x, 1);
+                    //UtilsPolyline.UtilsChangeColor(x, 1);
                     GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
                     GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData, pipeInfo);
                     // the key logic: remove the current polyline
@@ -196,7 +196,7 @@ namespace GsPgDataFlow
 
         private static (Point3d, Point3d) GetHorizontalAndVerticalPoints(Point3d basePoint, Point3d firstCrossPoint, Point3d secondCrossPoint)
         {
-            return UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint)
+            return UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint, 5.0)
                 ? (firstCrossPoint, secondCrossPoint)
                 : (secondCrossPoint, firstCrossPoint);
         }

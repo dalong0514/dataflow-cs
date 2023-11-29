@@ -86,6 +86,18 @@ namespace DLCommonUtils.CADUtils
             return polyline;
         }
 
+        //完成如下功能：1）创建一个新的 Polyline 对象。2）函数入参为一个点Point3d point，以该点为中心，构建一个半边长为distance的矩形，将矩形的四个顶点添加给 Polyline 对象。3）设置 Polyline 为闭合，意味着它形成一个完整的循环。4）返回 Polyline 对象
+        public static Polyline UtilsCreateRectangleByCenterPoint(Point3d point, double distance)
+        {
+            Polyline polyline = new Polyline();
+            polyline.AddVertexAt(0, point.UtilsPoint3dToPoint2d() + new Vector2d(-distance, -distance), 0, 0, 0);
+            polyline.AddVertexAt(1, new Point2d(point.X + distance, point.Y - distance), 0, 0, 0);
+            polyline.AddVertexAt(2, point.UtilsPoint3dToPoint2d() + new Vector2d(distance, distance), 0, 0, 0);
+            polyline.AddVertexAt(3, new Point2d(point.X - distance, point.Y + distance), 0, 0, 0);
+            polyline.Closed = true;
+            return polyline;
+        }
+
         public static Point2d UtilsPoint3dToPoint2d(this Point3d point)
         {
             return new Point2d(point.X, point.Y);
@@ -105,9 +117,11 @@ namespace DLCommonUtils.CADUtils
         }
 
         // 完成任务：已知直线的两个点断，判断其是水平直线还是垂直直线
-        public static bool UtilsIsLineHorizontal(Point3d startPoint, Point3d endPoint)
+        public static bool UtilsIsLineHorizontal(Point3d startPoint, Point3d endPoint, double tolerance = 1.0)
         {
-            return startPoint.Y == endPoint.Y;
+            // 2023-11-29 fix bug: 1）当直线的起点和终点的Y坐标相差小于5时，认为该直线是水平直线
+            return Math.Abs(startPoint.Y - endPoint.Y) < tolerance;
+
         }
 
         public static double UtilsGetIntersectionAngleByTwoLineEnd(Point3d line1Start, Point3d line1End, Point3d line2Start, Point3d line2End)
