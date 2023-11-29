@@ -296,7 +296,8 @@ namespace DLCommonUtils.CADUtils
             }
 
             // 删除没有匹配到ObjectId的块名
-            objectIdsGroups = objectIdsGroups.Where(pair => pair.Value.Count > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
+            // 2023-11-29 无需删除，因为在初始化字典时，已经为每个块名创建了一个空列表。删了反而会出错，比如图纸里无格原图签的情况
+            //objectIdsGroups = objectIdsGroups.Where(pair => pair.Value.Count > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
 
             return objectIdsGroups;
         }
