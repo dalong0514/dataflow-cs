@@ -16,17 +16,17 @@ namespace dataflow_cs
             GsLcDataFlow.GenerateManager.GsLcSynFromToLocationData();
         }
 
-        [CommandMethod("CsTest")]
-        public void CsTest()
-        {
-            GsLcDataFlow.GenerateManager.CsTest();
-        }
+        //[CommandMethod("CsTest")]
+        //public void CsTest()
+        //{
+        //    GsLcDataFlow.GenerateManager.CsTest();
+        //}
 
-        [CommandMethod("CsFuncitonTest")]
-        public void GsPgBatchSynPipeData()
-        {
-            GsLcDataFlow.GenerateManager.GsLcSynFromToLocationData();
-        }
+        //[CommandMethod("CsFuncitonTest")]
+        //public void GsPgBatchSynPipeData()
+        //{
+        //    GsLcDataFlow.GenerateManager.GsLcSynFromToLocationData();
+        //}
 
     }
 }

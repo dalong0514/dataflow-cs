@@ -15,16 +15,16 @@ namespace dataflow_cs
             GsPgDataFlow.GenerateManager.GsPgBatchSynPipeData();
         }
 
-        //[CommandMethod("CsTest")]
-        //public void CsTest()
-        //{
-        //    GsPgDataFlow.GenerateManager.CsTest();
-        //}
+        [CommandMethod("CsTest")]
+        public void CsTest()
+        {
+            GsPgDataFlow.GenerateManager.CsTest();
+        }
 
-        //[CommandMethod("CsFuncitonTest")]
-        //public void GsPgBatchSynPipeData()
-        //{
-        //    GsPgDataFlow.GenerateManager.GsPgBatchSynPipeData();
-        //}
+        [CommandMethod("CsFuncitonTest")]
+        public void GsPgBatchSynPipeData()
+        {
+            GsPgDataFlow.GenerateManager.GsPgBatchSynPipeData();
+        }
     }
 }

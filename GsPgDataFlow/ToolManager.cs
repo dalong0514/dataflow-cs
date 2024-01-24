@@ -83,7 +83,8 @@ namespace GsPgDataFlow
                     // The elbow that require synchronization have been incorporated into the global variables
                     processedPipeElbowObjectIds.Add(x);
                     ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
-                    if (result != ObjectId.Null)
+                    // 2024-01-24 如果弯头块在终止图层 0DataFlow-GsPgPipeLineDPSBreak 上，则数据无法通过该弯头传递给其他管道
+                    if (result != ObjectId.Null && UtilsBlock.UtilsGetBlockLayer(x) != "0DataFlow-GsPgPipeLineDPSBreak")
                     {
                         otherPipeLineObjectIds.Add(result);
                     }
@@ -417,9 +418,9 @@ namespace GsPgDataFlow
             {
 
                 // 通过拾取获得一个块的ObjectId
-                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
                 //UtilsBlock.UtilsSetBlockXYScale(blockId, 1, 1);
-                //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
+                UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockLayer(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId)["projectnum"].ToString());
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId).UtilsGetStrValue("projectnum"));
@@ -447,10 +448,10 @@ namespace GsPgDataFlow
 
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
 
-                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo("S22A03");
-                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo);
-                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("PW030002-50-1M1-80"));
-                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("0209-PL-1101-65-2J1-H5"));
+                //PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo("S22A03");
+                //UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo);
+                //UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("PW030002-50-1M1-80"));
+                //UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("0209-PL-1101-65-2J1-H5"));
 
                 UtilsCADActive.Editor.WriteMessage("\n测试完成...");
                 tr.Commit();

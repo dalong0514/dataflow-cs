@@ -45,6 +45,25 @@ namespace DLCommonUtils.CADUtils
 
         }
 
+        public static string UtilsGetBlockLayer(ObjectId objectId)
+        {
+            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
+            if (blockRef == null)
+            {
+                return string.Empty;
+            }
+
+            ObjectId blockId = blockRef.IsDynamicBlock ? blockRef.DynamicBlockTableRecord : blockRef.BlockTableRecord;
+
+            if (!blockId.IsValid || blockId.IsErased)
+            {
+                return string.Empty;
+            }
+
+            return blockRef?.Layer ?? string.Empty;
+
+        }
+
         /// <summary>
         /// // get all proerty dict list of the block entity
         /// </summary>
