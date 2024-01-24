@@ -1,18 +1,18 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using DLCommonUtils.CADUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace GsPgDataFlow
+namespace GsLcDataFlow
 {
-    public class ToolManager
+    internal class GsLcSynData
     {
         public static List<ObjectId> processedPolylineIds = new List<ObjectId>();
         public static List<ObjectId> processedPipeElbowObjectIds = new List<ObjectId>();
@@ -246,9 +246,10 @@ namespace GsPgDataFlow
                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow90" } });
                 if (pipeDiater != string.Empty)
                 {
-                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } }); 
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } });
                 }
                 GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
+                UtilsBlock.UtilsSetBlockXYScale(elbowObjectId, 1, 1);
             }
             else if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
             {
@@ -258,6 +259,7 @@ namespace GsPgDataFlow
                     UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
                 }
                 GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow45");
+                UtilsBlock.UtilsSetBlockXYScale(elbowObjectId, 1, 1);
             }
         }
 
@@ -317,8 +319,6 @@ namespace GsPgDataFlow
 
             processedPipeElbowObjectIds.ForEach(x =>
             {
-                // 2024-01-24 设计人员可能会镜像弯头块，之前仅仅在HandleElbowWithDifferentAngles中重置XY比例，现在在这里整体重置
-                UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
                 List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
                 List<ObjectId> teePipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
                 if (pipeLineObjectIds.Count() == 2)
@@ -374,7 +374,7 @@ namespace GsPgDataFlow
             return projectNum;
         }
 
-        public static void GsPgBatchSynPipeData()
+        public static void GsLcSynFromToLocationData()
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
@@ -417,7 +417,7 @@ namespace GsPgDataFlow
             {
 
                 // 通过拾取获得一个块的ObjectId
-                //ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
+                ObjectId blockId = UtilsCADActive.Editor.GetEntity("\n请选择一个块").ObjectId;
                 //UtilsBlock.UtilsSetBlockXYScale(blockId, 1, 1);
                 //ed.WriteMessage("\n" + UtilsBlock.UtilsGetBlockRotatonInDegrees(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
@@ -447,10 +447,7 @@ namespace GsPgDataFlow
 
                 //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
 
-                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo("S22A03");
-                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo);
-                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("PW030002-50-1M1-80"));
-                UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("0209-PL-1101-65-2J1-H5"));
+                UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockBasePoint(blockId));
 
                 UtilsCADActive.Editor.WriteMessage("\n测试完成...");
                 tr.Commit();

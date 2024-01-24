@@ -8,16 +8,16 @@ namespace GsLcDataFlow
 {
     public class GenerateManager
     {
-        public static void DLGsLcUpdateInstrumentLocationOnPipe()
+        public static void GsLcSynFromToLocationData()
         {
-
-            ToolManager.GsLcUpdateInstrumentLocationOnPipe();
+            GsLcSynData.GsLcSynFromToLocationData();
         }
 
         public static void CsTest()
         {
 
-            ToolManager.CsTest();
+            GsLcSynData.CsTest();
         }
+
     }
 }

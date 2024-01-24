@@ -8,3 +8,4 @@ D:\dataflow.code\dataflow-cs\GsLcDataFlow\obj\Debug\GsLcDataFlow.dll
 D:\dataflow.code\dataflow-cs\GsLcDataFlow\obj\Debug\GsLcDataFlow.pdb
 D:\dataflowcad\dataflowcad\dataflowNet\DLNet\GsLcDataFlow.dll
 D:\dataflowcad\dataflowcad\dataflowNet\DLNet\GsLcDataFlow.pdb
+D:\dataflow.code\dataflow-cs\GsLcDataFlow\obj\Debug\GsLcDataFlow.csproj.CopyComplete

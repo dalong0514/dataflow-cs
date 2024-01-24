@@ -10,16 +10,23 @@ namespace dataflow_cs
     public class GsLcCommands
     {
 
-        //[CommandMethod("CsTest")]
-        //public void CsTest()
-        //{
-        //    GsLcDataFlow.GenerateManager.CsTest();
-        //}
+        [CommandMethod("GsLcSynFromToLocationData")]
+        public void GsLcSynFromToLocationData()
+        {
+            GsLcDataFlow.GenerateManager.GsLcSynFromToLocationData();
+        }
 
-        //[CommandMethod("CsFuncitonTest")]
-        //public void DLGsLcUpdateInstrumentLocationOnPipe()
-        //{
-        //    GsLcDataFlow.GenerateManager.DLGsLcUpdateInstrumentLocationOnPipe();
-        //}
+        [CommandMethod("CsTest")]
+        public void CsTest()
+        {
+            GsLcDataFlow.GenerateManager.CsTest();
+        }
+
+        [CommandMethod("CsFuncitonTest")]
+        public void GsPgBatchSynPipeData()
+        {
+            GsLcDataFlow.GenerateManager.GsLcSynFromToLocationData();
+        }
+
     }
 }
