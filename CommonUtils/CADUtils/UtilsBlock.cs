@@ -184,19 +184,41 @@ namespace DLCommonUtils.CADUtils
             DynamicBlockReferencePropertyCollection props = blockRef.DynamicBlockReferencePropertyCollection;
 
             // set property value of the dynamic block entity
-            foreach (DynamicBlockReferenceProperty prop in props)
+            foreach (var item in propertyDict)
             {
-                foreach (var item in propertyDict)
+                // 2024-09-13
+                // 使用 LINQ 的 FirstOrDefault 方法来查找匹配的属性，如果找不到则返回 null
+                // 在尝试修改属性之前，先检查属性是否存在
+                DynamicBlockReferenceProperty prop = props.Cast<DynamicBlockReferenceProperty>()
+                    .FirstOrDefault(p => string.Equals(p.PropertyName, item.Key, StringComparison.OrdinalIgnoreCase));
+
+                if (prop != null)
                 {
-                    if (string.Equals(prop.PropertyName, item.Key, StringComparison.OrdinalIgnoreCase))
+                    try
                     {
-                        // Upgrade the block reference to allow modification in the model of ForRead
+                        // Upgrade the block reference to allow modification
                         blockRef.UpgradeOpen();
                         // Set the property value
                         prop.Value = Convert.ChangeType(item.Value, prop.Value.GetType());
-                        // Downgrade the block reference to prevent further modifications
-                        blockRef.DowngradeOpen();
                     }
+                    catch (Exception ex)
+                    {
+                        // Log the error or handle it as appropriate
+                        System.Diagnostics.Debug.WriteLine($"Error setting property {item.Key}: {ex.Message}");
+                    }
+                    finally
+                    {
+                        // Ensure the block reference is downgraded
+                        if (blockRef.IsWriteEnabled)
+                        {
+                            blockRef.DowngradeOpen();
+                        }
+                    }
+                }
+                else
+                {
+                    // Log that the property was not found
+                    System.Diagnostics.Debug.WriteLine($"Property {item.Key} not found in the dynamic block.");
                 }
             }
         }
