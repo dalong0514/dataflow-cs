@@ -6,3 +6,15 @@ CommonUtils/obj/Debug/*
 *.pdb
 *.dll
 
+CommonUtils/bin/Release/*
+CommonUtils/obj/Release/*
+dataflow-cs/bin/Release/*
+dataflow-cs/obj/Release/*
+GsLcDataFlow/bin/Release/*
+GsLcDataFlow/obj/Release/*
+GsPgDataFlow/bin/Release/*
+GsPgDataFlow/obj/Release/*
+WsBzDataFlow/bin/Release/*
+WsBzDataFlow/obj/Release/*
+StudyProgram/bin/Release/*
+StudyProgram/obj/Release/*

@@ -189,8 +189,10 @@ namespace GsPgDataFlow
 
         private static (Point3d, Point3d) GetCrossPoints(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
         {
-            var firstCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1).FirstOrDefault();
-            var secondCrossPoint = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2).FirstOrDefault();
+            List<Point3d> firstPoint3ds = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
+            var firstCrossPoint = firstPoint3ds != null ? firstPoint3ds.FirstOrDefault() : Point3d.Origin;
+            List<Point3d> secondPoint3ds = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
+            var secondCrossPoint = secondPoint3ds != null ? secondPoint3ds.FirstOrDefault() : Point3d.Origin;
 
             return (firstCrossPoint, secondCrossPoint);
         }
@@ -221,7 +223,7 @@ namespace GsPgDataFlow
             var basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
             var (firstCrossPoint, secondCrossPoint) = GetCrossPoints(elbowObjectId, pipeLineObjectId1, pipeLineObjectId2);
 
-            if (firstCrossPoint != null && secondCrossPoint != null)
+            if (firstCrossPoint != Point3d.Origin && secondCrossPoint != Point3d.Origin)
             {
                 var (horizontalPoint, verticalPoint) = GetHorizontalAndVerticalPoints(basePoint, firstCrossPoint, secondCrossPoint);
                 var xDiff = horizontalPoint.X - basePoint.X;
