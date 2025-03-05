@@ -153,7 +153,20 @@ namespace DLCommonUtils.CADUtils
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
 
             if (blockRef == null || blockRef.AttributeCollection.Count == 0) return;
-            // set property value of the block entity
+
+            // 获取当前图层
+            LayerTableRecord layer = (LayerTableRecord)blockRef.LayerId.GetObject(OpenMode.ForRead);
+            
+            // 检查图层是否被锁定
+            if (layer.IsLocked)
+            {
+                // 解锁图层
+                layer.UpgradeOpen();
+                layer.IsLocked = false;
+                layer.DowngradeOpen();
+            }
+
+            // 设置属性值
             foreach (ObjectId attId in blockRef.AttributeCollection)
             {
                 AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
@@ -162,16 +175,19 @@ namespace DLCommonUtils.CADUtils
                 {
                     if (attRef != null && string.Equals(attRef.Tag, item.Key, StringComparison.OrdinalIgnoreCase))
                     {
-                        // Upgrade the attribute reference to allow modification in the model of ForRead
+                        // 升级属性引用以允许修改
                         attRef.UpgradeOpen();
                         attRef.TextString = item.Value;
-                        // Downgrade the attribute reference to prevent further modifications
+                        // 降级属性引用以防止进一步修改
                         attRef.DowngradeOpen();
                     }
                 }
-
-
             }
+
+            // 如果需要，可以在这里重新锁定图层
+            layer.UpgradeOpen();
+            layer.IsLocked = true;
+            layer.DowngradeOpen();
         }
 
         public static void UtilsSetDynamicPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
