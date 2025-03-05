@@ -150,44 +150,62 @@ namespace DLCommonUtils.CADUtils
 
         public static void UtilsSetPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
         {
-            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
-
-            if (blockRef == null || blockRef.AttributeCollection.Count == 0) return;
-
-            // 获取当前图层
-            LayerTableRecord layer = (LayerTableRecord)blockRef.LayerId.GetObject(OpenMode.ForRead);
-            
-            // 检查图层是否被锁定
-            if (layer.IsLocked)
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                // 解锁图层
-                layer.UpgradeOpen();
-                layer.IsLocked = false;
-                layer.DowngradeOpen();
-            }
+                BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
 
-            // 设置属性值
-            foreach (ObjectId attId in blockRef.AttributeCollection)
-            {
-                AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
+                if (blockRef == null || blockRef.AttributeCollection.Count == 0) return;
 
-                foreach (var item in propertyDict)
+                // 获取块引用所在的图层
+                LayerTableRecord blockLayer = (LayerTableRecord)blockRef.LayerId.GetObject(OpenMode.ForRead);
+                
+                // 检查并解锁块引用所在的图层
+                if (blockLayer.IsLocked)
                 {
-                    if (attRef != null && string.Equals(attRef.Tag, item.Key, StringComparison.OrdinalIgnoreCase))
+                    blockLayer.UpgradeOpen();
+                    blockLayer.IsLocked = false;
+                    blockLayer.DowngradeOpen();
+                }
+
+                // 设置属性值
+                foreach (ObjectId attId in blockRef.AttributeCollection)
+                {
+                    AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
+
+                    // 获取属性引用所在的图层
+                    LayerTableRecord attLayer = (LayerTableRecord)attRef.LayerId.GetObject(OpenMode.ForRead);
+                    
+                    // 检查并解锁属性引用所在的图层
+                    if (attLayer.IsLocked)
                     {
-                        // 升级属性引用以允许修改
-                        attRef.UpgradeOpen();
-                        attRef.TextString = item.Value;
-                        // 降级属性引用以防止进一步修改
-                        attRef.DowngradeOpen();
+                        attLayer.UpgradeOpen();
+                        attLayer.IsLocked = false;
+                        attLayer.DowngradeOpen();
+                    }
+
+                    foreach (var item in propertyDict)
+                    {
+                        if (attRef != null && string.Equals(attRef.Tag, item.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            try
+                            {
+                                // 升级属性引用以允许修改
+                                attRef.UpgradeOpen();
+                                attRef.TextString = item.Value;
+                                // 降级属性引用以防止进一步修改
+                                attRef.DowngradeOpen();
+                            }
+                            catch (Exception ex)
+                            {
+                                // 记录错误信息
+                                UtilsCADActive.Editor.WriteMessage($"\nError setting property {item.Key}: {ex.Message}");
+                            }
+                        }
                     }
                 }
-            }
 
-            // 如果需要，可以在这里重新锁定图层
-            layer.UpgradeOpen();
-            layer.IsLocked = true;
-            layer.DowngradeOpen();
+                tr.Commit();
+            }
         }
 
         public static void UtilsSetDynamicPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
