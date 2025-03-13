@@ -38,7 +38,7 @@ namespace dataflow_cs.Utils.CADUtils
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
         /// <returns>图层名称</returns>
-        public static string UtilsGetBlockLayerName(ObjectId objectId)
+        public static string UtilsGetBlockLayer(ObjectId objectId)
         {
             return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
             {
@@ -157,12 +157,12 @@ namespace dataflow_cs.Utils.CADUtils
         /// <param name="objectId">块参照的ObjectId</param>
         /// <param name="propertyNames">属性名称列表</param>
         /// <returns>属性字典</returns>
-        public static Dictionary<string, string> UtilsGetPropertyDictListByPropertyNameList(ObjectId objectId, List<string> propertyNames)
+        public static Dictionary<string, string> UtilsGetPropertyDictListByPropertyNameList(ObjectId objectId, List<string> propertyNameList)
         {
             Dictionary<string, string> allProperties = UtilsGetAllPropertyDictList(objectId);
             Dictionary<string, string> filteredProperties = new Dictionary<string, string>();
             
-            foreach (string name in propertyNames)
+            foreach (string name in propertyNameList)
             {
                 if (allProperties.ContainsKey(name))
                 {
@@ -234,12 +234,12 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 根据属性字典设置块参照的多个属性值
+        /// 根据属性字典设置块参照的属性值
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
         /// <param name="propertyDict">属性字典</param>
         /// <returns>操作是否成功</returns>
-        public static bool UtilsSetPropertyDictList(ObjectId objectId, Dictionary<string, string> propertyDict)
+        public static bool UtilsSetPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
         {
             if (propertyDict == null || propertyDict.Count == 0)
             {
@@ -276,12 +276,54 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 根据块名称选择对象
+        /// 设置动态块的属性值
+        /// </summary>
+        /// <param name="objectId">块参照的ObjectId</param>
+        /// <param name="propertyDict">属性字典</param>
+        /// <returns>操作是否成功</returns>
+        public static bool UtilsSetDynamicPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
+        {
+            if (propertyDict == null || propertyDict.Count == 0)
+            {
+                return false;
+            }
+            
+            return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
+            {
+                try
+                {
+                    BlockReference blockRef = tr.GetObject(objectId, OpenMode.ForRead) as BlockReference;
+                    if (blockRef == null)
+                    {
+                        return false;
+                    }
+
+                    foreach (ObjectId attId in blockRef.AttributeCollection)
+                    {
+                        AttributeReference attRef = tr.GetObject(attId, OpenMode.ForWrite) as AttributeReference;
+                        if (attRef != null && propertyDict.ContainsKey(attRef.Tag))
+                        {
+                            attRef.TextString = propertyDict[attRef.Tag];
+                        }
+                    }
+                    
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.HandleException(ex, "设置块属性失败");
+                    return false;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 通过块名称选择块
         /// </summary>
         /// <param name="blockName">块名称</param>
         /// <param name="exactMatch">是否精确匹配</param>
-        /// <returns>选择的对象ID列表</returns>
-        public static List<ObjectId> UtilsSelectBlocksByName(string blockName, bool exactMatch = true)
+        /// <returns>选择的块ObjectId列表</returns>
+        public static List<ObjectId> UtilsGetObjectIdsBySelectByBlockName(string blockName, bool isIdentical = true)
         {
             Editor editor = ActiveDocumentService.GetEditor();
             if (editor == null)
@@ -307,7 +349,7 @@ namespace dataflow_cs.Utils.CADUtils
                     SelectionSet selSet = result.Value;
                     ObjectId[] ids = selSet.GetObjectIds();
                     
-                    if (!exactMatch)
+                    if (!isIdentical)
                     {
                         return new List<ObjectId>(ids);
                     }
@@ -339,10 +381,10 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 获取所有块参照对象
+        /// 获取所有块参照
         /// </summary>
         /// <returns>所有块参照的ObjectId列表</returns>
-        public static List<ObjectId> UtilsGetAllBlocks()
+        public static List<ObjectId> UtilsGetAllBlockObjectIds()
         {
             return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
             {
@@ -381,12 +423,12 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 根据块名称获取所有对象
+        /// 获取所有指定名称的块参照
         /// </summary>
         /// <param name="blockName">块名称</param>
         /// <param name="exactMatch">是否精确匹配</param>
-        /// <returns>块参照的ObjectId列表</returns>
-        public static List<ObjectId> UtilsGetAllBlocksByName(string blockName, bool exactMatch = true)
+        /// <returns>指定名称的块参照ObjectId列表</returns>
+        public static List<ObjectId> GetAllObjectIdsByBlockName(string blockName, bool isIdentical = true)
         {
             return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
             {
@@ -412,11 +454,11 @@ namespace dataflow_cs.Utils.CADUtils
                         {
                             string name = UtilsGetBlockName(id);
                             
-                            if (exactMatch && name == blockName)
+                            if (isIdentical && name == blockName)
                             {
                                 blockIds.Add(id);
                             }
-                            else if (!exactMatch && name.Contains(blockName))
+                            else if (!isIdentical && name.Contains(blockName))
                             {
                                 blockIds.Add(id);
                             }
@@ -434,11 +476,75 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 获取块参照的旋转角度(弧度)
+        /// 获取所有指定名称的块参照
+        /// </summary>
+        /// <param name="blockIds">要筛选的块参照ObjectId列表</param>
+        /// <param name="blockName">块名称</param>
+        /// <param name="exactMatch">是否精确匹配</param>
+        /// <returns>指定名称的块参照ObjectId列表</returns>
+        public static List<ObjectId> GetAllObjectIdsByBlockName(List<ObjectId> blockIds, string blockName, bool isIdentical = true)
+        {
+            return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
+            {
+                List<ObjectId> filteredIds = new List<ObjectId>();
+                
+                try
+                {
+                    foreach (ObjectId id in blockIds)
+                    {
+                        string name = UtilsGetBlockName(id);
+                        if (isIdentical && name == blockName || !isIdentical && name.Contains(blockName))
+                        {
+                            filteredIds.Add(id);
+                        }
+                    }
+                    
+                    return filteredIds;
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.HandleException(ex, $"获取名称为 {blockName} 的块参照失败");
+                    return filteredIds;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 根据块名称列表获取分组的块参照
+        /// </summary>
+        /// <param name="blockIds">要筛选的块参照ObjectId列表</param>
+        /// <param name="blockNameList">块名称列表</param>
+        /// <param name="exactMatch">是否精确匹配</param>
+        /// <returns>按块名称分组的块参照ObjectId字典</returns>
+        public static Dictionary<string, List<ObjectId>> UtilsGetAllObjectIdsGroupsByBlockNameList(List<ObjectId> blockIds, List<string> blockNameList, bool isIdentical = true)
+        {
+            return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
+            {
+                Dictionary<string, List<ObjectId>> groups = new Dictionary<string, List<ObjectId>>();
+                
+                try
+                {
+                    foreach (string blockName in blockNameList)
+                    {
+                        groups[blockName] = UtilsGetAllObjectIdsByBlockName(blockIds, blockName, isIdentical);
+                    }
+                    
+                    return groups;
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.HandleException(ex, "获取块参照失败");
+                    return groups;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 获取块参照的旋转角度（弧度）
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
-        /// <returns>旋转角度(弧度)</returns>
-        public static double UtilsGetBlockRotation(ObjectId objectId)
+        /// <returns>旋转角度（弧度）</returns>
+        public static double UtilsGetBlockRotaton(ObjectId objectId)
         {
             return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
             {
@@ -456,23 +562,23 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 获取块参照的旋转角度(度)
+        /// 获取块参照的旋转角度（度）
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
-        /// <returns>旋转角度(度)</returns>
-        public static double UtilsGetBlockRotationInDegrees(ObjectId objectId)
+        /// <returns>旋转角度（度）</returns>
+        public static double UtilsGetBlockRotatonInDegrees(ObjectId objectId)
         {
-            double radians = UtilsGetBlockRotation(objectId);
+            double radians = UtilsGetBlockRotaton(objectId);
             return radians * 180.0 / Math.PI;
         }
 
         /// <summary>
-        /// 设置块参照的旋转角度(弧度)
+        /// 设置块参照的旋转角度（弧度）
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
-        /// <param name="rotation">旋转角度(弧度)</param>
+        /// <param name="rotation">旋转角度（弧度）</param>
         /// <returns>操作是否成功</returns>
-        public static bool UtilsSetBlockRotation(ObjectId objectId, double rotation)
+        public static bool UtilsSetBlockRotaton(ObjectId objectId, double rotation)
         {
             return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
             {
@@ -495,25 +601,25 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// 设置块参照的旋转角度(度)
+        /// 设置块参照的旋转角度（度）
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
-        /// <param name="degrees">旋转角度(度)</param>
+        /// <param name="degrees">旋转角度（度）</param>
         /// <returns>操作是否成功</returns>
-        public static bool UtilsSetBlockRotationInDegrees(ObjectId objectId, double degrees)
+        public static bool UtilsSetBlockRotatonInDegrees(ObjectId objectId, double degrees)
         {
             double radians = degrees * Math.PI / 180.0;
-            return UtilsSetBlockRotation(objectId, radians);
+            return UtilsSetBlockRotaton(objectId, radians);
         }
 
         /// <summary>
-        /// 设置块参照的X和Y缩放
+        /// 设置块参照的XY比例
         /// </summary>
         /// <param name="objectId">块参照的ObjectId</param>
-        /// <param name="xScale">X方向缩放</param>
-        /// <param name="yScale">Y方向缩放</param>
+        /// <param name="xScale">X方向比例</param>
+        /// <param name="yScale">Y方向比例</param>
         /// <returns>操作是否成功</returns>
-        public static bool UtilsSetBlockScale(ObjectId objectId, double xScale, double yScale)
+        public static bool UtilsSetBlockXYScale(ObjectId objectId, double xScale, double yScale)
         {
             return ActiveDocumentService.ExecuteInTransaction((tr, db) =>
             {
