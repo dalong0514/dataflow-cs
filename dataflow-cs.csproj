@@ -1,0 +1,23 @@
+<Project>
+  <ItemGroup>
+    <Compile Include="Utils\CADUtils\BlockUtils.cs" />
+    <Compile Include="Utils\CADUtils\CadEnvironment.cs" />
+    <Compile Include="Utils\CADUtils\CommonUtils.cs" />
+    <Compile Include="Utils\CADUtils\GeometryUtils.cs" />
+    <Compile Include="Utils\CADUtils\PolylineUtils.cs" />
+    <Compile Include="Utils\CADUtils\SelectionSetUtils.cs" />
+    <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
+    <Compile Include="Business\PipeFlow\Commands\FunctionTestCommand.cs" />
+    <Compile Include="Business\PipeFlow\Commands\SyncPipeDataCommand.cs" />
+    <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
+    <Compile Include="CommandManager.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsBlock.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsCADActive.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsCommon.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsGeometric.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsJson.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsPolyline.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsSelectionSet.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsWeb.cs" />
+  </ItemGroup>
+</Project> 
