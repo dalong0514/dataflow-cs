@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DLCommonUtils.CADUtils
+namespace dataflow_cs.Utils.CADUtils
 {
     public static class UtilsJson
     {

@@ -8,6 +8,8 @@ using dataflow_cs.Utils.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+
 
 namespace dataflow_cs.Business.PipeFlow.Commands
 {
@@ -24,13 +26,33 @@ namespace dataflow_cs.Business.PipeFlow.Commands
         /// <summary>
         /// 已处理的多段线ID列表
         /// </summary>
-        protected List<ObjectId> processedPolylineIds = new List<ObjectId>();
-        
+        public static List<ObjectId> _processedPolylineIds = new List<ObjectId>();
+
         /// <summary>
         /// 已处理的管道弯头对象ID列表
         /// </summary>
-        protected List<ObjectId> processedPipeElbowObjectIds = new List<ObjectId>();
+        public static List<ObjectId> _processedPipeElbowObjectIds = new List<ObjectId>();
 
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            try
+            {
+                // 调用批量同步管道数据的方法
+                GsPgBatchSynPipeData();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                editor.WriteMessage($"\n执行批量同步管道数据命令时发生错误: {ex.Message}");
+                return false;
+            }
+        }
 
         public static bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
         {
@@ -96,7 +118,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                 {
                     UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
                     // The elbow that require synchronization have been incorporated into the global variables
-                    processedPipeElbowObjectIds.Add(x);
+                    _processedPipeElbowObjectIds.Add(x);
                     ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
                     // 2024-01-24 如果弯头块在终止图层 0DataFlow-GsPgPipeLineDPSBreak 上，则数据无法通过该弯头传递给其他管道
                     if (result != ObjectId.Null && UtilsBlock.UtilsGetBlockLayer(x) != "0DataFlow-GsPgPipeLineDPSBreak")
@@ -180,7 +202,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                     {
                         GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
                     }
-                    processedPolylineIds.Add(x);
+                    _processedPolylineIds.Add(x);
                 });
 
             }
@@ -330,15 +352,15 @@ namespace dataflow_cs.Business.PipeFlow.Commands
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
         {
             string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
-            processedPipeElbowObjectIds = processedPipeElbowObjectIds.Distinct().ToList();
-            processedPolylineIds = processedPolylineIds.Distinct().ToList();
+            _processedPipeElbowObjectIds = _processedPipeElbowObjectIds.Distinct().ToList();
+            _processedPolylineIds = _processedPolylineIds.Distinct().ToList();
 
-            processedPipeElbowObjectIds.ForEach(x =>
+            _processedPipeElbowObjectIds.ForEach(x =>
             {
                 // 2024-01-24 设计人员可能会镜像弯头块，之前仅仅在HandleElbowWithDifferentAngles中重置XY比例，现在在这里整体重置
                 UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
-                List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
-                List<ObjectId> teePipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                List<ObjectId> pipeLineObjectIds = _processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                List<ObjectId> teePipeLineObjectIds = _processedPolylineIds.Where(xx => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
                 if (pipeLineObjectIds.Count() == 2)
                 {
                     var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = GetPipeElevationAndIntersectionPoints(x, pipeLineObjectIds);
@@ -420,8 +442,8 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                     UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
                     GsPgSynPipeElbowStatus(pipeData, pipeInfo);
                 });
-                processedPipeElbowObjectIds.Clear();
-                processedPolylineIds.Clear();
+                _processedPipeElbowObjectIds.Clear();
+                _processedPolylineIds.Clear();
 
                 UtilsCADActive.Editor.WriteMessage("\n同步数据完成...");
 
