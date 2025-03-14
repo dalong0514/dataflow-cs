@@ -9,7 +9,6 @@ using Autodesk.AutoCAD.Geometry;
 
 namespace dataflow_cs.Utils.CADUtils
 {
-
     public static class UtilsBlock
     {
         public static Point3d UtilsGetBlockBasePoint(ObjectId objectId)
@@ -41,7 +40,6 @@ namespace dataflow_cs.Utils.CADUtils
 
             BlockTableRecord btr = blockId.GetObject(OpenMode.ForRead) as BlockTableRecord;
             return btr?.Name ?? string.Empty;
-
         }
 
         public static string UtilsGetBlockLayer(ObjectId objectId)
@@ -60,7 +58,6 @@ namespace dataflow_cs.Utils.CADUtils
             }
 
             return blockRef?.Layer ?? string.Empty;
-
         }
 
         /// <summary>
@@ -309,7 +306,6 @@ namespace dataflow_cs.Utils.CADUtils
                         .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
-
             }
             return blockIds;
         }
@@ -329,7 +325,6 @@ namespace dataflow_cs.Utils.CADUtils
                     blockIds = blockIds.Where(objectId => UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
-
             }
             return blockIds;
         }
@@ -397,7 +392,6 @@ namespace dataflow_cs.Utils.CADUtils
                         .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
                         .ToList();
                 }
-
             }
             return blockIds;
         }
@@ -441,6 +435,5 @@ namespace dataflow_cs.Utils.CADUtils
             if (blockRef == null) return;
             blockRef.ScaleFactors = new Scale3d(xScale, yScale, 1.0);
         }
-
     }
 }

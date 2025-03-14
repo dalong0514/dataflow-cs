@@ -9,12 +9,9 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net;
-using dataflow_cs.Utils.CADUtils;
-
 
 namespace dataflow_cs.Utils.CADUtils
 {
-
     public static class UtilsWeb
     {
         public static string Get(string serviceUrl)
@@ -50,7 +47,7 @@ namespace dataflow_cs.Utils.CADUtils
                 string returnXml = "";
                 //创建Web访问对象
                 HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(new Uri(serviceUrl));
-                //把用户传过来的数据转成“UTF-8”的字节流
+                //把用户传过来的数据转成"UTF-8"的字节流
                 byte[] buf = System.Text.Encoding.GetEncoding("UTF-8").GetBytes(data);
 
                 myRequest.Method = "POST";

@@ -56,13 +56,13 @@ namespace dataflow_cs.Business.PipeFlow.Commands
 
         public static bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
         {
-            return UtilsGeometric.UtilsIsPointOnPolyline(basePoint, pipeLineObjectId, 5);
+            return UtilsGeometry.UtilsIsPointOnPolyline(basePoint, pipeLineObjectId, 5);
 
         }
 
         public static bool IsPipeElementOnPipeLineEnds(Point3d basePoint, ObjectId pipeLineObjectId)
         {
-            return UtilsGeometric.UtilsIsPointOnPolylineEnds(basePoint, pipeLineObjectId, 5);
+            return UtilsGeometry.UtilsIsPointOnPolylineEnds(basePoint, pipeLineObjectId, 5);
 
         }
 
@@ -158,7 +158,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
 
         public static string GsPgGetPipeElbowDiameter(string pipeDiameter, double calMultiple)
         {
-            double result = UtilsCommnon.UtilsStringToDouble(pipeDiameter) * calMultiple;
+            double result = UtilsCommon.UtilsStringToDouble(pipeDiameter) * calMultiple;
             return result.ToString();
         }
 
@@ -226,9 +226,9 @@ namespace dataflow_cs.Business.PipeFlow.Commands
 
         private static (Point3d, Point3d) GetCrossPoints(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
         {
-            List<Point3d> firstPoint3ds = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
+            List<Point3d> firstPoint3ds = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
             var firstCrossPoint = firstPoint3ds != null ? firstPoint3ds.FirstOrDefault() : Point3d.Origin;
-            List<Point3d> secondPoint3ds = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
+            List<Point3d> secondPoint3ds = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
             var secondCrossPoint = secondPoint3ds != null ? secondPoint3ds.FirstOrDefault() : Point3d.Origin;
 
             return (firstCrossPoint, secondCrossPoint);
@@ -236,7 +236,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
 
         private static (Point3d, Point3d) GetHorizontalAndVerticalPoints(Point3d basePoint, Point3d firstCrossPoint, Point3d secondCrossPoint)
         {
-            return UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint, 5.0)
+            return UtilsGeometry.UtilsIsLineHorizontal(basePoint, firstCrossPoint, 5.0)
                 ? (firstCrossPoint, secondCrossPoint)
                 : (secondCrossPoint, firstCrossPoint);
         }
@@ -272,16 +272,16 @@ namespace dataflow_cs.Business.PipeFlow.Commands
 
         private static (double, double, List<Point3d>, List<Point3d>) GetPipeElevationAndIntersectionPoints(ObjectId elbowObjectId, List<ObjectId> pipeLineObjectIds)
         {
-            double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
-            double secondPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
-            List<Point3d> firstIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[0]);
-            List<Point3d> secondIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[1]);
+            double firstPipeElevation = UtilsCommon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
+            double secondPipeElevation = UtilsCommon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
+            List<Point3d> firstIntersectionPoints = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[0]);
+            List<Point3d> secondIntersectionPoints = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[1]);
             return (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints);
         }
 
         private static void HandleElbowWithDifferentAngles(ObjectId elbowObjectId, string pipeDiater, List<ObjectId> pipeLineObjectIds, double intersectionAngle)
         {
-            if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
+            if (UtilsCommon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
             {
                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow90" } });
                 if (pipeDiater != string.Empty)
@@ -290,7 +290,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                 }
                 GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
             }
-            else if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
+            else if (UtilsCommon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
             {
                 UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow45" } });
                 if (pipeDiater != string.Empty)
@@ -340,12 +340,12 @@ namespace dataflow_cs.Business.PipeFlow.Commands
 
         private static void SetBlockRotationByIntersectionPoint(ObjectId elbowObjectId, ObjectId pipeLineObjectId)
         {
-            List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId);
+            List<Point3d> crossPoints = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId);
             if (crossPoints.Count > 0)
             {
                 Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
                 Point3d crossPoint = crossPoints[0];
-                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, UtilsGeometry.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
             }
         }
 
@@ -370,7 +370,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                         Point3d firstIntersectionPoint = firstIntersectionPoints[0];
                         Point3d secondIntersectionPoint = secondIntersectionPoints[0];
 
-                        double intersectionAngle = UtilsGeometric.UtilsGetAngleByThreePoint(basePoint, firstIntersectionPoint, secondIntersectionPoint);
+                        double intersectionAngle = UtilsGeometry.UtilsGetAngleByThreePoint(basePoint, firstIntersectionPoint, secondIntersectionPoint);
                         if (firstPipeElevation == secondPipeElevation)
                         {
                             HandleElbowWithDifferentAngles(x, pipeDiater, pipeLineObjectIds, intersectionAngle);
@@ -405,7 +405,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
             string projectNum = string.Empty;
             allGeYuanDrawObjectIds.ForEach(x =>
             {
-                string result = UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(x).UtilsGetStrValue("projectnum");
+                string result = UtilsCommon.UtilsGetNewTitleBlockInfoJObject(x).UtilsGetStrValue("projectnum");
                 if (result != string.Empty)
                 {
                     projectNum = result;
@@ -432,7 +432,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                 List<ObjectId> allValveObjectIds = allObjectIdsGroups["GsPgValve"];
 
                 string projectNum = GsPgGetProjectNum(allGeYuanDrawObjectIds);
-                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
+                PipeInfoHelper pipeInfo = UtilsCommon.UtilsGetPipeInfo(projectNum);
 
                 pipeNumObjectIds.ForEach(x =>
                 {

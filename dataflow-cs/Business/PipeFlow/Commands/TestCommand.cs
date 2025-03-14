@@ -49,15 +49,15 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                 //UtilsBlock.UtilsSetBlockXYScale(blockId, 1, 1);
                 UtilsCADActive.Editor.WriteMessage("\n" + UtilsBlock.UtilsGetBlockLayer(blockId));
                 //UtilsBlock.UtilsSetBlockRotatonInDegrees(blockId, 180.0);
-                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId)["projectnum"].ToString());
-                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(blockId).UtilsGetStrValue("projectnum"));
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommon.UtilsGetNewTitleBlockInfoJObject(blockId)["projectnum"].ToString());
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommon.UtilsGetNewTitleBlockInfoJObject(blockId).UtilsGetStrValue("projectnum"));
 
                 // 通过拾取获得一个多段线的ObjectId
                 //Point3d point1 = UtilsCADActive.GetPointFromUser();
                 //ObjectId polylineId = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
                 //ObjectId polylineId2 = UtilsCADActive.Editor.GetEntity("\n请选择一个多段线").ObjectId;
 
-                //double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(polylineId, "pipeElevation"));
+                //double firstPipeElevation = UtilsCommon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(polylineId, "pipeElevation"));
                 //if (firstPipeElevation == 2.2)
                 //{
                 //    ed.WriteMessage("\n" + "good");
@@ -69,13 +69,13 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                 //Point3d point2 = UtilsCADActive.GetPointFromUser();
                 //Polyline polyline = polylineId.GetObject(OpenMode.ForRead) as Polyline;
                 //Polyline polyline2 = polylineId2.GetObject(OpenMode.ForRead) as Polyline;
-                //List<Point3d> pts = UtilsGeometric.UtilsIntersectWith(polyline, polyline2, Intersect.OnBothOperands);
+                //List<Point3d> pts = UtilsGeometry.UtilsIntersectWith(polyline, polyline2, Intersect.OnBothOperands);
 
-                //List<Point3d> intersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
+                //List<Point3d> intersectionPoints = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLineNew(blockId, polylineId);
 
-                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommnon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
+                //UtilsCADActive.Editor.WriteMessage("\n" + UtilsCommon.UtilsGetPipeInfo("S22XXX").GetPipeDiameter("0209-PL-1101-50-2J1-H5"));
 
-                //PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo("S22A03");
+                //PipeInfoHelper pipeInfo = UtilsCommon.UtilsGetPipeInfo("S22A03");
                 //UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo);
                 //UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("PW030002-50-1M1-80"));
                 //UtilsCADActive.Editor.WriteMessage("\n" + pipeInfo.GetPipeDiameter("0209-PL-1101-65-2J1-H5"));

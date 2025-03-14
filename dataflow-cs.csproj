@@ -14,7 +14,7 @@
     <Compile Include="CommonUtils\CADUtils\UtilsBlock.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsCADActive.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsCommon.cs" />
-    <Compile Include="CommonUtils\CADUtils\UtilsGeometric.cs" />
+    <Compile Include="CommonUtils\CADUtils\UtilsGeometry.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsJson.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsPolyline.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsSelectionSet.cs" />

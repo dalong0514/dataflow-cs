@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace dataflow_cs.Utils.CADUtils
 {
-    public static class UtilsGeometric
+    public static class UtilsGeometry
     {
         /// <summary>
         /// get the closest distance from the basePoint to the polyline

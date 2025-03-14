@@ -12,7 +12,7 @@ using dataflow_cs.Utils.ConstUtils;
 
 namespace dataflow_cs.Utils.CADUtils
 {
-    public static class UtilsCommnon
+    public static class UtilsCommon
     {
         public static void UtilsChangeColor(ObjectId objectId, int colorIndex)
         {

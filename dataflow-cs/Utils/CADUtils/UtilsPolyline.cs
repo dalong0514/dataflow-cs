@@ -17,13 +17,12 @@ namespace dataflow_cs.Utils.CADUtils
             polyline.ColorIndex = colorIndex;
         }
 
-        /// 获得所有的多段线对象 <summary>
+        /// <summary>
         /// 获得所有的多段线对象
         /// </summary>
         /// <returns></returns>
         public static List<Polyline> UtilsGetAllObjects()
         {
-
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllPolylineSelectionSet();
             List<Polyline> polylineObjects = new List<Polyline>();
 
@@ -40,7 +39,6 @@ namespace dataflow_cs.Utils.CADUtils
 
         public static List<Polyline> UtilsGetObjectsBySelect()
         {
-
             SelectionSet selSet = UtilsSelectionSet.UtilsGetPolylineSelectionSet();
             List<Polyline> polylineObjects = new List<Polyline>();
 
@@ -182,7 +180,6 @@ namespace dataflow_cs.Utils.CADUtils
                 }
             }
             return double.NaN;
-
         }
 
         public static double UtilsGetIntersectionAngleByTwoPolyLine(Point3d intersectionPoint, ObjectId polyline1Id, ObjectId polyline2Id)
@@ -223,7 +220,6 @@ namespace dataflow_cs.Utils.CADUtils
                 }
             }
             return double.NaN;
-
         }
 
         public static List<Point3d> UtilsGetIntersectionsByTwoPolyLine(ObjectId polyline1Id, Polyline polyline2)
@@ -255,7 +251,6 @@ namespace dataflow_cs.Utils.CADUtils
                 return intersectionPoints.OfType<Point3d>().ToList();
             }
             return null;
-
         }
 
         public static int UtilsGetSegmentIndexAtIntersection(Polyline polyline, Point3d intersection)
@@ -275,6 +270,5 @@ namespace dataflow_cs.Utils.CADUtils
 
             return index;
         }
-
     }
 } 
