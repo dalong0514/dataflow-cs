@@ -63,7 +63,6 @@
   <ItemGroup>
     <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\FunctionTestCommand.cs" />
     <Compile Include="CommandManager.cs" />
     <Compile Include="Core\Interfaces\ICommandHandler.cs" />
     <Compile Include="Core\Interfaces\IConfigurationService.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="Utils\CADUtils\UtilsPolyline.cs" />
     <Compile Include="Utils\CADUtils\UtilsSelectionSet.cs" />
     <Compile Include="Utils\CADUtils\UtilsWeb.cs" />
+    <Compile Include="Utils\ConstUtils\ConstURL.cs" />
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -95,12 +95,6 @@
     <Folder Include="UI\Dialogs\" />
     <Folder Include="UI\Palettes\" />
     <Folder Include="Utils\Extensions\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\StudyProgram\StudyProgram.csproj">
-      <Project>{21789726-d0f9-48f7-8301-167a2e4c5cd5}</Project>
-      <Name>StudyProgram</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -25,10 +25,8 @@ namespace dataflow_cs
             try
             {
                 // 注册命令处理器
-                RegisterCommandHandler(new SyncPipeDataCommand());
                 RegisterCommandHandler(new BatchSyncPipeDataCommand());
                 RegisterCommandHandler(new TestCommand());
-                RegisterCommandHandler(new FunctionTestCommand());
                 
                 // 将来可在此处添加更多命令
                 

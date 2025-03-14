@@ -1,4 +1,4 @@
-using Autodesk.AutoCAD.ApplicationServices;
+using AcadApp = Autodesk.AutoCAD.ApplicationServices;
 using dataflow_cs.Core.Services;
 using System;
 using System.Windows.Forms;
@@ -29,7 +29,7 @@ namespace dataflow_cs.Utils.Helpers
             // 输出到AutoCAD命令行
             if (!string.IsNullOrEmpty(message))
             {
-                Document doc = Application.DocumentManager.MdiActiveDocument;
+                AcadApp.Document doc = AcadApp.Application.DocumentManager.MdiActiveDocument;
                 if (doc != null)
                 {
                     doc.Editor.WriteMessage("\n错误: " + message);
@@ -70,7 +70,7 @@ namespace dataflow_cs.Utils.Helpers
             LoggingService.Instance.LogError(message);
             
             // 输出到AutoCAD命令行
-            Document doc = Application.DocumentManager.MdiActiveDocument;
+            AcadApp.Document doc = AcadApp.Application.DocumentManager.MdiActiveDocument;
             if (doc != null)
             {
                 doc.Editor.WriteMessage("\n错误: " + message);
@@ -99,7 +99,7 @@ namespace dataflow_cs.Utils.Helpers
             LoggingService.Instance.LogWarning(message);
             
             // 输出到AutoCAD命令行
-            Document doc = Application.DocumentManager.MdiActiveDocument;
+            AcadApp.Document doc = AcadApp.Application.DocumentManager.MdiActiveDocument;
             if (doc != null)
             {
                 doc.Editor.WriteMessage("\n警告: " + message);
@@ -128,7 +128,7 @@ namespace dataflow_cs.Utils.Helpers
             LoggingService.Instance.LogInfo(message);
             
             // 输出到AutoCAD命令行
-            Document doc = Application.DocumentManager.MdiActiveDocument;
+            AcadApp.Document doc = AcadApp.Application.DocumentManager.MdiActiveDocument;
             if (doc != null)
             {
                 doc.Editor.WriteMessage("\n" + message);
