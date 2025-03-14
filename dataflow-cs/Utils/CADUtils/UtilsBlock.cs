@@ -1,14 +1,15 @@
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using dataflow_cs.Core.Services;
-using dataflow_cs.Utils.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace dataflow_cs.Utils.CADUtils
 {
+
     public static class UtilsBlock
     {
         public static Point3d UtilsGetBlockBasePoint(ObjectId objectId)
@@ -442,4 +443,4 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
     }
-} 
+}

@@ -1,6 +1,7 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Utils.Helpers;
 using System;
@@ -128,37 +129,6 @@ namespace dataflow_cs.Core.Services
             }
             
             return null;
-        }
-        
-        /// <summary>
-        /// 请求用户选择对象
-        /// </summary>
-        /// <param name="editor">编辑器</param>
-        /// <param name="message">提示消息</param>
-        /// <param name="singleSelect">是否只选择单个对象</param>
-        /// <returns>选择结果</returns>
-        protected PromptSelectionResult GetSelectionFromUser(Editor editor, string message, bool singleSelect = false)
-        {
-            if (singleSelect)
-            {
-                PromptEntityOptions options = new PromptEntityOptions($"\n{message}");
-                PromptEntityResult result = editor.GetEntity(options);
-                
-                if (result.Status == PromptStatus.OK)
-                {
-                    SelectionSet selSet = new SelectionSet(new ObjectId[] { result.ObjectId });
-                    return new PromptSelectionResult(selSet, result.Status);
-                }
-                
-                return new PromptSelectionResult(null, result.Status);
-            }
-            else
-            {
-                PromptSelectionOptions options = new PromptSelectionOptions();
-                options.MessageForAdding = $"\n{message}";
-                
-                return editor.GetSelection(options);
-            }
         }
         
         /// <summary>

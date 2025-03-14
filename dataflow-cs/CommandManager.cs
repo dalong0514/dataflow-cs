@@ -4,7 +4,6 @@ using dataflow_cs.Business.PipeFlow.Commands;
 using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.Helpers;
-using System;
 using System.Collections.Generic;
 
 [assembly: CommandClass(typeof(dataflow_cs.CommandManager))]

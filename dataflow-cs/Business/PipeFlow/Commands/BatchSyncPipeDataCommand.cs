@@ -24,592 +24,410 @@ namespace dataflow_cs.Business.PipeFlow.Commands
         /// <summary>
         /// 已处理的多段线ID列表
         /// </summary>
-        protected List<ObjectId> _processedPolylineIds = new List<ObjectId>();
+        protected List<ObjectId> processedPolylineIds = new List<ObjectId>();
         
         /// <summary>
         /// 已处理的管道弯头对象ID列表
         /// </summary>
-        protected List<ObjectId> _processedPipeElbowObjectIds = new List<ObjectId>();
+        protected List<ObjectId> processedPipeElbowObjectIds = new List<ObjectId>();
 
-        /// <summary>
-        /// 执行命令核心逻辑
-        /// </summary>
-        protected override bool ExecuteCore(Editor editor, Database database)
+
+        public static bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
         {
-            try
-            {
-                // 清空已处理列表
-                _processedPolylineIds.Clear();
-                _processedPipeElbowObjectIds.Clear();
+            return UtilsGeometric.UtilsIsPointOnPolyline(basePoint, pipeLineObjectId, 5);
 
-                // 提示用户选择绿色箭头辅助管道块
-                editor.WriteMessage("\n请选择绿色箭头辅助管道块");
-                List<ObjectId> pipeArrowAssistBlockIds = GetPipeArrowAssistBlocks();
-                if (pipeArrowAssistBlockIds.Count == 0)
-                {
-                    ErrorHandler.ShowWarning("未找到绿色箭头辅助管道块，操作取消。");
-                    return false;
-                }
-
-                // 获取所有相关的块和多段线
-                Dictionary<string, List<ObjectId>> allObjectsGroups = GetAllNeededObjects();
-                if (allObjectsGroups == null)
-                {
-                    return false;
-                }
-                
-                List<ObjectId> allGeYuanDrawObjectIds = allObjectsGroups["GeYuanFrame"];
-                List<ObjectId> allPipeElbowObjectIds = allObjectsGroups["GsPgPipeElementElbow"];
-                List<ObjectId> allPipeArrowAssistObjectIds = allObjectsGroups["GsPgPipeElementArrowAssist"];
-                List<ObjectId> allValveObjectIds = allObjectsGroups["GsPgValve"];
-                List<ObjectId> allPolylineObjectIds = allObjectsGroups["PipeLines"];
-
-                // 获取项目编号和管道信息
-                string projectNum = GetProjectNumber(allGeYuanDrawObjectIds);
-                if (string.IsNullOrEmpty(projectNum))
-                {
-                    ErrorHandler.ShowWarning("无法获取项目编号，操作取消。");
-                    return false;
-                }
-
-                // 这里应该调用管道信息助手获取管道信息
-                 //PipeInfoHelper pipeInfo = CommnonUtils.UtilsGetPipeInfo(projectNum);
-                // 由于我们重构过程中还没有完全实现这个功能，先使用原始的调用
-                object pipeInfo = GsPgDataFlow.ToolManager.CsTest(); // 这只是一个临时的解决方案，实际应该使用重构后的方法
-
-                // 处理每一个管道箭头块
-                int successCount = 0;
-                foreach (ObjectId pipeArrowAssistId in pipeArrowAssistBlockIds)
-                {
-                    try
-                    {
-                        // 获取与该箭头相关的管道线
-                        List<ObjectId> pipeLineIds = GetPipeLinesByElement(pipeArrowAssistId, allPolylineObjectIds);
-                        if (pipeLineIds.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        // 获取管道数据
-                        Dictionary<string, string> pipeData = GetPipeData(pipeArrowAssistId);
-                        if (pipeData.Count == 0 || !pipeData.ContainsKey("pipeNum"))
-                        {
-                            continue;
-                        }
-
-                        // 同步管道数据到相关元素
-                        SyncPipeElementForOnePipeAssist(
-                            pipeData, 
-                            pipeLineIds, 
-                            allPolylineObjectIds, 
-                            allPipeElbowObjectIds, 
-                            allPipeArrowAssistObjectIds, 
-                            allValveObjectIds, 
-                            pipeInfo
-                        );
-
-                        // 同步管道弯头状态
-                        SyncPipeElbowStatus(pipeData, pipeInfo);
-
-                        editor.WriteMessage($"\n{pipeData["pipeNum"]}数据已同步...");
-                        successCount++;
-                    }
-                    catch (Exception ex)
-                    {
-                        LoggingService.Instance.LogException(ex, $"处理管道块 {pipeArrowAssistId} 时出错");
-                    }
-                }
-
-                // 清空处理列表
-                _processedPipeElbowObjectIds.Clear();
-                _processedPolylineIds.Clear();
-
-                editor.WriteMessage($"\n成功同步了 {successCount} 个管道的数据。");
-                return successCount > 0;
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.HandleException(ex, "执行批量管道数据同步过程中发生错误");
-                return false;
-            }
         }
 
-        /// <summary>
-        /// 获取绿色箭头辅助管道块
-        /// </summary>
-        protected virtual List<ObjectId> GetPipeArrowAssistBlocks()
+        public static bool IsPipeElementOnPipeLineEnds(Point3d basePoint, ObjectId pipeLineObjectId)
         {
-            try
-            {
-                return BlockUtils.GetAllObjectIdsByBlockName("GsPgPipeElementArrowAssist", false);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取绿色箭头辅助管道块失败");
-                return new List<ObjectId>();
-            }
+            return UtilsGeometric.UtilsIsPointOnPolylineEnds(basePoint, pipeLineObjectId, 5);
+
         }
 
-        /// <summary>
-        /// 获取所有需要的对象
-        /// </summary>
-        protected virtual Dictionary<string, List<ObjectId>> GetAllNeededObjects()
+        public static Dictionary<string, string> GsPgGetPipeData(ObjectId pipeNumObjectId)
         {
-            try
+            Dictionary<string, string> propertyValueDictList = UtilsBlock.UtilsGetAllPropertyDictList(pipeNumObjectId);
+            // Not setting the Elevation attribute value can conveniently avoid synchronously modifying the auxiliary arrow block elevation on other pipelines
+            return new Dictionary<string, string>
             {
-                Dictionary<string, List<ObjectId>> result = new Dictionary<string, List<ObjectId>>();
-
-                // 获取所有块
-                List<ObjectId> allBlockIds = BlockUtils.GetAllBlockObjectIds();
-                
-                // 获取所有指定图层名的多段线
-                List<ObjectId> allPolylineObjectIds = PolylineUtils.GetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
-
-                // 按块名称分组
-                List<string> blockNameList = new List<string> { "GeYuanFrame", "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve" };
-                foreach (string blockName in blockNameList)
-                {
-                    result[blockName] = BlockUtils.GetAllObjectIdsByBlockName(blockName, false);
-                }
-
-                result["PipeLines"] = allPolylineObjectIds;
-                
-                return result;
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取所需对象失败");
-                return null;
-            }
+                { "pipeNum", propertyValueDictList["PIPENUM"] },
+                { "pipeElevation", propertyValueDictList["ELEVATION"] }
+            };
         }
 
-        /// <summary>
-        /// 获取项目编号
-        /// </summary>
-        protected virtual string GetProjectNumber(List<ObjectId> geYuanFrameObjectIds)
+        public static ObjectId GsPgGetPipeLineByOnPL(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
-            try
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            if (pipeLineObjectIds.Count != 0)
             {
-                // 获取项目编号的逻辑暂时使用原有的方法
-                return GsPgDataFlow.ToolManager.GsPgGetProjectNum(geYuanFrameObjectIds);
+                return pipeLineObjectIds[0];
             }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取项目编号失败");
-                return string.Empty;
-            }
+            return ObjectId.Null;
         }
 
-        /// <summary>
-        /// 获取管道数据
-        /// </summary>
-        protected virtual Dictionary<string, string> GetPipeData(ObjectId pipeArrowAssistId)
+        public static ObjectId GsPgGetPipeLineByOnPLEnd(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
-            try
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            if (pipeLineObjectIds.Count != 0)
             {
-                Dictionary<string, string> propertyValueDict = BlockUtils.UtilsGetAllPropertyDictList(pipeArrowAssistId);
-                return new Dictionary<string, string>
-                {
-                    { "pipeNum", propertyValueDict.ContainsKey("PIPENUM") ? propertyValueDict["PIPENUM"] : string.Empty },
-                    { "pipeElevation", propertyValueDict.ContainsKey("ELEVATION") ? propertyValueDict["ELEVATION"] : string.Empty }
-                };
+                return pipeLineObjectIds[0];
             }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取管道数据失败");
-                return new Dictionary<string, string>();
-            }
+            return ObjectId.Null;
         }
 
-        /// <summary>
-        /// 根据元素获取相关的管道线
-        /// </summary>
-        protected virtual List<ObjectId> GetPipeLinesByElement(ObjectId elementObjectId, List<ObjectId> allPolylineObjectIds)
+        public static List<ObjectId> GsPgGetPipeLinesByOnPL(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
-            try
-            {
-                Point3d basePoint = BlockUtils.UtilsGetBlockBasePoint(elementObjectId);
-                return allPolylineObjectIds.Where(x => IsPipeElementOnPipeLine(basePoint, x)).ToList();
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取元素相关的管道线失败");
-                return new List<ObjectId>();
-            }
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            return pipeLineObjectIds;
         }
 
-        /// <summary>
-        /// 判断管道元素是否在管道线上
-        /// </summary>
-        protected virtual bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
+        public static List<ObjectId> GsPgGetPipeLinesByOnPLEnd(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
-            return GeometricUtils.IsPointOnPolyline(basePoint, pipeLineObjectId, 5);
+            pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            return pipeLineObjectIds;
         }
 
-        /// <summary>
-        /// 判断管道元素是否在管道线端点上
-        /// </summary>
-        protected virtual bool IsPipeElementOnPipeLineEnds(Point3d basePoint, ObjectId pipeLineObjectId)
-        {
-            return GeometricUtils.IsPointOnPolylineEnds(basePoint, pipeLineObjectId, 5);
-        }
-
-        /// <summary>
-        /// 同步管道数据到相关元素
-        /// </summary>
-        protected virtual void SyncPipeElementForOnePipeAssist(
-            Dictionary<string, string> pipeData, 
-            List<ObjectId> pipeLineObjectIds, 
-            List<ObjectId> allPipeLineObjectIds, 
-            List<ObjectId> allElbowObjectIds, 
-            List<ObjectId> allPipeArrowAssistObjectIds, 
-            List<ObjectId> allValveObjectIds, 
-            object pipeInfo)
-        {
-            if (pipeLineObjectIds == null || pipeLineObjectIds.Count == 0)
-            {
-                return;
-            }
-
-            foreach (ObjectId pipeLineId in pipeLineObjectIds)
-            {
-                // 添加扩展数据
-                EntityUtils.AddXData(pipeLineId, pipeData);
-                
-                // 更新管道箭头辅助块属性
-                ChangePipeArrowAssistPropertyValue(pipeLineId, allPipeArrowAssistObjectIds, pipeData);
-                
-                // 更新阀门属性
-                ChangeValvePropertyValue(pipeLineId, allValveObjectIds, pipeData, pipeInfo);
-                
-                // 移除当前管道线，避免重复处理
-                List<ObjectId> remainingPipeLines = allPipeLineObjectIds.Where(x => !x.Equals(pipeLineId)).ToList();
-                
-                // 获取与当前管道线相交的其他管道线
-                List<ObjectId> otherPipeLineIds = GetOtherPipeLineByIntersect(pipeLineId, remainingPipeLines, allElbowObjectIds, pipeData);
-                
-                // 递归处理相交的管道线
-                if (otherPipeLineIds != null && otherPipeLineIds.Count > 0)
-                {
-                    SyncPipeElementForOnePipeAssist(pipeData, otherPipeLineIds, remainingPipeLines, allElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
-                }
-                
-                // 记录已处理的管道线
-                _processedPolylineIds.Add(pipeLineId);
-            }
-        }
-
-        /// <summary>
-        /// 获取与当前管道线相交的其他管道线
-        /// </summary>
-        protected virtual List<ObjectId> GetOtherPipeLineByIntersect(
-            ObjectId pipeLineObjectId, 
-            List<ObjectId> pipeLineObjectIds, 
-            List<ObjectId> allElbowObjectIds, 
-            Dictionary<string, string> pipeData)
+        public static List<ObjectId> GsPgGetOtherPipeLineByInterset(ObjectId pipeLineObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> allElbowObjectIds, Dictionary<string, string> pipeData)
         {
             List<ObjectId> otherPipeLineObjectIds = new List<ObjectId>();
-            
-            // 找到所有在当前管道线端点上的弯头
-            var elbowsOnPipeLineEnds = allElbowObjectIds
-                .Where(x => IsPipeElementOnPipeLineEnds(BlockUtils.GetBlockBasePoint(x), pipeLineObjectId))
-                .ToList();
-                
-            foreach (ObjectId elbowId in elbowsOnPipeLineEnds)
-            {
-                // 更新弯头属性
-                BlockUtils.SetPropertyValueByDictData(elbowId, pipeData);
-                
-                // 记录已处理的弯头
-                _processedPipeElbowObjectIds.Add(elbowId);
-                
-                // 获取与弯头相连的其他管道线
-                Point3d elbowBasePoint = BlockUtils.GetBlockBasePoint(elbowId);
-                ObjectId otherPipeLineId = pipeLineObjectIds
-                    .FirstOrDefault(x => IsPipeElementOnPipeLineEnds(elbowBasePoint, x));
-                    
-                // 如果弯头不在终止图层上，则添加相连的管道线
-                if (otherPipeLineId != ObjectId.Null && BlockUtils.GetBlockLayer(elbowId) != "0DataFlow-GsPgPipeLineDPSBreak")
+            allElbowObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                .ToList()
+                .ForEach(x =>
                 {
-                    otherPipeLineObjectIds.Add(otherPipeLineId);
-                }
-            }
-            
+                    UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
+                    // The elbow that require synchronization have been incorporated into the global variables
+                    processedPipeElbowObjectIds.Add(x);
+                    ObjectId result = GsPgGetPipeLineByOnPLEnd(x, pipeLineObjectIds);
+                    // 2024-01-24 如果弯头块在终止图层 0DataFlow-GsPgPipeLineDPSBreak 上，则数据无法通过该弯头传递给其他管道
+                    if (result != ObjectId.Null && UtilsBlock.UtilsGetBlockLayer(x) != "0DataFlow-GsPgPipeLineDPSBreak")
+                    {
+                        otherPipeLineObjectIds.Add(result);
+                    }
+                });
             return otherPipeLineObjectIds;
         }
 
-        /// <summary>
-        /// 更新管道箭头辅助块属性
-        /// </summary>
-        protected virtual void ChangePipeArrowAssistPropertyValue(
-            ObjectId pipeLineObjectId, 
-            List<ObjectId> allPipeArrowAssistObjectIds, 
-            Dictionary<string, string> pipeData)
+        public static void GsPgChangePipeArrowAssistPropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allPipeArrowAssistObjectIds, Dictionary<string, string> pipeData)
         {
-            // 找到所有在当前管道线上的箭头辅助块
-            var arrowAssistsOnPipeLine = allPipeArrowAssistObjectIds
-                .Where(x => IsPipeElementOnPipeLine(BlockUtils.GetBlockBasePoint(x), pipeLineObjectId))
-                .ToList();
-                
-            foreach (ObjectId arrowAssistId in arrowAssistsOnPipeLine)
-            {
-                // 更新箭头辅助块属性
-                BlockUtils.SetPropertyValueByDictData(arrowAssistId, pipeData);
-            }
-        }
-
-        /// <summary>
-        /// 更新阀门属性
-        /// </summary>
-        protected virtual void ChangeValvePropertyValue(
-            ObjectId pipeLineObjectId, 
-            List<ObjectId> allValveObjectIds, 
-            Dictionary<string, string> pipeData, 
-            object pipeInfo)
-        {
-            // 找到所有在当前管道线上的阀门
-            var valvesOnPipeLine = allValveObjectIds
-                .Where(x => IsPipeElementOnPipeLine(BlockUtils.GetBlockBasePoint(x), pipeLineObjectId))
-                .ToList();
-                
-            foreach (ObjectId valveId in valvesOnPipeLine)
-            {
-                // 更新阀门属性
-                BlockUtils.SetPropertyValueByDictData(valveId, pipeData);
-                
-                // 获取管道直径
-                string pipeDiameter = GetPipeDiameter(pipeData["pipeNum"], pipeInfo);
-                
-                // 更新阀门动态属性
-                if (!string.IsNullOrEmpty(pipeDiameter))
+            allPipeArrowAssistObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                .ToList()
+                .ForEach(x =>
                 {
-                    Dictionary<string, string> dynamicProps = new Dictionary<string, string>
-                    {
-                        { "sideview-DN", pipeDiameter },
-                        { "topview-DN", pipeDiameter }
-                    };
-                    BlockUtils.SetDynamicPropertyValueByDictData(valveId, dynamicProps);
-                }
-            }
+                    UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
+                    // key logic: the other pipelines elevation should be based on the current auxiliary arrow block elevation
+                    UtilsCADActive.UtilsAddOneXData(pipeLineObjectId, "pipeElevation", UtilsBlock.UtilsGetPropertyValueByPropertyName(x, "elevation"));
+                });
         }
 
-        /// <summary>
-        /// 获取管道直径
-        /// </summary>
-        protected virtual string GetPipeDiameter(string pipeNum, object pipeInfo)
+        public static string GsPgGetPipeDiameter(string pipeNum, PipeInfoHelper pipeInfo)
         {
-            try
+            string pipeDiameter = pipeInfo.GetPipeDiameter(pipeNum);
+            //string pipeDiameter = pipeNum.Split('-').ElementAtOrDefault(1);
+
+            if (pipeDiameter == null || !Regex.IsMatch(pipeDiameter, @"^\d+$"))
             {
-                // 暂时使用原有方法
-                return GsPgDataFlow.ToolManager.GsPgGetPipeDiameter(pipeNum, pipeInfo);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取管道直径失败");
                 return string.Empty;
             }
+            else
+            {
+                return pipeDiameter;
+            }
         }
 
-        /// <summary>
-        /// 同步管道弯头状态
-        /// </summary>
-        protected virtual void SyncPipeElbowStatus(Dictionary<string, string> pipeData, object pipeInfo)
+        public static string GsPgGetPipeElbowDiameter(string pipeDiameter, double calMultiple)
         {
-            try
-            {
-                // 获取管道直径
-                string pipeDiameter = GetPipeDiameter(pipeData["pipeNum"], pipeInfo);
-                
-                // 去重处理
-                _processedPipeElbowObjectIds = _processedPipeElbowObjectIds.Distinct().ToList();
-                _processedPolylineIds = _processedPolylineIds.Distinct().ToList();
-                
-                foreach (ObjectId elbowId in _processedPipeElbowObjectIds)
+            double result = UtilsCommnon.UtilsStringToDouble(pipeDiameter) * calMultiple;
+            return result.ToString();
+        }
+
+        public static void GsPgChangeValvePropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allValveObjectIds, Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
+        {
+            allValveObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
+                .ToList()
+                .ForEach(x =>
                 {
-                    // 重置弯头块的XY比例，避免镜像问题
-                    BlockUtils.SetBlockXYScale(elbowId, 1, 1);
-                    
-                    // 获取与弯头相连的管道线
-                    Point3d elbowBasePoint = BlockUtils.GetBlockBasePoint(elbowId);
-                    List<ObjectId> connectedPipeLines = _processedPolylineIds
-                        .Where(x => IsPipeElementOnPipeLineEnds(elbowBasePoint, x))
-                        .ToList();
-                        
-                    List<ObjectId> teePipeLines = _processedPolylineIds
-                        .Where(x => IsPipeElementOnPipeLine(elbowBasePoint, x))
-                        .ToList();
-                        
-                    // 处理弯头
-                    if (connectedPipeLines.Count == 2)
+
+                    string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
+                    if (pipeDiater != string.Empty)
                     {
-                        ProcessElbowWithTwoPipeLines(elbowId, connectedPipeLines, pipeDiameter);
+                        Dictionary<string, string> propertyDict = new Dictionary<string, string>()
+                        {
+                            { "sideview-DN", pipeDiater },
+                            { "topview-DN", pipeDiater }
+                        };
+                        UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, propertyDict);
                     }
-                    // 处理三通
-                    else if (teePipeLines.Count == 2)
+
+                });
+        }
+
+        public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds, List<ObjectId> allValveObjectIds, PipeInfoHelper pipeInfo)
+        {
+            if (pipeLineObjectIds != null)
+            {
+                pipeLineObjectIds.ForEach(x =>
+                {
+                    UtilsCADActive.UtilsAddXData(x, pipeData);
+                    // for test
+                    //UtilsPolyline.UtilsChangeColor(x, 1);
+                    GsPgChangePipeArrowAssistPropertyValue(x, allPipeArrowAssistObjectIds, pipeData);
+                    GsPgChangeValvePropertyValue(x, allValveObjectIds, pipeData, pipeInfo);
+                    // the key logic: remove the current polyline
+                    allPipeLineObjectIds = allPipeLineObjectIds.Where(xx => xx != x).ToList();
+                    List<ObjectId> otherPipeLineObjectIds = GsPgGetOtherPipeLineByInterset(x, allPipeLineObjectIds, allElbowObjectIds, pipeData);
+
+                    if (otherPipeLineObjectIds != null)
                     {
-                        ProcessTeeWithTwoPipeLines(elbowId, teePipeLines);
+                        GsPgSynPipeElementForOnePipeAssist(pipeData, otherPipeLineObjectIds, allPipeLineObjectIds, allElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
+                    }
+                    processedPolylineIds.Add(x);
+                });
+
+            }
+        }
+
+        private static int GetObliqueRotationBasedOnPointPosition(double xDiff, double yDiff)
+        {
+            if (xDiff > 0 && yDiff > 0) return 45;
+            if (xDiff < 0 && yDiff < 0) return 225;
+            if (xDiff < 0 && yDiff > 0) return 90;
+            return 275;
+        }
+
+        private static int GetRotationBasedOnPointPosition(double xDiff, double yDiff)
+        {
+            if (xDiff > 0 && yDiff > 0) return 0;
+            if (xDiff < 0 && yDiff < 0) return 180;
+            if (xDiff < 0 && yDiff > 0) return 90;
+            return 270;
+        }
+
+        private static (Point3d, Point3d) GetCrossPoints(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
+        {
+            List<Point3d> firstPoint3ds = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
+            var firstCrossPoint = firstPoint3ds != null ? firstPoint3ds.FirstOrDefault() : Point3d.Origin;
+            List<Point3d> secondPoint3ds = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId2);
+            var secondCrossPoint = secondPoint3ds != null ? secondPoint3ds.FirstOrDefault() : Point3d.Origin;
+
+            return (firstCrossPoint, secondCrossPoint);
+        }
+
+        private static (Point3d, Point3d) GetHorizontalAndVerticalPoints(Point3d basePoint, Point3d firstCrossPoint, Point3d secondCrossPoint)
+        {
+            return UtilsGeometric.UtilsIsLineHorizontal(basePoint, firstCrossPoint, 5.0)
+                ? (firstCrossPoint, secondCrossPoint)
+                : (secondCrossPoint, firstCrossPoint);
+        }
+
+        private static void SetRotationBasedOnElbowType(ObjectId elbowObjectId, string elbowType, double xDiff, double yDiff)
+        {
+            if (elbowType == "elbow90")
+            {
+                int rotation = GetRotationBasedOnPointPosition(xDiff, yDiff);
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+            }
+            else if (elbowType == "elbow45")
+            {
+                int rotation = GetObliqueRotationBasedOnPointPosition(xDiff, yDiff);
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, rotation);
+            }
+        }
+
+        public static void GsPgSynElbowRotation(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2, string elbowType)
+        {
+            var basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
+            var (firstCrossPoint, secondCrossPoint) = GetCrossPoints(elbowObjectId, pipeLineObjectId1, pipeLineObjectId2);
+
+            if (firstCrossPoint != Point3d.Origin && secondCrossPoint != Point3d.Origin)
+            {
+                var (horizontalPoint, verticalPoint) = GetHorizontalAndVerticalPoints(basePoint, firstCrossPoint, secondCrossPoint);
+                var xDiff = horizontalPoint.X - basePoint.X;
+                var yDiff = verticalPoint.Y - basePoint.Y;
+
+                SetRotationBasedOnElbowType(elbowObjectId, elbowType, xDiff, yDiff);
+            }
+        }
+
+        private static (double, double, List<Point3d>, List<Point3d>) GetPipeElevationAndIntersectionPoints(ObjectId elbowObjectId, List<ObjectId> pipeLineObjectIds)
+        {
+            double firstPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
+            double secondPipeElevation = UtilsCommnon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[1], "pipeElevation"));
+            List<Point3d> firstIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[0]);
+            List<Point3d> secondIntersectionPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectIds[1]);
+            return (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints);
+        }
+
+        private static void HandleElbowWithDifferentAngles(ObjectId elbowObjectId, string pipeDiater, List<ObjectId> pipeLineObjectIds, double intersectionAngle)
+        {
+            if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow90" } });
+                if (pipeDiater != string.Empty)
+                {
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 1.5) } }); 
+                }
+                GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow90");
+            }
+            else if (UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 135, 2) || UtilsCommnon.UtilsIsTwoNumEqual(intersectionAngle, 225, 2))
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbow45" } });
+                if (pipeDiater != string.Empty)
+                {
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "radius90", GsPgGetPipeElbowDiameter(pipeDiater, 0.633) } });
+                }
+                GsPgSynElbowRotation(elbowObjectId, pipeLineObjectIds[0], pipeLineObjectIds[1], "elbow45");
+            }
+        }
+
+        private static void HandleElbowWithDifferentElevation(ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds)
+        {
+            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbowdown" } });
+            if (firstPipeElevation > secondPipeElevation)
+            {
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[0]);
+            }
+            else
+            {
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[1]);
+            }
+        }
+
+        private static void HandleTeeWithDifferentElevation(ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds, int firstIntersectionPointsNum)
+        {
+            if (firstPipeElevation > secondPipeElevation && firstIntersectionPointsNum == 2)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teeup" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[0]);
+            }
+            else if (firstPipeElevation < secondPipeElevation && firstIntersectionPointsNum == 2)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teedown" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[1]);
+            }
+            else if (firstPipeElevation < secondPipeElevation && firstIntersectionPointsNum == 1)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teeup" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[1]);
+            }
+            else if (firstPipeElevation > secondPipeElevation && firstIntersectionPointsNum == 1)
+            {
+                UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "teedown" } });
+                SetBlockRotationByIntersectionPoint(elbowObjectId, pipeLineObjectIds[0]);
+            }
+        }
+
+        private static void SetBlockRotationByIntersectionPoint(ObjectId elbowObjectId, ObjectId pipeLineObjectId)
+        {
+            List<Point3d> crossPoints = UtilsGeometric.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId);
+            if (crossPoints.Count > 0)
+            {
+                Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
+                Point3d crossPoint = crossPoints[0];
+                UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowObjectId, UtilsGeometric.UtilsGetAngleByTwoPoint(basePoint, crossPoint));
+            }
+        }
+
+        public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
+        {
+            string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
+            processedPipeElbowObjectIds = processedPipeElbowObjectIds.Distinct().ToList();
+            processedPolylineIds = processedPolylineIds.Distinct().ToList();
+
+            processedPipeElbowObjectIds.ForEach(x =>
+            {
+                // 2024-01-24 设计人员可能会镜像弯头块，之前仅仅在HandleElbowWithDifferentAngles中重置XY比例，现在在这里整体重置
+                UtilsBlock.UtilsSetBlockXYScale(x, 1, 1);
+                List<ObjectId> pipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                List<ObjectId> teePipeLineObjectIds = processedPolylineIds.Where(xx => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), xx)).ToList();
+                if (pipeLineObjectIds.Count() == 2)
+                {
+                    var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = GetPipeElevationAndIntersectionPoints(x, pipeLineObjectIds);
+                    if (firstIntersectionPoints != null && secondIntersectionPoints != null)
+                    {
+                        Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
+                        Point3d firstIntersectionPoint = firstIntersectionPoints[0];
+                        Point3d secondIntersectionPoint = secondIntersectionPoints[0];
+
+                        double intersectionAngle = UtilsGeometric.UtilsGetAngleByThreePoint(basePoint, firstIntersectionPoint, secondIntersectionPoint);
+                        if (firstPipeElevation == secondPipeElevation)
+                        {
+                            HandleElbowWithDifferentAngles(x, pipeDiater, pipeLineObjectIds, intersectionAngle);
+                        }
+                        else
+                        {
+                            HandleElbowWithDifferentElevation(x, firstPipeElevation, secondPipeElevation, pipeLineObjectIds);
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "同步管道弯头状态失败");
-            }
-        }
-
-        /// <summary>
-        /// 处理连接两条管道线的弯头
-        /// </summary>
-        protected virtual void ProcessElbowWithTwoPipeLines(ObjectId elbowId, List<ObjectId> pipeLineIds, string pipeDiameter)
-        {
-            try
-            {
-                // 获取管道高程和交点
-                var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = 
-                    GetPipeElevationAndIntersectionPoints(elbowId, pipeLineIds);
-                    
-                if (firstIntersectionPoints != null && firstIntersectionPoints.Count > 0 && 
-                    secondIntersectionPoints != null && secondIntersectionPoints.Count > 0)
+                else if (teePipeLineObjectIds.Count() == 2)
                 {
-                    Point3d basePoint = BlockUtils.GetBlockBasePoint(elbowId);
-                    Point3d firstIntersectionPoint = firstIntersectionPoints[0];
-                    Point3d secondIntersectionPoint = secondIntersectionPoints[0];
-                    
-                    // 计算交点角度
-                    double intersectionAngle = GeometricUtils.GetAngleByThreePoints(
-                        basePoint, firstIntersectionPoint, secondIntersectionPoint);
-                        
-                    // 根据高程差异处理弯头
-                    if (firstPipeElevation == secondPipeElevation)
+                    var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = GetPipeElevationAndIntersectionPoints(x, teePipeLineObjectIds);
+                    if (firstIntersectionPoints != null && secondIntersectionPoints != null)
                     {
-                        // 同一高程，根据角度处理
-                        HandleElbowWithDifferentAngles(elbowId, pipeDiameter, pipeLineIds, intersectionAngle);
-                    }
-                    else
-                    {
-                        // 不同高程，处理立管弯头
-                        HandleElbowWithDifferentElevation(elbowId, firstPipeElevation, secondPipeElevation, pipeLineIds);
+                        Point3d basePoint = UtilsBlock.UtilsGetBlockBasePoint(x);
+                        Point3d firstIntersectionPoint = firstIntersectionPoints[0];
+                        Point3d secondIntersectionPoint = secondIntersectionPoints[0];
+
+                        if (firstIntersectionPoints.Count + secondIntersectionPoints.Count == 3)
+                        {
+                            HandleTeeWithDifferentElevation(x, firstPipeElevation, secondPipeElevation, teePipeLineObjectIds, firstIntersectionPoints.Count);
+                        }
+
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, $"处理弯头 {elbowId} 失败");
-            }
+            });
         }
 
-        /// <summary>
-        /// 处理连接两条管道线的三通
-        /// </summary>
-        protected virtual void ProcessTeeWithTwoPipeLines(ObjectId teeId, List<ObjectId> pipeLineIds)
+        public static string GsPgGetProjectNum(List<ObjectId> allGeYuanDrawObjectIds)
         {
-            try
+            string projectNum = string.Empty;
+            allGeYuanDrawObjectIds.ForEach(x =>
             {
-                // 获取管道高程和交点
-                var (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints) = 
-                    GetPipeElevationAndIntersectionPoints(teeId, pipeLineIds);
-                    
-                if (firstIntersectionPoints != null && secondIntersectionPoints != null)
+                string result = UtilsCommnon.UtilsGetNewTitleBlockInfoJObject(x).UtilsGetStrValue("projectnum");
+                if (result != string.Empty)
                 {
-                    // 检查是否为三通（交点总数为3）
-                    if (firstIntersectionPoints.Count + secondIntersectionPoints.Count == 3)
-                    {
-                        // 处理三通
-                        HandleTeeWithDifferentElevation(
-                            teeId, firstPipeElevation, secondPipeElevation, pipeLineIds, firstIntersectionPoints.Count);
-                    }
+                    projectNum = result;
                 }
-            }
-            catch (Exception ex)
+            });
+            return projectNum;
+        }
+
+        public static void GsPgBatchSynPipeData()
+        {
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                LoggingService.Instance.LogException(ex, $"处理三通 {teeId} 失败");
+                UtilsCADActive.Editor.WriteMessage("\n请选择绿色箭头辅助管道块");
+                List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
+
+                List<ObjectId> allBlockIds = UtilsBlock.UtilsGetAllBlockObjectIds();
+                List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
+
+                List<string> blockNameList = new List<string> { "GeYuanFrame", "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve" };
+                Dictionary<string, List<ObjectId>> allObjectIdsGroups = UtilsBlock.UtilsGetAllObjectIdsGroupsByBlockNameList(allBlockIds, blockNameList, false);
+                List<ObjectId> allGeYuanDrawObjectIds = allObjectIdsGroups["GeYuanFrame"];
+                List<ObjectId> allPipeElbowObjectIds = allObjectIdsGroups["GsPgPipeElementElbow"];
+                List<ObjectId> allPipeArrowAssistObjectIds = allObjectIdsGroups["GsPgPipeElementArrowAssist"];
+                List<ObjectId> allValveObjectIds = allObjectIdsGroups["GsPgValve"];
+
+                string projectNum = GsPgGetProjectNum(allGeYuanDrawObjectIds);
+                PipeInfoHelper pipeInfo = UtilsCommnon.UtilsGetPipeInfo(projectNum);
+
+                pipeNumObjectIds.ForEach(x =>
+                {
+                    List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
+                    Dictionary<string, string> pipeData = GsPgGetPipeData(x);
+                    GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
+                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
+                    GsPgSynPipeElbowStatus(pipeData, pipeInfo);
+                });
+                processedPipeElbowObjectIds.Clear();
+                processedPolylineIds.Clear();
+
+                UtilsCADActive.Editor.WriteMessage("\n同步数据完成...");
+
+                tr.Commit();
             }
         }
 
-        /// <summary>
-        /// 获取管道高程和交点
-        /// </summary>
-        protected virtual (double, double, List<Point3d>, List<Point3d>) GetPipeElevationAndIntersectionPoints(
-            ObjectId elbowObjectId, List<ObjectId> pipeLineObjectIds)
-        {
-            try
-            {
-                // 获取管道高程
-                double firstPipeElevation = CommonUtils.UtilsStringToDouble(
-                    EntityUtils.GetXData(pipeLineObjectIds[0], "pipeElevation"));
-                    
-                double secondPipeElevation = CommonUtils.UtilsStringToDouble(
-                    EntityUtils.GetXData(pipeLineObjectIds[1], "pipeElevation"));
-                    
-                // 获取交点
-                List<Point3d> firstIntersectionPoints = GeometricUtils.GetIntersectionPointsByBlockAndPolyline(
-                    elbowObjectId, pipeLineObjectIds[0]);
-                    
-                List<Point3d> secondIntersectionPoints = GeometricUtils.GetIntersectionPointsByBlockAndPolyline(
-                    elbowObjectId, pipeLineObjectIds[1]);
-                    
-                return (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "获取管道高程和交点失败");
-                return (0, 0, null, null);
-            }
-        }
-
-        /// <summary>
-        /// 处理不同角度的弯头
-        /// </summary>
-        protected virtual void HandleElbowWithDifferentAngles(
-            ObjectId elbowObjectId, string pipeDiameter, List<ObjectId> pipeLineObjectIds, double intersectionAngle)
-        {
-            try
-            {
-                // 暂时使用原有方法
-                GsPgDataFlow.ToolManager.HandleElbowWithDifferentAngles(
-                    elbowObjectId, pipeDiameter, pipeLineObjectIds, intersectionAngle);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "处理不同角度的弯头失败");
-            }
-        }
-
-        /// <summary>
-        /// 处理不同高程的弯头
-        /// </summary>
-        protected virtual void HandleElbowWithDifferentElevation(
-            ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds)
-        {
-            try
-            {
-                // 暂时使用原有方法
-                GsPgDataFlow.ToolManager.HandleElbowWithDifferentElevation(
-                    elbowObjectId, firstPipeElevation, secondPipeElevation, pipeLineObjectIds);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "处理不同高程的弯头失败");
-            }
-        }
-
-        /// <summary>
-        /// 处理不同高程的三通
-        /// </summary>
-        protected virtual void HandleTeeWithDifferentElevation(
-            ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, 
-            List<ObjectId> pipeLineObjectIds, int firstIntersectionPointsNum)
-        {
-            try
-            {
-                // 暂时使用原有方法
-                GsPgDataFlow.ToolManager.HandleTeeWithDifferentElevation(
-                    elbowObjectId, firstPipeElevation, secondPipeElevation, pipeLineObjectIds, firstIntersectionPointsNum);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Instance.LogException(ex, "处理不同高程的三通失败");
-            }
-        }
     }
 } 
