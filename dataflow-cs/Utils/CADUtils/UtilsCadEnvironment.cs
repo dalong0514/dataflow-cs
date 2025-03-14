@@ -14,7 +14,7 @@ namespace dataflow_cs.Utils.CADUtils
     /// <summary>
     /// 提供CAD环境相关的工具类，包括获取当前活动文档、数据库、编辑器等功能
     /// </summary>
-    public static class CadEnvironment
+    public static class UtilsCadEnvironment
     {
         /// <summary>
         /// 获取当前活动编辑器对象

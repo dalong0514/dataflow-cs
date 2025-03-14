@@ -44,6 +44,9 @@
       <HintPath>..\CADDLL\CAD2013\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -71,7 +74,11 @@
     <Compile Include="Core\Services\LoggingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CADUtils\BlockUtils.cs" />
+    <Compile Include="Utils\CADUtils\CadEnvironment.cs" />
+    <Compile Include="Utils\CADUtils\CommonUtils.cs" />
     <Compile Include="Utils\CADUtils\GeometryUtils.cs" />
+    <Compile Include="Utils\CADUtils\PolylineUtils.cs" />
+    <Compile Include="Utils\CADUtils\SelectionSetUtils.cs" />
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,10 +92,6 @@
     <Folder Include="Utils\Extensions\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonUtils\DLCommonUtils.csproj">
-      <Project>{2c439b03-ad51-4bd7-8fa0-30e32481afb7}</Project>
-      <Name>DLCommonUtils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GsLcDataFlow\GsLcDataFlow.csproj">
       <Project>{cf169b6c-5830-4e6a-b84e-9115183dd1d8}</Project>
       <Name>GsLcDataFlow</Name>
@@ -101,6 +104,9 @@
       <Project>{21789726-d0f9-48f7-8301-167a2e4c5cd5}</Project>
       <Name>StudyProgram</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

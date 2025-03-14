@@ -535,10 +535,10 @@ namespace dataflow_cs.Business.PipeFlow.Commands
             try
             {
                 // 获取管道高程
-                double firstPipeElevation = CommonUtils.StringToDouble(
+                double firstPipeElevation = CommonUtils.UtilsStringToDouble(
                     EntityUtils.GetXData(pipeLineObjectIds[0], "pipeElevation"));
                     
-                double secondPipeElevation = CommonUtils.StringToDouble(
+                double secondPipeElevation = CommonUtils.UtilsStringToDouble(
                     EntityUtils.GetXData(pipeLineObjectIds[1], "pipeElevation"));
                     
                 // 获取交点
