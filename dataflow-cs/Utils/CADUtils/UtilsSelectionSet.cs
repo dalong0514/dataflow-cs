@@ -80,8 +80,6 @@ namespace dataflow_cs.Utils.CADUtils
             SelectionSet selSet = selRes.Value;
             if (selSet == null) return null;
 
-            //UtilsCADActive.Editor.WriteMessage("\nNumber of objects selected: " + selSet.Count.ToString());
-
             return selSet;
         }
 
@@ -129,7 +127,6 @@ namespace dataflow_cs.Utils.CADUtils
             TypedValue[] filterList = filterValues.ToArray();
             SelectionFilter filter = new SelectionFilter(filterList);
 
-
             PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);
             if (selRes.Status != PromptStatus.OK) return null;
 
@@ -152,19 +149,6 @@ namespace dataflow_cs.Utils.CADUtils
 
             // Create a new SelectionSet from the ObjectIdCollection
             return SelectionSet.FromObjectIds(filteredObjects.Cast<ObjectId>().ToArray());
-
-            //// Convert the extents to a Point3d array
-            //Point3d pt1 = new Point3d(extents.MinPoint.X, extents.MinPoint.Y, extents.MinPoint.Z);
-            //Point3d pt2 = new Point3d(extents.MaxPoint.X, extents.MaxPoint.Y, extents.MaxPoint.Z);
-
-            //PromptSelectionResult selRes = UtilsCADActive.Editor.SelectCrossingWindow(pt1, pt2, filter);
-            //if (selRes.Status != PromptStatus.OK) return null;
-
-            //SelectionSet selSet = selRes.Value;
-            //if (selSet == null) return null;
-
-            //return selSet;
         }
-
     }
 } 

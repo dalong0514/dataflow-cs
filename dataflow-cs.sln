@@ -5,10 +5,6 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dataflow-cs", "dataflow-cs\dataflow-cs.csproj", "{C59C4916-9579-4BC0-AE90-9E36F1C299D1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Program", "Program", "{7AE2627A-A154-4389-B78F-2B92FB748A2C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GsPgDataFlow", "GsPgDataFlow\GsPgDataFlow.csproj", "{904AC07A-0BC1-420A-8DD6-4778B1DDF874}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,16 +15,9 @@ Global
 		{C59C4916-9579-4BC0-AE90-9E36F1C299D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C59C4916-9579-4BC0-AE90-9E36F1C299D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C59C4916-9579-4BC0-AE90-9E36F1C299D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{904AC07A-0BC1-420A-8DD6-4778B1DDF874}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{904AC07A-0BC1-420A-8DD6-4778B1DDF874}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{904AC07A-0BC1-420A-8DD6-4778B1DDF874}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{904AC07A-0BC1-420A-8DD6-4778B1DDF874}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{904AC07A-0BC1-420A-8DD6-4778B1DDF874} = {7AE2627A-A154-4389-B78F-2B92FB748A2C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2187CB5-BE5E-46CC-B897-507780973EE0}
