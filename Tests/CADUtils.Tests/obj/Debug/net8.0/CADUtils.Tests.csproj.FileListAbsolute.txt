@@ -1,0 +1,6 @@
+D:\dataflow.code\dataflow-cs\Tests\CADUtils.Tests\obj\Debug\net8.0\CADUtils.Tests.csproj.AssemblyReference.cache
+D:\dataflow.code\dataflow-cs\Tests\CADUtils.Tests\obj\Debug\net8.0\CADUtils.Tests.GeneratedMSBuildEditorConfig.editorconfig
+D:\dataflow.code\dataflow-cs\Tests\CADUtils.Tests\obj\Debug\net8.0\CADUtils.Tests.AssemblyInfoInputs.cache
+D:\dataflow.code\dataflow-cs\Tests\CADUtils.Tests\obj\Debug\net8.0\CADUtils.Tests.AssemblyInfo.cs
+D:\dataflow.code\dataflow-cs\Tests\CADUtils.Tests\obj\Debug\net8.0\CADUtils.Tests.csproj.CoreCompileInputs.cache
+D:\dataflow.code\dataflow-cs\Tests\CADUtils.Tests\obj\Debug\net8.0\CADUtils.Tests.sourcelink.json
