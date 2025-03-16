@@ -4,7 +4,7 @@
 
 # User-specific files
 .vs/
-
+/dataflow-cs/.vs
 # Other Visual Studio files
 *.vsidx
 *.vspx
