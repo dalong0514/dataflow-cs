@@ -27,12 +27,13 @@ namespace dataflow_cs
                 // 注册命令处理器
                 RegisterCommandHandler(new BatchSyncPipeDataCommand());
                 RegisterCommandHandler(new TestCommand());
+                RegisterCommandHandler(new ExportCADDataCommand());
                 
                 // 将来可在此处添加更多命令
                 
                 LoggingService.Instance.LogInfo($"已成功注册 {_commandHandlers.Count} 个命令。");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 LoggingService.Instance.LogException(ex, "注册命令处理器时发生错误");
             }
@@ -88,7 +89,7 @@ namespace dataflow_cs
                     handler.Execute(doc.Editor, doc.Database);
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 ErrorHandler.HandleException(ex, $"执行命令 {commandName} 时发生错误");
             }
@@ -112,6 +113,15 @@ namespace dataflow_cs
         public void DPS()
         {
             ExecuteCommand("DPS");
+        }
+        
+        /// <summary>
+        /// CAD数据导出命令
+        /// </summary>
+        [CommandMethod("DLGsLcExportData")]
+        public void DLGsLcExportData()
+        {
+            ExecuteCommand("DLGsLcExportData");
         }
         
         /// <summary>

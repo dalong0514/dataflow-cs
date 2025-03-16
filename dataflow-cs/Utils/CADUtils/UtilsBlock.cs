@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using Newtonsoft.Json.Linq;
 
 namespace dataflow_cs.Utils.CADUtils
 {
@@ -329,6 +330,23 @@ namespace dataflow_cs.Utils.CADUtils
             return blockIds;
         }
 
+        public static List<ObjectId> UtilsGetAllObjectIdsByBlockNameList(List<string> blockNameList, bool isIdentical = true)
+        {
+            // 任务1: 在AutoCAD中获得块实体对象的选择集
+            List<ObjectId> allBlockIds = UtilsGetAllBlockObjectIds();
+            List<ObjectId> resultBlockIds = new List<ObjectId>();
+
+            // 遍历块名列表，获取每个块名对应的ObjectId
+            foreach (string blockName in blockNameList)
+            {
+                var blockIds = UtilsGetAllObjectIdsByBlockName(allBlockIds, blockName, isIdentical);
+                resultBlockIds.AddRange(blockIds);
+            }
+
+            return resultBlockIds.Distinct().ToList(); // 去重并返回
+        }
+
+
         public static Dictionary<string, List<ObjectId>> UtilsGetAllObjectIdsGroupsByBlockNameList(List<ObjectId> blockIds, List<string> blockNameList, bool isIdentical = true)
         {
             Dictionary<string, List<ObjectId>> objectIdsGroups = new Dictionary<string, List<ObjectId>>();
@@ -435,5 +453,94 @@ namespace dataflow_cs.Utils.CADUtils
             if (blockRef == null) return;
             blockRef.ScaleFactors = new Scale3d(xScale, yScale, 1.0);
         }
+
+
+        /// <summary>
+        /// 获取块属性
+        /// </summary>
+        /// <param name="blockReference">块引用</param>
+        /// <returns>属性字典</returns>
+        public static Dictionary<string, string> GetBlockAttrs(BlockReference blockReference)
+        {
+            return UtilsBlock.UtilsGetAllPropertyDictList(blockReference.ObjectId);
+        }
+
+        /// <summary>
+        /// 获取块名称
+        /// </summary>
+        /// <param name="blockReference">块引用</param>
+        /// <returns>块名称</returns>
+        public static string GetBlockName(BlockReference blockReference)
+        {
+            return UtilsBlock.UtilsGetBlockName(blockReference.ObjectId);
+        }
+
+        /// <summary>
+        /// 获取块属性值
+        /// </summary>
+        /// <param name="blockReference">块引用</param>
+        /// <param name="attributeName">属性名称</param>
+        /// <returns>属性值</returns>
+        public static string GetBlockAttrValue(BlockReference blockReference, string attributeName)
+        {
+            var attrs = GetBlockAttrs(blockReference);
+            if (attrs.ContainsKey(attributeName))
+            {
+                return attrs[attributeName];
+            }
+            return string.Empty;
+        }
+        
+        /// <summary>
+        /// 获取图框信息
+        /// </summary>
+        /// <returns>图框信息</returns>
+        public static JObject GetDrawInfo()
+        {
+            try
+            {
+                // 获取所有块
+                var blockIds = UtilsBlock.UtilsGetAllBlockObjectIds();
+                if (blockIds == null || blockIds.Count == 0)
+                {
+                    return null;
+                }
+                
+                // 查找图框块
+                foreach (var blockId in blockIds)
+                {
+                    string blockName = UtilsBlock.UtilsGetBlockName(blockId);
+                    if (blockName.Contains("TitleBlock") || blockName.Contains("图框"))
+                    {
+                        // 获取图框属性
+                        var attrs = UtilsBlock.UtilsGetAllPropertyDictList(blockId);
+                        if (attrs != null && attrs.Count > 0)
+                        {
+                            // 创建图框信息对象
+                            JObject drawInfo = new JObject();
+                            drawInfo["blockId"] = blockId.ToString();
+                            drawInfo["blockName"] = blockName;
+                            
+                            // 添加图框属性
+                            foreach (var attr in attrs)
+                            {
+                                drawInfo[attr.Key] = attr.Value;
+                            }
+                            
+                            return drawInfo;
+                        }
+                    }
+                }
+                
+                return null;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"获取图框信息时发生错误: {ex.Message}", "错误", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        
     }
 }

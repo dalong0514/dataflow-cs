@@ -1,0 +1,45 @@
+<Window x:Class="dataflow_cs.Business.PipeFlow.Views.WindowExportData"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:dataflow_cs.Business.PipeFlow.Views"
+        mc:Ignorable="d"
+        Title="CAD数据导出" Height="300" Width="500" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="选择要导出的数据类型" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <ComboBox Grid.Column="1" Grid.Row="0" Margin="50 0 0 0" VerticalAlignment="Center" Width="200" Height="30"  VerticalContentAlignment="Center" ItemsSource="{Binding DataTypeList, Mode=TwoWay}"  SelectedItem="{Binding DataType, Mode=TwoWay}" SelectedIndex="0" />
+
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="导出数据数量：" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding ExportDataCount}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Text="导出数据状态：" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding ExportDataStatus}" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding BatchSelectionCommand}" Width="100" Content="选取" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <Button Grid.Column="1" Command="{Binding AllSelectionCommand}" Width="100" Content="全选" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <Button Grid.Column="2" Command="{Binding ExportCommand}" Width="100" Content="导出" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <Button Grid.Column="3" Command="{Binding CancelCommand}" Width="100" Content="取消" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
+    </Grid>
+</Window> 
