@@ -141,31 +141,10 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                     
                     // 获取实体的几何范围
                     Extents3d extents = entity.GeometricExtents;
-                    
-                    // 手动实现缩放功能
-                    using (ViewTableRecord view = editor.GetCurrentView())
-                    {
-                        // 从世界坐标转换到视图坐标
-                        Matrix3d worldToEye = Matrix3d.Rotation(-view.ViewTwist, view.ViewDirection, view.Target).Inverse() *
-                                          Matrix3d.Displacement(Point3d.Origin - view.Target).Inverse() *
-                                          Matrix3d.PlaneToWorld(view.ViewDirection).Inverse();
-                        
-                        extents.TransformBy(worldToEye);
-                        double scale = 1.2; // 缩放比例
-                        
-                        // 设置视图范围
-                        view.Width = (extents.MaxPoint.X - extents.MinPoint.X) * scale;
-                        view.Height = (extents.MaxPoint.Y - extents.MinPoint.Y) * scale;
-                        
-                        // 设置视图中心
-                        view.CenterPoint = new Point2d(
-                            (extents.MaxPoint.X + extents.MinPoint.X) / 2.0,
-                            (extents.MaxPoint.Y + extents.MinPoint.Y) / 2.0);
-                            
-                        // 应用视图设置
-                        editor.SetCurrentView(view);
-                    }
-                    
+
+                    // 使用UtilsZoom中的ZoomObjects方法进行缩放
+                    editor.ZoomObjects(new ObjectId[] { id });
+
                     // 高亮显示该实体
                     editor.SetImpliedSelection(new ObjectId[] { id });
                     
