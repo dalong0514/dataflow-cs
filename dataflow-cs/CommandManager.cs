@@ -1,6 +1,7 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
 using dataflow_cs.Business.PipeFlow.Commands;
+using dataflow_cs.Business.Common.Commands;
 using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.Helpers;
@@ -28,6 +29,7 @@ namespace dataflow_cs
                 RegisterCommandHandler(new BatchSyncPipeDataCommand());
                 RegisterCommandHandler(new TestCommand());
                 RegisterCommandHandler(new ExportCADDataCommand());
+                RegisterCommandHandler(new DLLocateByHandleCommand());
                 
                 // 将来可在此处添加更多命令
                 
@@ -134,12 +136,12 @@ namespace dataflow_cs
         }
         
         /// <summary>
-        /// 功能测试命令
+        /// 定位实体对象位置
         /// </summary>
-        [CommandMethod("CsFuncitonTest")]
-        public void CsFuncitonTest()
+        [CommandMethod("DLLocateByHandle")]
+        public void DLLocateByHandle()
         {
-            ExecuteCommand("CsFuncitonTest");
+            ExecuteCommand("DLLocateByHandle");
         }
         
         // 在这里添加更多命令定义...

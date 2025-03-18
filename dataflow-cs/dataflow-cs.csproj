@@ -65,6 +65,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\Common\Commands\LocateByHandleCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\ExportCADDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
@@ -97,7 +98,6 @@
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Business\Common\" />
     <Folder Include="Business\PipeFlow\Operations\" />
     <Folder Include="Business\PipeFlow\Services\" />
     <Folder Include="Plugins\" />
