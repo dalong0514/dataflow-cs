@@ -6,6 +6,8 @@ using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Utils.Helpers;
 using System;
 using System.Windows;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.Geometry;
 
 namespace dataflow_cs.Business.PipeFlow.Commands
 {
@@ -32,10 +34,40 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                 // 显示测试信息
                 editor.WriteMessage("\n开始执行测试命令...");
                 
-                // 测试WindowExportData窗口
-                TestWindowExportData();
+                // 提示用户输入实体句柄或选择其他测试功能
+                PromptKeywordOptions pKeyOpts = new PromptKeywordOptions("\n请选择功能: ");
+                pKeyOpts.Keywords.Add("LocateByHandle");
+                pKeyOpts.Keywords.Add("ExportData");
+                pKeyOpts.Keywords.Default = "LocateByHandle";
+                pKeyOpts.AllowNone = false;
                 
-                return true;
+                PromptResult pKeyRes = editor.GetKeywords(pKeyOpts);
+                if (pKeyRes.Status != PromptStatus.OK)
+                    return false;
+                
+                switch (pKeyRes.StringResult)
+                {
+                    case "LocateByHandle":
+                        // 提示用户输入实体句柄
+                        PromptStringOptions pStrOpts = new PromptStringOptions("\n请输入实体句柄(例如:27E2BF): ");
+                        pStrOpts.AllowSpaces = false;
+                        PromptResult pStrRes = editor.GetString(pStrOpts);
+                        
+                        if (pStrRes.Status == PromptStatus.OK)
+                        {
+                            string handle = pStrRes.StringResult;
+                            return LocateEntityByHandle(handle);
+                        }
+                        return false;
+                        
+                    case "ExportData":
+                        // 测试WindowExportData窗口
+                        TestWindowExportData();
+                        return true;
+                        
+                    default:
+                        return false;
+                }
             }
             catch (Exception ex)
             {
@@ -50,7 +82,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
         private void TestWindowExportData()
         {
             // 在UI线程中执行
-            Application.Current.Dispatcher.Invoke((Action)(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
             {
                 try
                 {
@@ -63,6 +95,90 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                     MessageBox.Show($"显示窗口时发生错误: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }));
+        }
+        
+        /// <summary>
+        /// 通过实体句柄定位到实体对象
+        /// </summary>
+        /// <param name="entityHandle">实体句柄字符串，如"27E2BF"</param>
+        /// <returns>是否成功定位</returns>
+        protected bool LocateEntityByHandle(string entityHandle)
+        {
+            try
+            {
+                // 获取编辑器和文档引用
+                Editor editor = UtilsCADActive.Editor;
+                Document doc = UtilsCADActive.Document;
+                
+                // 显示正在定位的句柄
+                editor.WriteMessage($"\n正在定位实体，句柄为: {entityHandle}");
+                
+                // 将句柄字符串转换为Handle对象
+                Handle handle = new Handle(Convert.ToInt64(entityHandle, 16));
+                
+                // 使用Database的TryGetObjectId方法获取ObjectId
+                if (!doc.Database.TryGetObjectId(handle, out ObjectId id))
+                {
+                    editor.WriteMessage($"\n找不到句柄为 {entityHandle} 的实体对象");
+                    return false;
+                }
+                
+                if (!id.IsValid)
+                {
+                    editor.WriteMessage($"\n句柄为 {entityHandle} 的实体ID无效");
+                    return false;
+                }
+                
+                // 使用事务获取实体对象
+                using (Transaction trans = doc.Database.TransactionManager.StartTransaction())
+                {
+                    DBObject dbObject = trans.GetObject(id, OpenMode.ForRead);
+                    if (!(dbObject is Entity entity))
+                    {
+                        editor.WriteMessage($"\n句柄为 {entityHandle} 的对象不是实体");
+                        return false;
+                    }
+                    
+                    // 获取实体的几何范围
+                    Extents3d extents = entity.GeometricExtents;
+                    
+                    // 手动实现缩放功能
+                    using (ViewTableRecord view = editor.GetCurrentView())
+                    {
+                        // 从世界坐标转换到视图坐标
+                        Matrix3d worldToEye = Matrix3d.Rotation(-view.ViewTwist, view.ViewDirection, view.Target).Inverse() *
+                                          Matrix3d.Displacement(Point3d.Origin - view.Target).Inverse() *
+                                          Matrix3d.PlaneToWorld(view.ViewDirection).Inverse();
+                        
+                        extents.TransformBy(worldToEye);
+                        double scale = 1.2; // 缩放比例
+                        
+                        // 设置视图范围
+                        view.Width = (extents.MaxPoint.X - extents.MinPoint.X) * scale;
+                        view.Height = (extents.MaxPoint.Y - extents.MinPoint.Y) * scale;
+                        
+                        // 设置视图中心
+                        view.CenterPoint = new Point2d(
+                            (extents.MaxPoint.X + extents.MinPoint.X) / 2.0,
+                            (extents.MaxPoint.Y + extents.MinPoint.Y) / 2.0);
+                            
+                        // 应用视图设置
+                        editor.SetCurrentView(view);
+                    }
+                    
+                    // 高亮显示该实体
+                    editor.SetImpliedSelection(new ObjectId[] { id });
+                    
+                    editor.WriteMessage($"\n已定位到句柄为 {entityHandle} 的实体");
+                    trans.Commit();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.Editor.WriteMessage($"\n定位实体时发生错误: {ex.Message}");
+                return false;
+            }
         }
     }
 } 

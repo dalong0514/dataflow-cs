@@ -92,6 +92,7 @@
     <Compile Include="Utils\CADUtils\UtilsPolyline.cs" />
     <Compile Include="Utils\CADUtils\UtilsSelectionSet.cs" />
     <Compile Include="Utils\CADUtils\UtilsWeb.cs" />
+    <Compile Include="Utils\CADUtils\UtilsZoom.cs" />
     <Compile Include="Utils\ConstUtils\ConstURL.cs" />
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
   </ItemGroup>
