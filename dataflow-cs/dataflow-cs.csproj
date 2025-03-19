@@ -72,6 +72,9 @@
   <ItemGroup>
     <Compile Include="Business\Common\Commands\AddCustomMenu.cs" />
     <Compile Include="Business\Common\Commands\LocateByHandleCommand.cs" />
+    <Compile Include="Business\Common\Helpers\AutoCADCommandHelper.cs" />
+    <Compile Include="Business\Common\Models\MenuConfig.cs" />
+    <Compile Include="Business\Common\Services\MenuConfigService.cs" />
     <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\ExportCADDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
@@ -113,6 +116,7 @@
     <Folder Include="Utils\Extensions\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="config\MenuConfig.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

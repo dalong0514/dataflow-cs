@@ -1,0 +1,50 @@
+{
+  "PaletteTitle": "天正数智设计",
+  "PaletteWidth": 250,
+  "PaletteHeight": 400,
+  "MenuGroups": [
+    {
+      "Title": "一级菜单 1",
+      "IconKey": "folder",
+      "Items": [
+        {
+          "Title": "二级菜单 1-1",
+          "IconKey": "本地生活",
+          "Command": "GsLcExportCADData"
+        },
+        {
+          "Title": "二级菜单 1-2",
+          "IconKey": "本地生活",
+          "Command": "CIRCLE"
+        }
+      ]
+    },
+    {
+      "Title": "一级菜单 2",
+      "IconKey": "folder",
+      "Items": [
+        {
+          "Title": "二级菜单 2-1",
+          "IconKey": "编辑",
+          "Command": "RECTANGLE"
+        },
+        {
+          "Title": "二级菜单 2-2",
+          "IconKey": "编辑",
+          "Command": "ARC"
+        }
+      ]
+    },
+    {
+      "Title": "一级菜单 3",
+      "IconKey": "folder",
+      "Items": [
+        {
+          "Title": "二级菜单 3-1",
+          "IconKey": "second",
+          "Command": "TEXT"
+        }
+      ]
+    }
+  ]
+} 

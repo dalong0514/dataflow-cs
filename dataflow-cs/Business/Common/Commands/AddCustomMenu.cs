@@ -11,6 +11,9 @@ using System.Drawing;
 using Autodesk.AutoCAD.ApplicationServices;
 using System.IO;
 using System.Drawing.Drawing2D;
+using dataflow_cs.Business.Common.Models;
+using dataflow_cs.Business.Common.Services;
+using dataflow_cs.Business.Common.Helpers;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Panel = System.Windows.Forms.Panel;
 
@@ -27,6 +30,9 @@ namespace dataflow_cs.Business.Common.Commands
         public override string CommandName => "DLAddCustomMenu";
 
         private static PaletteSet _paletteSet;
+        // 保存面板引用以便刷新
+        private static Panel _menuPanel;
+        private static CustomTreeView _treeView;
 
         /// <summary>
         /// 执行命令核心逻辑
@@ -56,12 +62,15 @@ namespace dataflow_cs.Business.Common.Commands
 
         public static PaletteSet ShowCustomMenu()
         {
+            // 加载菜单配置
+            MenuConfig config = MenuConfigService.LoadMenuConfig();
+            
             if (_paletteSet == null)
             {
                 // 创建 PaletteSet 作为 AutoCAD 固定面板
-                _paletteSet = new PaletteSet("天正数智设计")
+                _paletteSet = new PaletteSet(config.PaletteTitle)
                 {
-                    Size = new System.Drawing.Size(250, 400), // 设置面板大小
+                    Size = new System.Drawing.Size(config.PaletteWidth, config.PaletteHeight),
                     Style = PaletteSetStyles.ShowPropertiesMenu |
                             PaletteSetStyles.ShowCloseButton |
                             PaletteSetStyles.ShowAutoHideButton |
@@ -72,7 +81,7 @@ namespace dataflow_cs.Business.Common.Commands
                 };
 
                 // 创建承载自定义菜单的 Panel，并设置上下间距
-                Panel panel = new Panel
+                _menuPanel = new Panel
                 {
                     BackColor = System.Drawing.Color.LightGray,
                     Dock = DockStyle.Fill,
@@ -91,7 +100,7 @@ namespace dataflow_cs.Business.Common.Commands
                 };
 
                 // 创建自定义树控件，用于实现多级菜单及交互效果
-                CustomTreeView treeView = new CustomTreeView
+                _treeView = new CustomTreeView
                 {
                     Dock = DockStyle.Fill,
                     Font = new System.Drawing.Font("微软雅黑", 10),
@@ -101,63 +110,34 @@ namespace dataflow_cs.Business.Common.Commands
                 // 设置 ImageList（示例，实际应加载真实图标）
                 ImageList imgList = new ImageList();
                 LoadAutoCADIcons(imgList);
-                treeView.ImageList = imgList;
+                _treeView.ImageList = imgList;
 
-                // 添加一级菜单和二级菜单
-                TreeNode node1 = new TreeNode("一级菜单 1");
-                TreeNode node2 = new TreeNode("一级菜单 2");
-                TreeNode node3 = new TreeNode("一级菜单 3");
+                // 从配置添加菜单
+                AddMenuItemsFromConfig(_treeView, config);
 
-                // 设置一级菜单的图标（可选）
-                node1.ImageKey = "folder";
-                node2.ImageKey = "folder";
-                node3.ImageKey = "folder";
-
-                // 添加二级菜单项，并设置图标
-                TreeNode node1_1 = new TreeNode("二级菜单 1-1");
-                node1_1.ImageKey = "本地生活";
-                node1_1.SelectedImageKey = "本地生活";
-                TreeNode node1_2 = new TreeNode("二级菜单 1-2");
-                node1_2.ImageKey = "本地生活";
-                node1_2.SelectedImageKey = "本地生活";
-                node1.Nodes.Add(node1_1);
-                node1.Nodes.Add(node1_2);
-
-                TreeNode node2_1 = new TreeNode("二级菜单 2-1");
-                node2_1.ImageKey = "编辑";
-                node2_1.SelectedImageKey = "编辑";
-                TreeNode node2_2 = new TreeNode("二级菜单 2-2");
-                node2_2.ImageKey = "编辑";
-                node2_2.SelectedImageKey = "编辑";
-                node2.Nodes.Add(node2_1);
-                node2.Nodes.Add(node2_2);
-
-                TreeNode node3_1 = new TreeNode("二级菜单 3-1");
-                node3_1.ImageKey = "second";
-                node3_1.SelectedImageKey = "second";
-                node3.Nodes.Add(node3_1);
-
-                treeView.Nodes.Add(node1);
-                treeView.Nodes.Add(node2);
-                treeView.Nodes.Add(node3);
-
-                // 一级菜单点击时展开/收缩，二级菜单点击时触发事件
-                treeView.NodeMouseClick += (sender, e) =>
+                // 一级菜单点击时展开/收缩，二级菜单点击时触发命令
+                _treeView.NodeMouseClick += (sender, e) =>
                 {
                     if (e.Node.Level == 0) // 一级菜单：切换展开/收缩
                     {
                         e.Node.Toggle();
                     }
-                    else if (e.Node.Level == 1) // 二级菜单：触发事件
+                    else if (e.Node.Level == 1) // 二级菜单：执行命令
                     {
-                        MessageBox.Show($"你点击了: {e.Node.Text}", "提示");
+                        // 获取存储在Tag中的命令
+                        string command = e.Node.Tag as string;
+                        if (!string.IsNullOrEmpty(command))
+                        {
+                            // 执行AutoCAD命令
+                            AutoCADCommandHelper.RunCommand(command);
+                        }
                     }
                 };
 
-                panel.Controls.Add(treeView);
-                panel.Controls.Add(titleLabel);
+                _menuPanel.Controls.Add(_treeView);
+                _menuPanel.Controls.Add(titleLabel);
                 // 将 Panel 添加到 PaletteSet
-                _paletteSet.Add("我的面板", panel);
+                _paletteSet.Add("我的面板", _menuPanel);
 
                 // 停靠到 AutoCAD 左侧
                 _paletteSet.Dock = DockSides.Left;
@@ -173,15 +153,56 @@ namespace dataflow_cs.Business.Common.Commands
                 {
                     int x = Convert.ToInt32(mainWindow.DeviceIndependentLocation.X);
                     int y = Convert.ToInt32(mainWindow.DeviceIndependentLocation.Y + mainWindow.DeviceIndependentSize.Height / 3);
-                    int width = 250;
+                    int width = config.PaletteWidth;
                     int height = Convert.ToInt32(mainWindow.DeviceIndependentSize.Height * 0.75);
                     _paletteSet.SetLocation(new System.Drawing.Point(x, y));
                     _paletteSet.Size = new System.Drawing.Size(width, height);
                 }
             }
+            else
+            {
+                // 如果面板已存在，则刷新菜单
+                if (_treeView != null)
+                {
+                    _treeView.Nodes.Clear();
+                    AddMenuItemsFromConfig(_treeView, config);
+                }
+            }
 
             _paletteSet.Visible = true;
             return _paletteSet;
+        }
+
+        /// <summary>
+        /// 从配置加载菜单项
+        /// </summary>
+        /// <param name="treeView">树视图控件</param>
+        /// <param name="config">菜单配置</param>
+        private static void AddMenuItemsFromConfig(CustomTreeView treeView, MenuConfig config)
+        {
+            treeView.Nodes.Clear();
+
+            foreach (var group in config.MenuGroups)
+            {
+                // 创建一级菜单
+                TreeNode groupNode = new TreeNode(group.Title);
+                groupNode.ImageKey = group.IconKey;
+                groupNode.SelectedImageKey = group.IconKey;
+
+                // 添加二级菜单
+                foreach (var item in group.Items)
+                {
+                    TreeNode itemNode = new TreeNode(item.Title);
+                    itemNode.ImageKey = item.IconKey;
+                    itemNode.SelectedImageKey = item.IconKey;
+                    // 在Tag中存储命令，以便点击时执行
+                    itemNode.Tag = item.Command;
+                    
+                    groupNode.Nodes.Add(itemNode);
+                }
+
+                treeView.Nodes.Add(groupNode);
+            }
         }
 
         public static void LoadAutoCADIcons(ImageList imgList)
