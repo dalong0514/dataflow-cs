@@ -65,6 +65,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\Common\Commands\AddCustomMenu.cs" />
     <Compile Include="Business\Common\Commands\LocateByHandleCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\ExportCADDataCommand.cs" />

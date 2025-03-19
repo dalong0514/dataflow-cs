@@ -30,6 +30,7 @@ namespace dataflow_cs
                 RegisterCommandHandler(new TestCommand());
                 RegisterCommandHandler(new ExportCADDataCommand());
                 RegisterCommandHandler(new DLLocateByHandleCommand());
+                RegisterCommandHandler(new DLAddCustomMenuCommand());
                 
                 // 将来可在此处添加更多命令
                 
@@ -142,6 +143,15 @@ namespace dataflow_cs
         public void DLLocateByHandle()
         {
             ExecuteCommand("DLLocateByHandle");
+        }
+        
+        /// <summary>
+        /// 添加自定义菜单
+        /// </summary>
+        [CommandMethod("DLAddCustomMenu")]
+        public void DLAddCustomMenu()
+        {
+            ExecuteCommand("DLAddCustomMenu");
         }
         
         // 在这里添加更多命令定义...
