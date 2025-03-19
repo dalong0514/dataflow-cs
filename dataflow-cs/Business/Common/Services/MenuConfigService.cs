@@ -22,17 +22,62 @@ namespace dataflow_cs.Business.Common.Services
         /// <returns>配置文件目录路径</returns>
         private static string GetConfigDirectory()
         {
-            // 使用AutoCAD应用程序目录
-            string appDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string configDir = Path.Combine(appDir, "config");
-            
-            // 确保目录存在
-            if (!Directory.Exists(configDir))
+            try
             {
-                Directory.CreateDirectory(configDir);
+                // 首先尝试获取程序集所在目录
+                string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string assemblyDir = Path.GetDirectoryName(assemblyLocation);
+                
+                // 检查当前程序集目录下是否有config文件夹
+                string configDir1 = Path.Combine(assemblyDir, "config");
+                if (Directory.Exists(configDir1) && File.Exists(Path.Combine(configDir1, ConfigFileName)))
+                {
+                    return configDir1;
+                }
+                
+                // 回退到上一级目录查找config目录
+                string parentDir = Directory.GetParent(assemblyDir)?.FullName;
+                if (parentDir != null)
+                {
+                    string configDir2 = Path.Combine(parentDir, "config");
+                    if (Directory.Exists(configDir2) && File.Exists(Path.Combine(configDir2, ConfigFileName)))
+                    {
+                        return configDir2;
+                    }
+                    
+                    // 再向上一级查找
+                    string grandParentDir = Directory.GetParent(parentDir)?.FullName;
+                    if (grandParentDir != null)
+                    {
+                        string configDir3 = Path.Combine(grandParentDir, "config");
+                        if (Directory.Exists(configDir3) && File.Exists(Path.Combine(configDir3, ConfigFileName)))
+                        {
+                            return configDir3;
+                        }
+                    }
+                }
+                
+                // 如果没有找到配置文件，则使用程序集目录下的config目录
+                string defaultConfigDir = Path.Combine(assemblyDir, "config");
+                if (!Directory.Exists(defaultConfigDir))
+                {
+                    Directory.CreateDirectory(defaultConfigDir);
+                }
+                
+                return defaultConfigDir;
             }
-            
-            return configDir;
+            catch (Exception ex)
+            {
+                Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n获取配置目录时出错: {ex.Message}");
+                
+                // 兜底使用当前工作目录
+                string fallbackDir = Path.Combine(Environment.CurrentDirectory, "config");
+                if (!Directory.Exists(fallbackDir))
+                {
+                    Directory.CreateDirectory(fallbackDir);
+                }
+                return fallbackDir;
+            }
         }
 
         /// <summary>
@@ -54,7 +99,17 @@ namespace dataflow_cs.Business.Common.Services
 
                 // 从文件读取JSON
                 string json = File.ReadAllText(ConfigFilePath);
-                return JsonConvert.DeserializeObject<MenuConfig>(json);
+                try
+                {
+                    var config = JsonConvert.DeserializeObject<MenuConfig>(json);
+                    Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n成功从 {ConfigFilePath} 加载菜单配置");
+                    return config;
+                }
+                catch (Exception jsonEx)
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\nJSON解析错误: {jsonEx.Message}");
+                    return CreateDefaultConfig();
+                }
             }
             catch (Exception ex)
             {
@@ -73,6 +128,7 @@ namespace dataflow_cs.Business.Common.Services
             {
                 string json = JsonConvert.SerializeObject(config, Formatting.Indented);
                 File.WriteAllText(ConfigFilePath, json);
+                Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n成功保存菜单配置到 {ConfigFilePath}");
             }
             catch (Exception ex)
             {

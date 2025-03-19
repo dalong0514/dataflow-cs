@@ -23,10 +23,28 @@ namespace dataflow_cs.Business.Common.Helpers
                 // 获取当前文档
                 Document doc = Application.DocumentManager.MdiActiveDocument;
                 if (doc == null)
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n无法执行命令 {commandName}: 没有活动文档");
                     return;
+                }
 
-                // 执行命令，确保添加空格作为命令结束符
-                doc.SendStringToExecute($"{commandName} ", true, false, true);
+                // 确保命令能被准确执行
+                string commandString = commandName.Trim();
+                
+                // 对命令进行格式化，确保正确执行
+                if (!commandString.StartsWith("_")) // 非国际化命令
+                {
+                    if (!commandString.EndsWith(" "))
+                    {
+                        commandString += " "; // 添加空格作为命令结束符
+                    }
+                }
+                
+                // 执行命令
+                doc.SendStringToExecute(commandString, true, false, true);
+                
+                // 记录命令执行
+                Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n成功执行命令: {commandName}");
             }
             catch (Exception ex)
             {

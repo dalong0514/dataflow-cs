@@ -62,115 +62,133 @@ namespace dataflow_cs.Business.Common.Commands
 
         public static PaletteSet ShowCustomMenu()
         {
-            // 加载菜单配置
-            MenuConfig config = MenuConfigService.LoadMenuConfig();
-            
-            if (_paletteSet == null)
+            try
             {
-                // 创建 PaletteSet 作为 AutoCAD 固定面板
-                _paletteSet = new PaletteSet(config.PaletteTitle)
+                // 每次都重新加载菜单配置，确保能获取最新修改
+                MenuConfig config = MenuConfigService.LoadMenuConfig();
+                
+                if (_paletteSet == null)
                 {
-                    Size = new System.Drawing.Size(config.PaletteWidth, config.PaletteHeight),
-                    Style = PaletteSetStyles.ShowPropertiesMenu |
-                            PaletteSetStyles.ShowCloseButton |
-                            PaletteSetStyles.ShowAutoHideButton |
-                            PaletteSetStyles.SingleColDock,
-                    KeepFocus = true,
-                    Dock = DockSides.Left,
-                    DockEnabled = DockSides.Left
-                };
-
-                // 创建承载自定义菜单的 Panel，并设置上下间距
-                _menuPanel = new Panel
-                {
-                    BackColor = System.Drawing.Color.LightGray,
-                    Dock = DockStyle.Fill,
-                    Padding = new Padding(5)
-                };
-
-                // 添加一个标题标签（与 TreeView 分开，留出间距）
-                Label titleLabel = new Label
-                {
-                    Text = "固定面板",
-                    Dock = DockStyle.Top,
-                    Height = 30,
-                    TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                    BackColor = System.Drawing.Color.Gray,
-                    ForeColor = System.Drawing.Color.White
-                };
-
-                // 创建自定义树控件，用于实现多级菜单及交互效果
-                _treeView = new CustomTreeView
-                {
-                    Dock = DockStyle.Fill,
-                    Font = new System.Drawing.Font("微软雅黑", 10),
-                    BorderStyle = BorderStyle.FixedSingle
-                };
-
-                // 设置 ImageList（示例，实际应加载真实图标）
-                ImageList imgList = new ImageList();
-                LoadAutoCADIcons(imgList);
-                _treeView.ImageList = imgList;
-
-                // 从配置添加菜单
-                AddMenuItemsFromConfig(_treeView, config);
-
-                // 一级菜单点击时展开/收缩，二级菜单点击时触发命令
-                _treeView.NodeMouseClick += (sender, e) =>
-                {
-                    if (e.Node.Level == 0) // 一级菜单：切换展开/收缩
+                    // 创建 PaletteSet 作为 AutoCAD 固定面板
+                    _paletteSet = new PaletteSet(config.PaletteTitle)
                     {
-                        e.Node.Toggle();
-                    }
-                    else if (e.Node.Level == 1) // 二级菜单：执行命令
+                        Size = new System.Drawing.Size(config.PaletteWidth, config.PaletteHeight),
+                        Style = PaletteSetStyles.ShowPropertiesMenu |
+                                PaletteSetStyles.ShowCloseButton |
+                                PaletteSetStyles.ShowAutoHideButton |
+                                PaletteSetStyles.SingleColDock,
+                        KeepFocus = true,
+                        Dock = DockSides.Left,
+                        DockEnabled = DockSides.Left
+                    };
+
+                    // 创建承载自定义菜单的 Panel，并设置上下间距
+                    _menuPanel = new Panel
                     {
-                        // 获取存储在Tag中的命令
-                        string command = e.Node.Tag as string;
-                        if (!string.IsNullOrEmpty(command))
+                        BackColor = System.Drawing.Color.LightGray,
+                        Dock = DockStyle.Fill,
+                        Padding = new Padding(5)
+                    };
+
+                    // 添加一个标题标签（与 TreeView 分开，留出间距）
+                    Label titleLabel = new Label
+                    {
+                        Text = "固定面板",
+                        Dock = DockStyle.Top,
+                        Height = 30,
+                        TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                        BackColor = System.Drawing.Color.Gray,
+                        ForeColor = System.Drawing.Color.White
+                    };
+
+                    // 创建自定义树控件，用于实现多级菜单及交互效果
+                    _treeView = new CustomTreeView
+                    {
+                        Dock = DockStyle.Fill,
+                        Font = new System.Drawing.Font("微软雅黑", 10),
+                        BorderStyle = BorderStyle.FixedSingle
+                    };
+
+                    // 设置 ImageList（示例，实际应加载真实图标）
+                    ImageList imgList = new ImageList();
+                    LoadAutoCADIcons(imgList);
+                    _treeView.ImageList = imgList;
+
+                    // 从配置添加菜单
+                    AddMenuItemsFromConfig(_treeView, config);
+
+                    // 一级菜单点击时展开/收缩，二级菜单点击时触发命令
+                    _treeView.NodeMouseClick += (sender, e) =>
+                    {
+                        if (e.Node.Level == 0) // 一级菜单：切换展开/收缩
                         {
-                            // 执行AutoCAD命令
-                            AutoCADCommandHelper.RunCommand(command);
+                            e.Node.Toggle();
                         }
+                        else if (e.Node.Level == 1) // 二级菜单：执行命令
+                        {
+                            // 获取存储在Tag中的命令
+                            string command = e.Node.Tag as string;
+                            if (!string.IsNullOrEmpty(command))
+                            {
+                                // 显示正在执行的命令
+                                Application.DocumentManager.MdiActiveDocument?.Editor
+                                    .WriteMessage($"\n执行命令: {command}");
+                                
+                                // 执行AutoCAD命令
+                                AutoCADCommandHelper.RunCommand(command);
+                            }
+                        }
+                    };
+
+                    _menuPanel.Controls.Add(_treeView);
+                    _menuPanel.Controls.Add(titleLabel);
+                    // 将 Panel 添加到 PaletteSet
+                    _paletteSet.Add("我的面板", _menuPanel);
+
+                    // 停靠到 AutoCAD 左侧
+                    _paletteSet.Dock = DockSides.Left;
+
+                    _paletteSet.Visible = true;
+
+                    _paletteSet.Dock = DockSides.Left;
+                    _paletteSet.DockEnabled = DockSides.Left;
+
+                    // 设置 PaletteSet 的位置与尺寸
+                    var mainWindow = Application.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        int x = Convert.ToInt32(mainWindow.DeviceIndependentLocation.X);
+                        int y = Convert.ToInt32(mainWindow.DeviceIndependentLocation.Y + mainWindow.DeviceIndependentSize.Height / 3);
+                        int width = config.PaletteWidth;
+                        int height = Convert.ToInt32(mainWindow.DeviceIndependentSize.Height * 0.75);
+                        _paletteSet.SetLocation(new System.Drawing.Point(x, y));
+                        _paletteSet.Size = new System.Drawing.Size(width, height);
                     }
-                };
-
-                _menuPanel.Controls.Add(_treeView);
-                _menuPanel.Controls.Add(titleLabel);
-                // 将 Panel 添加到 PaletteSet
-                _paletteSet.Add("我的面板", _menuPanel);
-
-                // 停靠到 AutoCAD 左侧
-                _paletteSet.Dock = DockSides.Left;
+                }
+                else
+                {
+                    // 如果面板已存在，则刷新菜单
+                    if (_treeView != null)
+                    {
+                        _treeView.Nodes.Clear();
+                        AddMenuItemsFromConfig(_treeView, config);
+                    }
+                    
+                    // 更新面板标题和尺寸
+                    _paletteSet.Text = config.PaletteTitle;
+                    _paletteSet.Size = new System.Drawing.Size(config.PaletteWidth, 
+                        _paletteSet.Size.Height); // 只更新宽度，保持高度不变
+                }
 
                 _paletteSet.Visible = true;
-
-                _paletteSet.Dock = DockSides.Left;
-                _paletteSet.DockEnabled = DockSides.Left;
-
-                // 设置 PaletteSet 的位置与尺寸
-                var mainWindow = Application.MainWindow;
-                if (mainWindow != null)
-                {
-                    int x = Convert.ToInt32(mainWindow.DeviceIndependentLocation.X);
-                    int y = Convert.ToInt32(mainWindow.DeviceIndependentLocation.Y + mainWindow.DeviceIndependentSize.Height / 3);
-                    int width = config.PaletteWidth;
-                    int height = Convert.ToInt32(mainWindow.DeviceIndependentSize.Height * 0.75);
-                    _paletteSet.SetLocation(new System.Drawing.Point(x, y));
-                    _paletteSet.Size = new System.Drawing.Size(width, height);
-                }
+                return _paletteSet;
             }
-            else
+            catch (Exception ex)
             {
-                // 如果面板已存在，则刷新菜单
-                if (_treeView != null)
-                {
-                    _treeView.Nodes.Clear();
-                    AddMenuItemsFromConfig(_treeView, config);
-                }
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n显示自定义菜单时出错: {ex.Message}");
+                return null;
             }
-
-            _paletteSet.Visible = true;
-            return _paletteSet;
         }
 
         /// <summary>
