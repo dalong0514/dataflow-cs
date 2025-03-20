@@ -1,0 +1,12 @@
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.csproj.AssemblyReference.cache
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.csproj.CoreCompileInputs.cache
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.pdb
+D:\dataflow.code\dataflow-cs\TargetDLL\dataflow-cs.dll
+D:\dataflow.code\dataflow-cs\TargetDLL\dataflow-cs.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow.5A4E7D24.Up2Date
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs_MarkupCompile.cache
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Business\PipeFlow\Views\WindowExportData.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs_MarkupCompile.lref
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Business\PipeFlow\Views\WindowExportData.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.g.resources
