@@ -28,3 +28,5 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.xml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.xml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Business\GsLc\Views\UserControl1.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Business\GsLc\Views\UserControl1.baml

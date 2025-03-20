@@ -6,6 +6,7 @@ using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.Helpers;
 using System.Collections.Generic;
+using dataflow_cs.Business.GsLc.Views;
 
 [assembly: CommandClass(typeof(dataflow_cs.CommandManager))]
 
@@ -154,6 +155,7 @@ namespace dataflow_cs
             ExecuteCommand("DLAddCustomMenu");
         }
         
+
         // 在这里添加更多命令定义...
         
         #endregion
