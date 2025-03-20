@@ -20,6 +20,8 @@ CommonUtils/obj/Debug/*
 *.pdb
 *.dll
 
+/obj/Debug/*
+/bin/Debug/*
 CommonUtils/bin/Release/
 CommonUtils/obj/Release/
 dataflow-cs/bin/Release/
