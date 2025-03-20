@@ -22,3 +22,5 @@ CommonUtils/obj/Debug/*
 
 /obj/Debug/*
 /bin/Debug/*
+/obj/Release/*
+/bin/Release/*
