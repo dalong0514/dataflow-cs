@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\dataflowcad\dataflowcad\dataflowNet\DLNet\</OutputPath>
+    <OutputPath>obj\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -70,7 +70,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Business\Common\Commands\AddCustomMenu.cs" />
+    <Compile Include="Business\Common\Commands\AddCustomMenuCommand.cs" />
     <Compile Include="Business\Common\Commands\LocateByHandleCommand.cs" />
     <Compile Include="Business\Common\Helpers\AutoCADCommandHelper.cs" />
     <Compile Include="Business\Common\Models\MenuConfig.cs" />

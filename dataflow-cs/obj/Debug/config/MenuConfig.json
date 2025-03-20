@@ -4,34 +4,34 @@
   "PaletteHeight": 400,
   "MenuGroups": [
     {
-      "Title": "一级菜单 1",
+      "Title": "数据处理",
       "IconKey": "folder",
       "Items": [
         {
-          "Title": "二级菜单 1-1",
+          "Title": "导出数据",
           "IconKey": "本地生活",
           "Command": "GsLcExportCADData"
         },
         {
-          "Title": "二级菜单 1-2",
+          "Title": "同步数据",
           "IconKey": "本地生活",
-          "Command": "CIRCLE"
+          "Command": "GsLcImportDataLisp"
         }
       ]
     },
     {
-      "Title": "一级菜单 2",
+      "Title": "绑定相对位置",
       "IconKey": "folder",
       "Items": [
         {
-          "Title": "二级菜单 2-1",
+          "Title": "刷仪表所在位置绑定相对位置",
           "IconKey": "编辑",
-          "Command": "RECTANGLE"
+          "Command": "LINE"
         },
         {
           "Title": "二级菜单 2-2",
           "IconKey": "编辑",
-          "Command": "ARC"
+          "Command": "LINE"
         }
       ]
     },
@@ -45,6 +45,29 @@
           "Command": "TEXT"
         }
       ]
+    },
+    {
+      "Title": "一级菜单 4",
+      "IconKey": "folder",
+      "Items": [
+        {
+          "Title": "二级菜单 3-1",
+          "IconKey": "second",
+          "Command": "TEXT"
+        }
+      ]
+    },
+    {
+      "Title": "一级菜单 5",
+      "IconKey": "folder",
+      "Items": [
+        {
+          "Title": "二级菜单 3-1",
+          "IconKey": "second",
+          "Command": "TEXT"
+        }
+      ]
     }
+	
   ]
 }

@@ -24,3 +24,7 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs_MarkupCompile.cac
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs_MarkupCompile.lref
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Business\PipeFlow\Views\WindowExportData.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.g.resources
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.xml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.xml
