@@ -1,13 +1,14 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
+using dataflow_cs.Views;
 using System;
 using System.Windows;
 
 namespace dataflow_cs.Business.GsLc.Commands
 {
     /// <summary>
-    /// 显示UserControl1面板命令
+    /// 显示数据导出面板命令
     /// </summary>
     public class GsLcSysDataFromClientCommand : CommandHandlerBase
     {
@@ -28,29 +29,16 @@ namespace dataflow_cs.Business.GsLc.Commands
             {
                 editor.WriteMessage("\n正在显示数据导出面板...");
 
-                // 创建一个新窗口来承载GsLcSysDataFromClient
-                Window window = new Window
-                {
-                    Title = "天正数据设计",
-                    Width = 520,
-                    Height = 350,
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                    ResizeMode = ResizeMode.NoResize
-                };
-
-                // 创建GsLcSysDataFromClient实例并设置事件处理
-                var userControl = new dataflow_cs.Views.GsLcSysDataFromClient();
-                userControl.ExportCompleted += (sender, e) =>
+                // 创建GsLcSysDataWindow实例并设置事件处理
+                var window = new GsLcSysDataWindow();
+                window.ExportCompleted += (sender, e) =>
                 {
                     editor.WriteMessage("\n导出操作已完成");
                 };
-                userControl.ExportCancelled += (sender, e) =>
+                window.ExportCancelled += (sender, e) =>
                 {
                     editor.WriteMessage("\n导出操作已取消");
                 };
-
-                // 设置窗口内容
-                window.Content = userControl;
                 
                 // 显示窗口
                 window.ShowDialog();

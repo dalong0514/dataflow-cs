@@ -43,7 +43,6 @@ namespace dataflow_cs.ViewModel
             ////}
 
             SimpleIoc.Default.Register<MainViewModel>();
-            SimpleIoc.Default.Register<GsLcSysDataFromClienModel>();
         }
 
         public MainViewModel Main
@@ -51,14 +50,6 @@ namespace dataflow_cs.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
-            }
-        }
-        
-        public GsLcSysDataFromClienModel GsLcSysDataFromClient
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<GsLcSysDataFromClienModel>();
             }
         }
         
