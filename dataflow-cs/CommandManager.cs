@@ -28,10 +28,11 @@ namespace dataflow_cs
             {
                 // 注册命令处理器
                 RegisterCommandHandler(new BatchSyncPipeDataCommand());
-                RegisterCommandHandler(new TestCommand());
+                RegisterCommandHandler(new GsLcSysDataFromClientCommand());
                 RegisterCommandHandler(new LocateByHandleCommand());
                 RegisterCommandHandler(new AddCustomMenuCommand());
-                RegisterCommandHandler(new GsLcSysDataFromClientCommand());
+                RegisterCommandHandler(new TestCommand());
+                RegisterCommandHandler(new TestTemplateWindowCommand());
                 
                 // 将来可在此处添加更多命令
                 
@@ -144,6 +145,12 @@ namespace dataflow_cs
         public void DLGsLcSysDataFromClient()
         {
             ExecuteCommand("DLGsLcSysDataFromClient");
+        }
+
+        [CommandMethod("DLTestTemplateWindow")]
+        public void DLTestTemplateWindow()
+        {
+            ExecuteCommand("DLTestTemplateWindow");
         }
 
         // 在这里添加更多命令定义...

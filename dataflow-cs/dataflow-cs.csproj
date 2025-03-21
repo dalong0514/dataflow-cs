@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Business\Common\Commands\AddCustomMenuCommand.cs" />
     <Compile Include="Business\Common\Commands\LocateByHandleCommand.cs" />
+    <Compile Include="Business\Common\Commands\TestTemplateCommand.cs" />
     <Compile Include="Business\Common\Helpers\AutoCADCommandHelper.cs" />
     <Compile Include="Business\Common\Models\MenuConfig.cs" />
     <Compile Include="Business\Common\Services\MenuConfigService.cs" />
@@ -110,7 +111,11 @@
     <Compile Include="Utils\CADUtils\UtilsZoom.cs" />
     <Compile Include="Utils\ConstUtils\ConstURL.cs" />
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
+    <Compile Include="ViewModel\TestTemplateWindowViewModel.cs" />
     <Compile Include="ViewModel\GsLcSysDataFromClientViewModel.cs" />
+    <Compile Include="Views\TestTemplateWindow.xaml.cs">
+      <DependentUpon>TestTemplateWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GsLcSysDataFromClient.xaml.cs">
       <DependentUpon>GsLcSysDataFromClient.xaml</DependentUpon>
     </Compile>
@@ -131,6 +136,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TestTemplateWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -36,3 +36,5 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.g
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\App.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.GeneratedMSBuildEditorConfig.editorconfig
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\TestTemplateWindow.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\TestTemplateWindow.baml
