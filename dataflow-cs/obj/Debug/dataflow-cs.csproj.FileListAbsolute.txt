@@ -26,14 +26,7 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.xml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.xml
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\CommonServiceLocator.dll
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.dll
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.Extras.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.Windows.Interactivity.dll
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.pdb
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.xml
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.Extras.pdb
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.Extras.xml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\ControlzEx.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\ControlzEx.pdb
@@ -42,3 +35,4 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.xml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.g.cs
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\App.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.GeneratedMSBuildEditorConfig.editorconfig

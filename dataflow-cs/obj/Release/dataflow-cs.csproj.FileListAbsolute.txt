@@ -11,3 +11,4 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.g.resources
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\App.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Views\GsLcSysDataFromClient.g.cs
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Views\GsLcSysDataFromClient.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.GeneratedMSBuildEditorConfig.editorconfig
