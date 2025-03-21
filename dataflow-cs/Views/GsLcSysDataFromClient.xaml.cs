@@ -5,9 +5,9 @@ using System.Windows;
 namespace dataflow_cs.Views
 {
     /// <summary>
-    /// GsLcSysDataWindow.xaml 的交互逻辑
+    /// GsLcSysDataFromClient.xaml 的交互逻辑
     /// </summary>
-    public partial class GsLcSysDataWindow : Window
+    public partial class GsLcSysDataFromClient : Window
     {
         // 导出完成事件
         public event EventHandler ExportCompleted;
@@ -23,7 +23,7 @@ namespace dataflow_cs.Views
             new DataTypeInfo { Id = 4, Name = "阀门管件数据" }
         };
 
-        public GsLcSysDataWindow()
+        public GsLcSysDataFromClient()
         {
             InitializeComponent();
             
