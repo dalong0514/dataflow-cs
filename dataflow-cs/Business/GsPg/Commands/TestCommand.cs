@@ -1,6 +1,5 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using dataflow_cs.Business.PipeFlow.Views;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Utils.Helpers;
@@ -9,7 +8,7 @@ using System.Windows;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace dataflow_cs.Business.PipeFlow.Commands
+namespace dataflow_cs.Business.GsPg.Commands
 {
     /// <summary>
     /// 测试命令
@@ -62,7 +61,7 @@ namespace dataflow_cs.Business.PipeFlow.Commands
                         
                     case "ExportData":
                         // 测试WindowExportData窗口
-                        TestWindowExportData();
+                        editor.WriteMessage($"\n执行测试命令时发生错误");
                         return true;
                         
                     default:
@@ -76,26 +75,6 @@ namespace dataflow_cs.Business.PipeFlow.Commands
             }
         }
         
-        /// <summary>
-        /// 测试WindowExportData窗口
-        /// </summary>
-        private void TestWindowExportData()
-        {
-            // 在UI线程中执行
-            System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
-            {
-                try
-                {
-                    // 创建窗口
-                    var window = new WindowExportData();
-                    window.Show();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"显示窗口时发生错误: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }));
-        }
         
         /// <summary>
         /// 通过实体句柄定位到实体对象

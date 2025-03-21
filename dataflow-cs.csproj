@@ -6,10 +6,10 @@
     <Compile Include="Utils\CADUtils\GeometryUtils.cs" />
     <Compile Include="Utils\CADUtils\PolylineUtils.cs" />
     <Compile Include="Utils\CADUtils\SelectionSetUtils.cs" />
-    <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\FunctionTestCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\SyncPipeDataCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\BatchSyncPipeDataCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\FunctionTestCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\SyncPipeDataCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\TestCommand.cs" />
     <Compile Include="CommandManager.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsBlock.cs" />
     <Compile Include="CommonUtils\CADUtils\UtilsCADActive.cs" />

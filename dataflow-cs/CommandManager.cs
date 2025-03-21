@@ -1,11 +1,11 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
-using dataflow_cs.Business.PipeFlow.Commands;
-using dataflow_cs.Business.Common.Commands;
 using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.Helpers;
 using System.Collections.Generic;
+using dataflow_cs.Business.GsPg.Commands;
+using dataflow_cs.Business.Common.Commands;
 using dataflow_cs.Business.GsLc.Commands;
 
 [assembly: CommandClass(typeof(dataflow_cs.CommandManager))]
@@ -29,9 +29,8 @@ namespace dataflow_cs
                 // 注册命令处理器
                 RegisterCommandHandler(new BatchSyncPipeDataCommand());
                 RegisterCommandHandler(new TestCommand());
-                RegisterCommandHandler(new ExportCADDataCommand());
-                RegisterCommandHandler(new DLLocateByHandleCommand());
-                RegisterCommandHandler(new DLAddCustomMenuCommand());
+                RegisterCommandHandler(new LocateByHandleCommand());
+                RegisterCommandHandler(new AddCustomMenuCommand());
                 RegisterCommandHandler(new GsLcSysDataFromClientCommand());
                 
                 // 将来可在此处添加更多命令
@@ -103,30 +102,12 @@ namespace dataflow_cs
         #region 命令定义
         
         /// <summary>
-        /// 管道数据同步命令
-        /// </summary>
-        [CommandMethod("GsLcSynFromToLocationData")]
-        public void GsLcSynFromToLocationData()
-        {
-            ExecuteCommand("GsLcSynFromToLocationData");
-        }
-        
-        /// <summary>
         /// 批量同步管道数据命令
         /// </summary>
         [CommandMethod("DPS")]
         public void DPS()
         {
             ExecuteCommand("DPS");
-        }
-        
-        /// <summary>
-        /// CAD数据导出命令
-        /// </summary>
-        [CommandMethod("DLGsLcExportData")]
-        public void DLGsLcExportData()
-        {
-            ExecuteCommand("DLGsLcExportData");
         }
         
         /// <summary>
@@ -159,10 +140,10 @@ namespace dataflow_cs
         /// <summary>
         /// 显示UserControl1面板
         /// </summary>
-        [CommandMethod("DLSysDataFromClient")]
-        public void DLSysDataFromClient()
+        [CommandMethod("DLGsLcSysDataFromClient")]
+        public void DLGsLcSysDataFromClient()
         {
-            ExecuteCommand("DLSysDataFromClient");
+            ExecuteCommand("DLGsLcSysDataFromClient");
         }
 
         // 在这里添加更多命令定义...

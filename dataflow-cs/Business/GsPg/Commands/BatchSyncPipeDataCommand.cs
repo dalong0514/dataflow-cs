@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 
-namespace dataflow_cs.Business.PipeFlow.Commands
+namespace dataflow_cs.Business.GsPg.Commands
 {
     /// <summary>
     /// 批量同步管道数据命令

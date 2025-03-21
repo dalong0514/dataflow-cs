@@ -16,7 +16,7 @@ namespace dataflow_cs.Business.GsLc.Commands
         /// <summary>
         /// 命令名称
         /// </summary>
-        public override string CommandName => "DLSysDataFromClient";
+        public override string CommandName => "DLGsLcSysDataFromClient";
 
         /// <summary>
         /// 执行命令核心逻辑

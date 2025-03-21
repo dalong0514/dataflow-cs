@@ -1,6 +1,5 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using dataflow_cs.Business.PipeFlow.Views;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Utils.Helpers;
@@ -14,7 +13,7 @@ namespace dataflow_cs.Business.Common.Commands
     /// <summary>
     /// 测试命令
     /// </summary>
-    public class DLLocateByHandleCommand : CommandHandlerBase
+    public class LocateByHandleCommand : CommandHandlerBase
     {
         /// <summary>
         /// 命令名称

@@ -22,7 +22,7 @@ namespace dataflow_cs.Business.Common.Commands
     /// <summary>
     /// 添加自定义菜单命令
     /// </summary>
-    public class DLAddCustomMenuCommand : CommandHandlerBase
+    public class AddCustomMenuCommand : CommandHandlerBase
     {
         /// <summary>
         /// 命令名称

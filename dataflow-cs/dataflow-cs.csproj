@@ -94,13 +94,8 @@
     <Compile Include="Business\Common\Models\MenuConfig.cs" />
     <Compile Include="Business\Common\Services\MenuConfigService.cs" />
     <Compile Include="Business\GsLc\Commands\GsLcSysDataFromClientCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\ExportCADDataCommand.cs" />
-    <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
-    <Compile Include="Business\PipeFlow\ViewModels\ExportDataViewModel.cs" />
-    <Compile Include="Business\PipeFlow\Views\WindowExportData.xaml.cs">
-      <DependentUpon>WindowExportData.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Business\GsPg\Commands\BatchSyncPipeDataCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\TestCommand.cs" />
     <Compile Include="CommandManager.cs" />
     <Compile Include="Core\Extensions\MetroWindowExtensions.cs" />
     <Compile Include="Core\Interfaces\ICommandHandler.cs" />
@@ -133,8 +128,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Business\PipeFlow\Operations\" />
-    <Folder Include="Business\PipeFlow\Services\" />
+    <Folder Include="Business\GsPg\Operations\" />
+    <Folder Include="Business\GsPg\Services\" />
     <Folder Include="Plugins\" />
     <Folder Include="Resources\" />
     <Folder Include="UI\Dialogs\" />
@@ -149,10 +144,6 @@
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Business\PipeFlow\Views\WindowExportData.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GsLcSysDataFromClient.xaml">
       <SubType>Designer</SubType>

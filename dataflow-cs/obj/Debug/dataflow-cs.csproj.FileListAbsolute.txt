@@ -19,10 +19,8 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.csproj.CoreCompil
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.pdb
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow.5A4E7D24.Up2Date
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Business\PipeFlow\Views\WindowExportData.g.cs
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs_MarkupCompile.cache
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs_MarkupCompile.lref
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Business\PipeFlow\Views\WindowExportData.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.g.resources
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Newtonsoft.Json.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.ValueTuple.dll
