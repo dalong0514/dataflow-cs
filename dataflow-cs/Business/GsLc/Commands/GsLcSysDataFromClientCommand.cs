@@ -9,12 +9,12 @@ namespace dataflow_cs.Business.GsLc.Commands
     /// <summary>
     /// 显示UserControl1面板命令
     /// </summary>
-    public class ShowUserControl1Command : CommandHandlerBase
+    public class GsLcSysDataFromClientCommand : CommandHandlerBase
     {
         /// <summary>
         /// 命令名称
         /// </summary>
-        public override string CommandName => "DLShowUserControl1";
+        public override string CommandName => "DLSysDataFromClient";
 
         /// <summary>
         /// 执行命令核心逻辑

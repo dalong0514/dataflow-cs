@@ -6,7 +6,6 @@ using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.Helpers;
 using System.Collections.Generic;
-using dataflow_cs.Business.GsLc.Views;
 using dataflow_cs.Business.GsLc.Commands;
 
 [assembly: CommandClass(typeof(dataflow_cs.CommandManager))]
@@ -33,7 +32,7 @@ namespace dataflow_cs
                 RegisterCommandHandler(new ExportCADDataCommand());
                 RegisterCommandHandler(new DLLocateByHandleCommand());
                 RegisterCommandHandler(new DLAddCustomMenuCommand());
-                RegisterCommandHandler(new ShowUserControl1Command());
+                RegisterCommandHandler(new GsLcSysDataFromClientCommand());
                 
                 // 将来可在此处添加更多命令
                 
@@ -160,10 +159,10 @@ namespace dataflow_cs
         /// <summary>
         /// 显示UserControl1面板
         /// </summary>
-        [CommandMethod("DLShowUserControl1")]
-        public void DLShowUserControl1()
+        [CommandMethod("DLSysDataFromClient")]
+        public void DLSysDataFromClient()
         {
-            ExecuteCommand("DLShowUserControl1");
+            ExecuteCommand("DLSysDataFromClient");
         }
 
         // 在这里添加更多命令定义...

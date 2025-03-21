@@ -93,10 +93,7 @@
     <Compile Include="Business\Common\Helpers\AutoCADCommandHelper.cs" />
     <Compile Include="Business\Common\Models\MenuConfig.cs" />
     <Compile Include="Business\Common\Services\MenuConfigService.cs" />
-    <Compile Include="Business\GsLc\Commands\ShowUserControl1Command.cs" />
-    <Compile Include="Business\GsLc\Views\UserControl1.xaml.cs">
-      <DependentUpon>UserControl1.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Business\GsLc\Commands\GsLcSysDataFromClientCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\BatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\ExportCADDataCommand.cs" />
     <Compile Include="Business\PipeFlow\Commands\TestCommand.cs" />
@@ -147,10 +144,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Business\GsLc\Views\UserControl1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Business\PipeFlow\Views\WindowExportData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
