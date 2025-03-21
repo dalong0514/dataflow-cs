@@ -5,7 +5,7 @@ using System.Text;
 
 namespace dataflow_cs.ViewModel
 {
-    internal class GsLcSysDataFromClient
+    internal class GsLcSysDataFromClientViewModel
     {
     }
 }
