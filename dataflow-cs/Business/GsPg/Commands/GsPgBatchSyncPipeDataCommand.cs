@@ -54,18 +54,35 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 判断管道元素是否在管道线上
+        /// </summary>
+        /// <param name="basePoint">基准点</param>
+        /// <param name="pipeLineObjectId">管道线对象ID</param>
+        /// <returns>是否在管道线上</returns>
         public static bool IsPipeElementOnPipeLine(Point3d basePoint, ObjectId pipeLineObjectId)
         {
             return UtilsGeometry.UtilsIsPointOnPolyline(basePoint, pipeLineObjectId, 5);
 
         }
 
+        /// <summary>
+        /// 判断管道元素是否在管道线端点上
+        /// </summary>
+        /// <param name="basePoint">基准点</param>
+        /// <param name="pipeLineObjectId">管道线对象ID</param>
+        /// <returns>是否在管道线端点上</returns>
         public static bool IsPipeElementOnPipeLineEnds(Point3d basePoint, ObjectId pipeLineObjectId)
         {
             return UtilsGeometry.UtilsIsPointOnPolylineEnds(basePoint, pipeLineObjectId, 5);
 
         }
 
+        /// <summary>
+        /// 获取管道数据
+        /// </summary>
+        /// <param name="pipeNumObjectId">管道编号对象ID</param>
+        /// <returns>管道数据字典</returns>
         public static Dictionary<string, string> GsPgGetPipeData(ObjectId pipeNumObjectId)
         {
             Dictionary<string, string> propertyValueDictList = UtilsBlock.UtilsGetAllPropertyDictList(pipeNumObjectId);
@@ -77,6 +94,12 @@ namespace dataflow_cs.Business.GsPg.Commands
             };
         }
 
+        /// <summary>
+        /// 通过管道元素获取其所在的管道线
+        /// </summary>
+        /// <param name="pipeElementObjectId">管道元素对象ID</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <returns>管道元素所在的管道线对象ID</returns>
         public static ObjectId GsPgGetPipeLineByOnPL(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
             pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
@@ -87,6 +110,12 @@ namespace dataflow_cs.Business.GsPg.Commands
             return ObjectId.Null;
         }
 
+        /// <summary>
+        /// 通过管道元素获取其所在的管道线端点
+        /// </summary>
+        /// <param name="pipeElementObjectId">管道元素对象ID</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <returns>管道元素所在的管道线端点对象ID</returns>
         public static ObjectId GsPgGetPipeLineByOnPLEnd(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
             pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
@@ -97,18 +126,38 @@ namespace dataflow_cs.Business.GsPg.Commands
             return ObjectId.Null;
         }
 
+        /// <summary>
+        /// 获取管道元素所在的所有管道线
+        /// </summary>
+        /// <param name="pipeElementObjectId">管道元素对象ID</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <returns>管道元素所在的所有管道线对象ID列表</returns>
         public static List<ObjectId> GsPgGetPipeLinesByOnPL(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
             pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
             return pipeLineObjectIds;
         }
 
+        /// <summary>
+        /// 获取管道元素所在的所有管道线端点
+        /// </summary>
+        /// <param name="pipeElementObjectId">管道元素对象ID</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <returns>管道元素所在的所有管道线端点对象ID列表</returns>
         public static List<ObjectId> GsPgGetPipeLinesByOnPLEnd(ObjectId pipeElementObjectId, List<ObjectId> pipeLineObjectIds)
         {
             pipeLineObjectIds = pipeLineObjectIds.Where(x => IsPipeElementOnPipeLineEnds(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
             return pipeLineObjectIds;
         }
 
+        /// <summary>
+        /// 通过相交获取其他管道线
+        /// </summary>
+        /// <param name="pipeLineObjectId">当前管道线对象ID</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <param name="allElbowObjectIds">所有弯头对象ID列表</param>
+        /// <param name="pipeData">管道数据</param>
+        /// <returns>相交的其他管道线对象ID列表</returns>
         public static List<ObjectId> GsPgGetOtherPipeLineByInterset(ObjectId pipeLineObjectId, List<ObjectId> pipeLineObjectIds, List<ObjectId> allElbowObjectIds, Dictionary<string, string> pipeData)
         {
             List<ObjectId> otherPipeLineObjectIds = new List<ObjectId>();
@@ -129,6 +178,12 @@ namespace dataflow_cs.Business.GsPg.Commands
             return otherPipeLineObjectIds;
         }
 
+        /// <summary>
+        /// 修改管道箭头辅助属性值
+        /// </summary>
+        /// <param name="pipeLineObjectId">管道线对象ID</param>
+        /// <param name="allPipeArrowAssistObjectIds">所有管道箭头辅助对象ID列表</param>
+        /// <param name="pipeData">管道数据</param>
         public static void GsPgChangePipeArrowAssistPropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allPipeArrowAssistObjectIds, Dictionary<string, string> pipeData)
         {
             allPipeArrowAssistObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
@@ -141,6 +196,12 @@ namespace dataflow_cs.Business.GsPg.Commands
                 });
         }
 
+        /// <summary>
+        /// 获取管道直径
+        /// </summary>
+        /// <param name="pipeNum">管道编号</param>
+        /// <param name="pipeInfo">管道信息辅助类</param>
+        /// <returns>管道直径</returns>
         public static string GsPgGetPipeDiameter(string pipeNum, PipeInfoHelper pipeInfo)
         {
             string pipeDiameter = pipeInfo.GetPipeDiameter(pipeNum);
@@ -156,12 +217,25 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 获取管道弯头直径
+        /// </summary>
+        /// <param name="pipeDiameter">管道直径</param>
+        /// <param name="calMultiple">计算倍数</param>
+        /// <returns>管道弯头直径</returns>
         public static string GsPgGetPipeElbowDiameter(string pipeDiameter, double calMultiple)
         {
             double result = UtilsCommon.UtilsStringToDouble(pipeDiameter) * calMultiple;
             return result.ToString();
         }
 
+        /// <summary>
+        /// 修改阀门属性值
+        /// </summary>
+        /// <param name="pipeLineObjectId">管道线对象ID</param>
+        /// <param name="allValveObjectIds">所有阀门对象ID列表</param>
+        /// <param name="pipeData">管道数据</param>
+        /// <param name="pipeInfo">管道信息辅助类</param>
         public static void GsPgChangeValvePropertyValue(ObjectId pipeLineObjectId, List<ObjectId> allValveObjectIds, Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
         {
             allValveObjectIds.Where(x => IsPipeElementOnPipeLine(UtilsBlock.UtilsGetBlockBasePoint(x), pipeLineObjectId))
@@ -183,6 +257,16 @@ namespace dataflow_cs.Business.GsPg.Commands
                 });
         }
 
+        /// <summary>
+        /// 同步一个管道辅助的管道元素
+        /// </summary>
+        /// <param name="pipeData">管道数据</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <param name="allPipeLineObjectIds">所有管道线对象ID列表</param>
+        /// <param name="allElbowObjectIds">所有弯头对象ID列表</param>
+        /// <param name="allPipeArrowAssistObjectIds">所有管道箭头辅助对象ID列表</param>
+        /// <param name="allValveObjectIds">所有阀门对象ID列表</param>
+        /// <param name="pipeInfo">管道信息辅助类</param>
         public static void GsPgSynPipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> pipeLineObjectIds, List<ObjectId> allPipeLineObjectIds, List<ObjectId> allElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds, List<ObjectId> allValveObjectIds, PipeInfoHelper pipeInfo)
         {
             if (pipeLineObjectIds != null)
@@ -208,6 +292,12 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 根据点位置获取斜角旋转角度
+        /// </summary>
+        /// <param name="xDiff">X差值</param>
+        /// <param name="yDiff">Y差值</param>
+        /// <returns>旋转角度</returns>
         private static int GetObliqueRotationBasedOnPointPosition(double xDiff, double yDiff)
         {
             if (xDiff > 0 && yDiff > 0) return 45;
@@ -216,6 +306,12 @@ namespace dataflow_cs.Business.GsPg.Commands
             return 275;
         }
 
+        /// <summary>
+        /// 根据点位置获取旋转角度
+        /// </summary>
+        /// <param name="xDiff">X差值</param>
+        /// <param name="yDiff">Y差值</param>
+        /// <returns>旋转角度</returns>
         private static int GetRotationBasedOnPointPosition(double xDiff, double yDiff)
         {
             if (xDiff > 0 && yDiff > 0) return 0;
@@ -224,6 +320,13 @@ namespace dataflow_cs.Business.GsPg.Commands
             return 270;
         }
 
+        /// <summary>
+        /// 获取交叉点
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="pipeLineObjectId1">管道线1对象ID</param>
+        /// <param name="pipeLineObjectId2">管道线2对象ID</param>
+        /// <returns>两个交叉点</returns>
         private static (Point3d, Point3d) GetCrossPoints(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2)
         {
             List<Point3d> firstPoint3ds = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId1);
@@ -234,6 +337,13 @@ namespace dataflow_cs.Business.GsPg.Commands
             return (firstCrossPoint, secondCrossPoint);
         }
 
+        /// <summary>
+        /// 获取水平和垂直点
+        /// </summary>
+        /// <param name="basePoint">基准点</param>
+        /// <param name="firstCrossPoint">第一个交叉点</param>
+        /// <param name="secondCrossPoint">第二个交叉点</param>
+        /// <returns>水平点和垂直点</returns>
         private static (Point3d, Point3d) GetHorizontalAndVerticalPoints(Point3d basePoint, Point3d firstCrossPoint, Point3d secondCrossPoint)
         {
             return UtilsGeometry.UtilsIsLineHorizontal(basePoint, firstCrossPoint, 5.0)
@@ -241,6 +351,13 @@ namespace dataflow_cs.Business.GsPg.Commands
                 : (secondCrossPoint, firstCrossPoint);
         }
 
+        /// <summary>
+        /// 根据弯头类型设置旋转角度
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="elbowType">弯头类型</param>
+        /// <param name="xDiff">X差值</param>
+        /// <param name="yDiff">Y差值</param>
         private static void SetRotationBasedOnElbowType(ObjectId elbowObjectId, string elbowType, double xDiff, double yDiff)
         {
             if (elbowType == "elbow90")
@@ -255,6 +372,13 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 同步弯头旋转角度
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="pipeLineObjectId1">管道线1对象ID</param>
+        /// <param name="pipeLineObjectId2">管道线2对象ID</param>
+        /// <param name="elbowType">弯头类型</param>
         public static void GsPgSynElbowRotation(ObjectId elbowObjectId, ObjectId pipeLineObjectId1, ObjectId pipeLineObjectId2, string elbowType)
         {
             var basePoint = UtilsBlock.UtilsGetBlockBasePoint(elbowObjectId);
@@ -270,6 +394,12 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 获取管道高程和交叉点
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <returns>第一管道高程、第二管道高程、第一交叉点列表、第二交叉点列表</returns>
         private static (double, double, List<Point3d>, List<Point3d>) GetPipeElevationAndIntersectionPoints(ObjectId elbowObjectId, List<ObjectId> pipeLineObjectIds)
         {
             double firstPipeElevation = UtilsCommon.UtilsStringToDouble(UtilsCADActive.UtilsGetXData(pipeLineObjectIds[0], "pipeElevation"));
@@ -279,6 +409,13 @@ namespace dataflow_cs.Business.GsPg.Commands
             return (firstPipeElevation, secondPipeElevation, firstIntersectionPoints, secondIntersectionPoints);
         }
 
+        /// <summary>
+        /// 处理不同角度的弯头
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="pipeDiater">管道直径</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <param name="intersectionAngle">交叉角度</param>
         private static void HandleElbowWithDifferentAngles(ObjectId elbowObjectId, string pipeDiater, List<ObjectId> pipeLineObjectIds, double intersectionAngle)
         {
             if (UtilsCommon.UtilsIsTwoNumEqual(intersectionAngle, 90, 2) || UtilsCommon.UtilsIsTwoNumEqual(intersectionAngle, 270, 2))
@@ -301,6 +438,13 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 处理不同高程的弯头
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="firstPipeElevation">第一管道高程</param>
+        /// <param name="secondPipeElevation">第二管道高程</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
         private static void HandleElbowWithDifferentElevation(ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds)
         {
             UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowObjectId, new Dictionary<string, string>() { { "status", "elbowdown" } });
@@ -314,6 +458,14 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 处理不同高程的三通
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="firstPipeElevation">第一管道高程</param>
+        /// <param name="secondPipeElevation">第二管道高程</param>
+        /// <param name="pipeLineObjectIds">管道线对象ID列表</param>
+        /// <param name="firstIntersectionPointsNum">第一交叉点数量</param>
         private static void HandleTeeWithDifferentElevation(ObjectId elbowObjectId, double firstPipeElevation, double secondPipeElevation, List<ObjectId> pipeLineObjectIds, int firstIntersectionPointsNum)
         {
             if (firstPipeElevation > secondPipeElevation && firstIntersectionPointsNum == 2)
@@ -338,6 +490,11 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 根据交叉点设置块旋转角度
+        /// </summary>
+        /// <param name="elbowObjectId">弯头对象ID</param>
+        /// <param name="pipeLineObjectId">管道线对象ID</param>
         private static void SetBlockRotationByIntersectionPoint(ObjectId elbowObjectId, ObjectId pipeLineObjectId)
         {
             List<Point3d> crossPoints = UtilsGeometry.UtilsGetIntersectionPointsByBlockAndPolyLine(elbowObjectId, pipeLineObjectId);
@@ -349,6 +506,13 @@ namespace dataflow_cs.Business.GsPg.Commands
             }
         }
 
+        /// <summary>
+        /// 同步管道弯头状态
+        /// </summary>
+        /// <param name="pipeData">管道数据字典</param>
+        /// <param name="pipeInfo">管道信息辅助类</param>
+        /// <remarks>
+        /// 该方法处理所有已处理的管道弯头，根据其位置和相交的管道线设置其状态和旋转角度。
         public static void GsPgSynPipeElbowStatus(Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
         {
             string pipeDiater = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
@@ -400,6 +564,11 @@ namespace dataflow_cs.Business.GsPg.Commands
             });
         }
 
+        /// <summary>
+        /// 获取项目编号
+        /// </summary>
+        /// <param name="allGeYuanDrawObjectIds">所有的GeYuan绘图对象ID列表</param>
+        /// <returns>项目编号</returns>
         public static string GsPgGetProjectNum(List<ObjectId> allGeYuanDrawObjectIds)
         {
             string projectNum = string.Empty;
@@ -414,6 +583,9 @@ namespace dataflow_cs.Business.GsPg.Commands
             return projectNum;
         }
 
+        /// <summary>
+        /// 批量同步管道数据
+        /// </summary>
         public static void GsPgBatchSynPipeData()
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
