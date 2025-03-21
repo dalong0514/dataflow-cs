@@ -13,44 +13,49 @@ using Autodesk.AutoCAD.Runtime;
 
 namespace dataflow_cs.Utils.CADUtils
 {
-    /// runtime environment.
+    /// <summary>
+    /// AutoCAD活动会话工具类，提供获取当前活动文档、编辑器和数据库的方法
     /// </summary>
     public static class UtilsCADActive
     {
         /// <summary>
-        /// Returns the active Editor object.
+        /// 获取当前活动的编辑器对象
         /// </summary>
         public static Editor Editor
         {
             get { return Document.Editor; }
         }
+        
         /// <summary>
-        /// Returns the active Document object.
+        /// 获取当前活动的文档对象
         /// </summary>
         public static Document Document
         {
             get { return Application.DocumentManager.MdiActiveDocument; }
         }
+        
         /// <summary>
-        /// Returns the active Database object.
+        /// 获取当前活动的数据库对象
         /// </summary>
         public static Database Database
         {
             get { return Document.Database; }
         }
+        
         /// <summary>
-        /// Sends a string to the command line in the active Editor
+        /// 向当前活动的命令行发送消息
         /// </summary>
-        /// <param name="message">The message to send.</param>
+        /// <param name="message">要发送的消息内容</param>
         public static void WriteMessage(string message)
         {
             Editor.WriteMessage(message);
         }
+        
         /// <summary>
-        /// Sends a string to the command line in the active Editor using String.Format.
+        /// 向当前活动的命令行发送格式化消息
         /// </summary>
-        /// <param name="message">The message containing format specifications.</param>
-        /// <param name="parameter">The variables to substitute into the format string.</param>
+        /// <param name="message">包含格式说明符的消息模板</param>
+        /// <param name="parameter">要替换到格式字符串中的变量</param>
         public static void WriteMessage(string message, params object[] parameter)
         {
             Editor.WriteMessage(message, parameter);
@@ -58,12 +63,11 @@ namespace dataflow_cs.Utils.CADUtils
 
         /// <summary>
         /// 在注册应用程序表（RegAppTable）中添加一个新的记录
-        /// 是必要的，因为在给实体添加扩展数据之前，你需要确保扩展数据的应用程序名已经在注册应用程序表中。
+        /// 这是必要的，因为在给实体添加扩展数据之前，需要确保扩展数据的应用程序名已经在注册应用程序表中
         /// </summary>
-        /// <param name="regAppName"></param>
+        /// <param name="regAppName">要注册的应用程序名称</param>
         public static void AddRegAppTableRecord(string regAppName)
         {
-
             Database db = Database;
 
             using (Transaction tr = db.TransactionManager.StartTransaction())
@@ -81,6 +85,11 @@ namespace dataflow_cs.Utils.CADUtils
             }
         }
 
+        /// <summary>
+        /// 为对象添加多个扩展数据
+        /// </summary>
+        /// <param name="objectId">要添加扩展数据的对象ID</param>
+        /// <param name="xdataDictList">包含应用程序名和数据内容的字典</param>
         public static void UtilsAddXData(ObjectId objectId, Dictionary<string, string> xdataDictList)
         {
             foreach (KeyValuePair<string, string> xdataDict in xdataDictList)
@@ -89,6 +98,11 @@ namespace dataflow_cs.Utils.CADUtils
             }
         }
 
+        /// <summary>
+        /// 为对象添加单个扩展数据
+        /// </summary>
+        /// <param name="objectId">要添加扩展数据的对象ID</param>
+        /// <param name="xdataDict">包含应用程序名和数据内容的键值对</param>
         public static void UtilsAddOneXData(ObjectId objectId, KeyValuePair<string, string> xdataDict)
         {
             string regAppName = xdataDict.Key;
@@ -101,6 +115,12 @@ namespace dataflow_cs.Utils.CADUtils
             rb.Dispose();
         }
 
+        /// <summary>
+        /// 为对象添加单个扩展数据
+        /// </summary>
+        /// <param name="objectId">要添加扩展数据的对象ID</param>
+        /// <param name="regAppName">注册应用程序名称</param>
+        /// <param name="xdataContent">扩展数据内容</param>
         public static void UtilsAddOneXData(ObjectId objectId, string regAppName, string xdataContent)
         {
             AddRegAppTableRecord(regAppName);
@@ -111,6 +131,12 @@ namespace dataflow_cs.Utils.CADUtils
             rb.Dispose();
         }
 
+        /// <summary>
+        /// 获取对象的扩展数据
+        /// </summary>
+        /// <param name="objectId">要获取扩展数据的对象ID</param>
+        /// <param name="regAppName">注册应用程序名称</param>
+        /// <returns>扩展数据内容，如果不存在则返回空字符串</returns>
         public static string UtilsGetXData(ObjectId objectId, string regAppName)
         {
             string result = string.Empty;
@@ -134,6 +160,12 @@ namespace dataflow_cs.Utils.CADUtils
             return result;
         }
 
+        /// <summary>
+        /// 获取实体的扩展数据
+        /// </summary>
+        /// <param name="ent">要获取扩展数据的实体</param>
+        /// <param name="regAppName">注册应用程序名称</param>
+        /// <returns>扩展数据内容，如果不存在则返回空字符串</returns>
         public static string UtilsGetXData(Entity ent, string regAppName)
         {
             string result = string.Empty;
@@ -156,12 +188,20 @@ namespace dataflow_cs.Utils.CADUtils
             return result;
         }
 
+        /// <summary>
+        /// 删除实体
+        /// </summary>
+        /// <param name="objectId">要删除的实体的对象ID</param>
         public static void UtilsDeleteEntity(ObjectId objectId)
         {
             DBObject obj = objectId.GetObject(OpenMode.ForWrite);
             obj.Erase();
         }
 
+        /// <summary>
+        /// 从用户获取一个点坐标
+        /// </summary>
+        /// <returns>用户选择的点坐标，如果用户取消则返回原点(0,0,0)</returns>
         public static Point3d GetPointFromUser()
         {
             // Prompt the user to select a point
@@ -178,7 +218,5 @@ namespace dataflow_cs.Utils.CADUtils
                 return new Point3d();
             }
         }
-
-
     }
 }

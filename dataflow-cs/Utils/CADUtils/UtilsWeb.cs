@@ -12,8 +12,16 @@ using System.Net;
 
 namespace dataflow_cs.Utils.CADUtils
 {
+    /// <summary>
+    /// Web请求工具类，用于发送HTTP请求与Web服务交互
+    /// </summary>
     public static class UtilsWeb
     {
+        /// <summary>
+        /// 发送HTTP GET请求
+        /// </summary>
+        /// <param name="serviceUrl">请求的URL地址</param>
+        /// <returns>服务器响应内容，请求失败时返回null</returns>
         public static string Get(string serviceUrl)
         {
             try
@@ -40,6 +48,12 @@ namespace dataflow_cs.Utils.CADUtils
 
         }
 
+        /// <summary>
+        /// 发送HTTP POST请求
+        /// </summary>
+        /// <param name="serviceUrl">请求的URL地址</param>
+        /// <param name="data">POST请求体数据</param>
+        /// <returns>服务器响应内容，请求失败时返回null</returns>
         public static string Post(string serviceUrl, string data)
         {
             try
@@ -103,6 +117,12 @@ namespace dataflow_cs.Utils.CADUtils
 
         }
 
+        /// <summary>
+        /// 执行HTTP请求并解析返回的JSON结果，自动处理错误码
+        /// </summary>
+        /// <param name="serviceUrl">请求的URL地址</param>
+        /// <param name="data">POST请求体数据，为空时执行GET请求</param>
+        /// <returns>处理后的响应数据，如果请求失败或返回码不是20000则返回null</returns>
         public static string DoPost(string serviceUrl, string data = "")
         {
             string json = string.Empty;

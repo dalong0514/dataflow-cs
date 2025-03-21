@@ -12,18 +12,33 @@ namespace dataflow_cs.Utils.CADUtils
 {
     public static class UtilsBlock
     {
+        /// <summary>
+        /// 获取块的基准点坐标
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <returns>块的基准点坐标</returns>
         public static Point3d UtilsGetBlockBasePoint(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
             return blockRef.Position;
         }
 
+        /// <summary>
+        /// 修改块的图层名称
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="layerName">新的图层名称</param>
         public static void UtilsChangeBlockLayerName(ObjectId objectId, string layerName)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
             blockRef.Layer = layerName;
         }
 
+        /// <summary>
+        /// 获取块的名称
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <returns>块的名称，如果块无效则返回空字符串</returns>
         public static string UtilsGetBlockName(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -43,6 +58,11 @@ namespace dataflow_cs.Utils.CADUtils
             return btr?.Name ?? string.Empty;
         }
 
+        /// <summary>
+        /// 获取块所在的图层名称
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <returns>块所在的图层名称，如果块无效则返回空字符串</returns>
         public static string UtilsGetBlockLayer(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -62,10 +82,10 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
         /// <summary>
-        /// // get all proerty dict list of the block entity
+        /// 获取块实体的所有属性键值对
         /// </summary>
-        /// <param name="objectId"></param>
-        /// <returns></returns>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <returns>包含块所有属性的键值对字典</returns>
         public static Dictionary<string, string> UtilsGetAllPropertyDictList(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -84,6 +104,12 @@ namespace dataflow_cs.Utils.CADUtils
             return blockAttribute;
         }
 
+        /// <summary>
+        /// 根据属性名列表获取块的指定属性键值对
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="propertyNameList">要获取的属性名列表</param>
+        /// <returns>包含指定属性的键值对字典</returns>
         public static Dictionary<string, string> UtilsGetPropertyDictListByPropertyNameList(ObjectId objectId, List<string> propertyNameList)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -105,9 +131,9 @@ namespace dataflow_cs.Utils.CADUtils
         /// <summary>
         /// 根据块的ObjectId和属性名获取属性值
         /// </summary>
-        /// <param name="objectId"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="propertyName">要获取的属性名</param>
+        /// <returns>属性值，如果未找到或块无效则返回空字符串</returns>
         public static string UtilsGetPropertyValueByPropertyName(ObjectId objectId, string propertyName)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -125,6 +151,12 @@ namespace dataflow_cs.Utils.CADUtils
             return string.Empty;
         }
 
+        /// <summary>
+        /// 根据属性名设置块的属性值
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="propertyName">要设置的属性名</param>
+        /// <param name="propertyValue">要设置的属性值</param>
         public static void UtilsSetPropertyValueByPropertyName(ObjectId objectId, string propertyName, string propertyValue)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -145,6 +177,11 @@ namespace dataflow_cs.Utils.CADUtils
             }
         }
 
+        /// <summary>
+        /// 根据字典数据设置块的多个属性值，自动处理图层锁定问题
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="propertyDict">包含属性名和属性值的字典</param>
         public static void UtilsSetPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
@@ -205,6 +242,11 @@ namespace dataflow_cs.Utils.CADUtils
             }
         }
 
+        /// <summary>
+        /// 根据字典数据设置动态块的属性值
+        /// </summary>
+        /// <param name="objectId">动态块的ObjectId</param>
+        /// <param name="propertyDict">包含属性名和属性值的字典</param>
         public static void UtilsSetDynamicPropertyValueByDictData(ObjectId objectId, Dictionary<string, string> propertyDict)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -254,6 +296,12 @@ namespace dataflow_cs.Utils.CADUtils
             }
         }
 
+        /// <summary>
+        /// 通过用户选择获取指定名称的块的ObjectId列表
+        /// </summary>
+        /// <param name="blockName">块名称</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>匹配的块ObjectId列表</returns>
         public static List<ObjectId> UtilsGetObjectIdsBySelectByBlockName(string blockName, bool isIdentical = true)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
@@ -279,13 +327,22 @@ namespace dataflow_cs.Utils.CADUtils
             return blockIds;
         }
 
+        /// <summary>
+        /// 获取当前图纸中所有块的ObjectId列表
+        /// </summary>
+        /// <returns>所有块的ObjectId列表</returns>
         public static List<ObjectId> UtilsGetAllBlockObjectIds()
         {
             SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
             return selSet.GetObjectIds().ToList();
         }
 
-        // AutoCAD中获得所有块名为{Instrument}的ObjectId
+        /// <summary>
+        /// 获取当前图纸中指定名称的所有块的ObjectId列表
+        /// </summary>
+        /// <param name="blockName">块名称</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>匹配的块ObjectId列表</returns>
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(string blockName, bool isIdentical = true)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
@@ -311,6 +368,13 @@ namespace dataflow_cs.Utils.CADUtils
             return blockIds;
         }
 
+        /// <summary>
+        /// 从指定的块ObjectId列表中筛选出指定名称的块
+        /// </summary>
+        /// <param name="blockIds">要筛选的块ObjectId列表</param>
+        /// <param name="blockName">要筛选的块名称</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>匹配的块ObjectId列表</returns>
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(List<ObjectId> blockIds, string blockName, bool isIdentical = true)
         {
             // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
@@ -330,6 +394,12 @@ namespace dataflow_cs.Utils.CADUtils
             return blockIds;
         }
 
+        /// <summary>
+        /// 根据块名称列表获取匹配的所有块的ObjectId列表
+        /// </summary>
+        /// <param name="blockNameList">块名称列表</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>匹配的块ObjectId列表（已去重）</returns>
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockNameList(List<string> blockNameList, bool isIdentical = true)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
@@ -347,6 +417,13 @@ namespace dataflow_cs.Utils.CADUtils
         }
 
 
+        /// <summary>
+        /// 根据块名称列表将指定的块ObjectId分组
+        /// </summary>
+        /// <param name="blockIds">要分组的块ObjectId列表</param>
+        /// <param name="blockNameList">块名称列表</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>按块名称分组的ObjectId字典</returns>
         public static Dictionary<string, List<ObjectId>> UtilsGetAllObjectIdsGroupsByBlockNameList(List<ObjectId> blockIds, List<string> blockNameList, bool isIdentical = true)
         {
             Dictionary<string, List<ObjectId>> objectIdsGroups = new Dictionary<string, List<ObjectId>>();
@@ -389,6 +466,13 @@ namespace dataflow_cs.Utils.CADUtils
             return objectIdsGroups;
         }
 
+        /// <summary>
+        /// 在指定范围内通过交叉窗口选择获取指定名称的块的ObjectId列表
+        /// </summary>
+        /// <param name="extents">选择范围</param>
+        /// <param name="blockName">块名称</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>匹配的块ObjectId列表</returns>
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockNameByCrossingWindow(Extents3d extents, string blockName, bool isIdentical = true)
         {
             // 任务1: 在AutoCAD中获得块实体对象的选择集
@@ -414,6 +498,11 @@ namespace dataflow_cs.Utils.CADUtils
             return blockIds;
         }
 
+        /// <summary>
+        /// 获取块的旋转角度（弧度值）
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <returns>块的旋转角度（弧度值），如果块无效则返回0</returns>
         public static double UtilsGetBlockRotaton(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -422,6 +511,11 @@ namespace dataflow_cs.Utils.CADUtils
             return blockRef.Rotation;
         }
 
+        /// <summary>
+        /// 获取块的旋转角度（度数值）
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <returns>块的旋转角度（度数值），如果块无效则返回0</returns>
         public static double UtilsGetBlockRotatonInDegrees(ObjectId objectId)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
@@ -430,6 +524,11 @@ namespace dataflow_cs.Utils.CADUtils
             return blockRef.Rotation * (180.0 / Math.PI);
         }
 
+        /// <summary>
+        /// 设置块的旋转角度（弧度值）
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="rotation">要设置的旋转角度（弧度值）</param>
         public static void UtilsSetBlockRotaton(ObjectId objectId, double rotation)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
@@ -438,6 +537,11 @@ namespace dataflow_cs.Utils.CADUtils
             blockRef.Rotation = rotation;
         }
 
+        /// <summary>
+        /// 设置块的旋转角度（度数值）
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="rotationDegrees">要设置的旋转角度（度数值）</param>
         public static void UtilsSetBlockRotatonInDegrees(ObjectId objectId, double rotationDegrees)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
@@ -446,6 +550,12 @@ namespace dataflow_cs.Utils.CADUtils
             blockRef.Rotation = rotationDegrees * (Math.PI / 180.0);
         }
 
+        /// <summary>
+        /// 设置块的X和Y方向的缩放比例
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="xScale">X方向的缩放比例</param>
+        /// <param name="yScale">Y方向的缩放比例</param>
         public static void UtilsSetBlockXYScale(ObjectId objectId, double xScale, double yScale)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForWrite) as BlockReference;
