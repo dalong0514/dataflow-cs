@@ -38,4 +38,8 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.pdb
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.xml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.Extras.pdb
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\GalaSoft.MvvmLight.Extras.xml
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\System.Windows.Interactivity.xml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\ControlzEx.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.dll
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\ControlzEx.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.pdb
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.xml
