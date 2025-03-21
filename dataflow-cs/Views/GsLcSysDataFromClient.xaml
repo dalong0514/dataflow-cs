@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dataflow_cs.Views"
+        xmlns:vm="clr-namespace:dataflow_cs.ViewModel"
         mc:Ignorable="d"
         Title="天正数据设计——导出CAD数据" 
         Width="500" 
@@ -31,19 +32,22 @@
             <!-- 选择要导出的数据类型 -->
             <StackPanel Orientation="Horizontal" Margin="0,5">
                 <TextBlock Text="选择要导出的数据类型:" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <ComboBox x:Name="DataTypeComboBox" Width="200" DisplayMemberPath="Name"/>
+                <ComboBox x:Name="DataTypeComboBox" Width="200" 
+                          ItemsSource="{Binding DataTypes}" 
+                          SelectedItem="{Binding SelectedDataType}"
+                          DisplayMemberPath="Name"/>
             </StackPanel>
 
             <!-- 导出数据数量 -->
             <StackPanel Orientation="Horizontal" Margin="0,15,0,5">
                 <TextBlock Text="导出数据数量:" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="DataCountTextBlock" Text="0" Width="200" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DataCountTextBlock" Text="{Binding DataCount}" Width="200" VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- 导出数据状态 -->
             <StackPanel Orientation="Horizontal" Margin="0,15,0,5">
                 <TextBlock Text="导出数据状态:" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="DataStatusTextBlock" Text="就绪" Width="200" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DataStatusTextBlock" Text="{Binding DataStatus}" Width="200" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
 

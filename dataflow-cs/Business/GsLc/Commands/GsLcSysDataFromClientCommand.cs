@@ -31,14 +31,6 @@ namespace dataflow_cs.Business.GsLc.Commands
 
                 // 创建GsLcSysDataWindow实例并设置事件处理
                 var window = new GsLcSysDataFromClient();
-                window.ExportCompleted += (sender, e) =>
-                {
-                    editor.WriteMessage("\n导出操作已完成");
-                };
-                window.ExportCancelled += (sender, e) =>
-                {
-                    editor.WriteMessage("\n导出操作已取消");
-                };
                 
                 // 显示窗口
                 window.ShowDialog();
