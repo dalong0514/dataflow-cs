@@ -6,7 +6,7 @@
     <Compile Include="Utils\CADUtils\GeometryUtils.cs" />
     <Compile Include="Utils\CADUtils\PolylineUtils.cs" />
     <Compile Include="Utils\CADUtils\SelectionSetUtils.cs" />
-    <Compile Include="Business\GsPg\Commands\BatchSyncPipeDataCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\GsPgBatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\GsPg\Commands\FunctionTestCommand.cs" />
     <Compile Include="Business\GsPg\Commands\SyncPipeDataCommand.cs" />
     <Compile Include="Business\GsPg\Commands\TestCommand.cs" />

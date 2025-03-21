@@ -27,7 +27,7 @@ namespace dataflow_cs
             try
             {
                 // 注册命令处理器
-                RegisterCommandHandler(new BatchSyncPipeDataCommand());
+                RegisterCommandHandler(new GsPgBatchSyncPipeDataCommand());
                 RegisterCommandHandler(new GsLcSysDataFromClientCommand());
                 RegisterCommandHandler(new LocateByHandleCommand());
                 RegisterCommandHandler(new AddCustomMenuCommand());

@@ -85,7 +85,7 @@
     <Compile Include="Business\Common\Models\MenuConfig.cs" />
     <Compile Include="Business\Common\Services\MenuConfigService.cs" />
     <Compile Include="Business\GsLc\Commands\GsLcSysDataFromClientCommand.cs" />
-    <Compile Include="Business\GsPg\Commands\BatchSyncPipeDataCommand.cs" />
+    <Compile Include="Business\GsPg\Commands\GsPgBatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\GsPg\Commands\TestCommand.cs" />
     <Compile Include="CommandManager.cs" />
     <Compile Include="Core\Extensions\MetroWindowExtensions.cs" />

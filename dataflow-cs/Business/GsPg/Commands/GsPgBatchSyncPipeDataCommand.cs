@@ -16,7 +16,7 @@ namespace dataflow_cs.Business.GsPg.Commands
     /// <summary>
     /// 批量同步管道数据命令
     /// </summary>
-    public class BatchSyncPipeDataCommand : CommandHandlerBase
+    public class GsPgBatchSyncPipeDataCommand : CommandHandlerBase
     {
         /// <summary>
         /// 命令名称
