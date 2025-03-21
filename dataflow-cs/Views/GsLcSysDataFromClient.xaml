@@ -8,9 +8,9 @@
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="天正数据设计——导出CAD数据" 
-        Width="550" 
-        Height="350"
+        Title="数智设计——同步CAD数据" 
+        Width="450" 
+        Height="250"
         TitleCharacterCasing="Normal"
         BorderThickness="1"
         BorderBrush="{DynamicResource AccentColorBrush}"
@@ -54,16 +54,16 @@
         <Border Grid.Row="0" Margin="0,0,0,10" 
                 BorderBrush="{DynamicResource AccentColorBrush}"
                 BorderThickness="0,0,0,1">
-            <TextBlock Text="导出CAD数据工具" 
+            <TextBlock 
                        FontSize="18" 
                        FontWeight="Bold" 
                        Foreground="{DynamicResource AccentColorBrush}"
-                       Margin="5,0,0,5"/>
+                       Margin="5,0,0,5"><Run Language="zh-cn" Text="同步"/><Run Text="CAD数据工具"/></TextBlock>
         </Border>
         
         <!-- 中间内容 -->
         <controls:MetroHeader Grid.Row="1" Margin="10,0" 
-                              Header="数据导出选项" 
+                              Header="数据同步选项" 
                               FontSize="16"
                               FontWeight="Bold"
                               Background="{DynamicResource ControlBackgroundBrush}"
@@ -77,11 +77,11 @@
                 <StackPanel>
                     <!-- 选择要导出的数据类型 -->
                     <DockPanel Margin="0,5,0,10">
-                        <TextBlock Text="选择要导出的数据类型:" Width="150" 
+                        <TextBlock Width="150" 
                                 VerticalAlignment="Center" 
                                 HorizontalAlignment="Left"
                                 TextAlignment="Left"
-                                FontSize="13"/>
+                                FontSize="13"><Run Text="选择要"/><Run Language="zh-cn" Text="同步"/><Run Text="的数据类型:"/></TextBlock>
                         <ComboBox x:Name="DataTypeComboBox" 
                                 Width="250"
                                 HorizontalAlignment="Left"
@@ -94,27 +94,15 @@
                     </DockPanel>
 
                     <!-- 导出数据数量 -->
-                    <DockPanel Margin="0,5,0,10">
-                        <TextBlock Text="导出数据数量:" Width="150" 
-                                VerticalAlignment="Center" 
-                                HorizontalAlignment="Left"
-                                TextAlignment="Left"
-                                FontSize="13"/>
-                        <TextBlock x:Name="DataCountTextBlock" 
-                                Text="{Binding DataCount}" 
-                                Width="250"
-                                HorizontalAlignment="Left"
-                                FontWeight="SemiBold"
-                                VerticalAlignment="Center"/>
-                    </DockPanel>
+                    <DockPanel Margin="0,5,0,10"/>
 
                     <!-- 导出数据状态 -->
                     <DockPanel Margin="0,5,0,5">
-                        <TextBlock Text="导出数据状态:" Width="150" 
+                        <TextBlock Width="150" 
                                 VerticalAlignment="Center" 
                                 HorizontalAlignment="Left"
                                 TextAlignment="Left"
-                                FontSize="13"/>
+                                FontSize="13"><Run Language="zh-cn" Text="同步"/><Run Text="数据状态:"/></TextBlock>
                         <TextBlock x:Name="DataStatusTextBlock" 
                                 Text="{Binding DataStatus}" 
                                 Width="250"
@@ -129,10 +117,10 @@
 
         <!-- 底部按钮 -->
         <Grid Grid.Row="2" Margin="10,15,10,5">
-            <UniformGrid Columns="4" HorizontalAlignment="Center">
+            <UniformGrid Columns="2" HorizontalAlignment="Center">
                 <Button x:Name="SelectButton" 
                         Width="110" Height="40" 
-                        Margin="5,0"
+                        Margin="50,0"
                         Style="{DynamicResource AccentedSquareButtonStyle}"
                         Click="SelectButton_Click">
                     <StackPanel Orientation="Horizontal">
@@ -141,43 +129,11 @@
                           Width="18" Height="18"
                           Stretch="Uniform"
                           Margin="0,0,5,0" />
-                        <TextBlock Text="选取" />
+                        <TextBlock Text="同步数据" />
                     </StackPanel>
                 </Button>
-                
-                <Button x:Name="SelectAllButton" 
-                        Width="110" Height="40" 
-                        Margin="5,0"
-                        Style="{DynamicResource AccentedSquareButtonStyle}"
-                        Click="SelectAllButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Data="M3,5H9V11H3V5M5,7V9H7V7H5M11,7H21V9H11V7M11,15H21V17H11V15M5,20L1.5,16.5L2.91,15.09L5,17.17L9.59,12.59L11,14L5,20Z"
-                          Fill="{DynamicResource IdealForegroundColorBrush}"
-                          Width="18" Height="18"
-                          Stretch="Uniform"
-                          Margin="0,0,5,0" />
-                        <TextBlock Text="全选" />
-                    </StackPanel>
-                </Button>
-                
-                <Button x:Name="ExportButton" 
-                        Width="110" Height="40" 
-                        Margin="5,0"
-                        Style="{DynamicResource AccentedSquareButtonStyle}"
-                        Click="ExportButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Data="M14,13V17H10V13H7L12,8L17,13H14M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z"
-                          Fill="{DynamicResource IdealForegroundColorBrush}"
-                          Width="18" Height="18"
-                          Stretch="Uniform"
-                          Margin="0,0,5,0" />
-                        <TextBlock Text="导出" />
-                    </StackPanel>
-                </Button>
-                
                 <Button x:Name="CancelButton" 
-                        Width="110" Height="40" 
-                        Margin="5,0"
+                        Width="110" Height="40"
                         Style="{DynamicResource SquareButtonStyle}"
                         Click="CancelButton_Click">
                     <StackPanel Orientation="Horizontal">

@@ -42,16 +42,6 @@ namespace dataflow_cs.Views
             _viewModel.SelectData();
         }
         
-        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.SelectAllData();
-        }
-        
-        private void ExportButton_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ExportData();
-        }
-        
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

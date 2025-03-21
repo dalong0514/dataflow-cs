@@ -84,23 +84,7 @@ namespace dataflow_cs.ViewModel
         
         public void SelectData()
         {
-            // 选取数据
-            int count = new Random().Next(10, 100);
-            DataCount = count.ToString();
-            DataStatus = "已选取数据";
-        }
-        
-        public void SelectAllData()
-        {
-            // 全选数据
-            int count = new Random().Next(100, 500);
-            DataCount = count.ToString();
-            DataStatus = "已全选数据";
-        }
-        
-        public void ExportData()
-        {
-            // 导出数据
+            // 同步数据
             if (int.TryParse(DataCount, out int count) && count > 0)
             {
                 DataStatus = "数据导出中...";
