@@ -102,6 +102,7 @@
       <DependentUpon>WindowExportData.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommandManager.cs" />
+    <Compile Include="Core\Extensions\MetroWindowExtensions.cs" />
     <Compile Include="Core\Interfaces\ICommandHandler.cs" />
     <Compile Include="Core\Interfaces\IConfigurationService.cs" />
     <Compile Include="Core\Interfaces\IDrawingOperation.cs" />
@@ -145,6 +146,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Business\PipeFlow\Views\WindowExportData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,5 +1,6 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using dataflow_cs.Core.Extensions;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Views;
 using System;
@@ -31,9 +32,10 @@ namespace dataflow_cs.Business.GsLc.Commands
 
                 // 创建GsLcSysDataWindow实例并设置事件处理
                 var window = new GsLcSysDataFromClient();
-                
-                // 显示窗口
-                window.ShowDialog();
+
+                // 显示窗口 - 使用我们的扩展方法确保正确显示
+                window.ShowDialog(); 
+
 
                 return true;
             }

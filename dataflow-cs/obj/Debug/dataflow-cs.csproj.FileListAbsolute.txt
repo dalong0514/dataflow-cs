@@ -43,3 +43,4 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.pdb
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.xml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.g.cs
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\App.baml

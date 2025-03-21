@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using MahApps.Metro.Controls;
 using dataflow_cs.ViewModel;
 
 namespace dataflow_cs.Views
@@ -7,7 +8,7 @@ namespace dataflow_cs.Views
     /// <summary>
     /// GsLcSysDataFromClient.xaml 的交互逻辑
     /// </summary>
-    public partial class GsLcSysDataFromClient : Window
+    public partial class GsLcSysDataFromClient : MetroWindow
     {
         private readonly GsLcSysDataFromClientViewModel _viewModel;
         
@@ -24,19 +25,16 @@ namespace dataflow_cs.Views
             // 订阅ViewModel事件
             _viewModel.ExportCompleted += (s, e) => 
             {
-                // 可以在这里添加额外的UI逻辑
+                // 导出完成后的UI逻辑
             };
             
             _viewModel.ExportCancelled += (s, e) => 
             {
-                // 可以在这里添加额外的UI逻辑
+                // 导出取消后的UI逻辑
             };
-        }
-        
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-            _viewModel.Close();
+            
+            // 关闭窗口时清理资源
+            this.Closed += (s, e) => _viewModel.Close();
         }
         
         private void SelectButton_Click(object sender, RoutedEventArgs e)
@@ -56,7 +54,7 @@ namespace dataflow_cs.Views
         
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.CancelOperation();
+            this.Close();
         }
     }
 } 
