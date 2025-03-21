@@ -124,6 +124,7 @@
     <Compile Include="Utils\CADUtils\UtilsZoom.cs" />
     <Compile Include="Utils\ConstUtils\ConstURL.cs" />
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
+    <Compile Include="ViewModel\GsLcSysDataFromClienModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\GsLcSysDataFromClient.xaml.cs">

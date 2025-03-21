@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:dataflow_cs.Views"
+             DataContext="{Binding GsLcSysDataFromClient, Source={StaticResource Locator}}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
@@ -13,11 +14,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 顶部标题 -->
+        <!-- 顶部标题栏 -->
         <Border Grid.Row="0" Background="#33B5E5" Padding="10,5">
             <Grid>
                 <TextBlock Text="天正数据设计——导出CAD数据" FontSize="14" Foreground="White" VerticalAlignment="Center"/>
-                <Button HorizontalAlignment="Right" Width="20" Height="20" Content="×" Background="Transparent" BorderThickness="0" Foreground="White" Click="CloseButton_Click"/>
+                <Button HorizontalAlignment="Right" Width="20" Height="20" Content="×" 
+                        Background="Transparent" BorderThickness="0" Foreground="White"
+                        Command="{Binding CloseCommand}"/>
             </Grid>
         </Border>
 
@@ -26,34 +29,32 @@
             <!-- 选择要导出的数据类型 -->
             <StackPanel Orientation="Horizontal" Margin="0,5">
                 <TextBlock Text="选择要导出的数据类型:" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <ComboBox x:Name="ComboBoxDataType" Width="200" SelectedIndex="0">
-                    <ComboBoxItem Content="管道数据"/>
-                    <ComboBoxItem Content="仪表数据"/>
-                    <ComboBoxItem Content="设备数据"/>
-                    <ComboBoxItem Content="阀门管件数据"/>
-                </ComboBox>
+                <ComboBox Width="200" 
+                          ItemsSource="{Binding DataTypeList}"
+                          DisplayMemberPath="Name"
+                          SelectedItem="{Binding SelectedDataType}"/>
             </StackPanel>
 
             <!-- 导出数据数量 -->
             <StackPanel Orientation="Horizontal" Margin="0,15,0,5">
                 <TextBlock Text="导出数据数量:" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="TextBlockDataCount" Text="" Width="200" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding DataCount}" Width="200" VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- 导出数据状态 -->
             <StackPanel Orientation="Horizontal" Margin="0,15,0,5">
                 <TextBlock Text="导出数据状态:" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="TextBlockDataStatus" Text="" Width="200" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding DataStatus}" Width="200" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
 
         <!-- 底部按钮 -->
         <Grid Grid.Row="2" Margin="10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button x:Name="ButtonSelect" Content="选取" Width="80" Height="30" Margin="10,0" Click="ButtonSelect_Click"/>
-                <Button x:Name="ButtonSelectAll" Content="全选" Width="80" Height="30" Margin="10,0" Click="ButtonSelectAll_Click"/>
-                <Button x:Name="ButtonExport" Content="导出" Width="80" Height="30" Margin="10,0" Click="ButtonExport_Click"/>
-                <Button x:Name="ButtonCancel" Content="取消" Width="80" Height="30" Margin="10,0" Click="ButtonCancel_Click"/>
+                <Button Content="选取" Width="80" Height="30" Margin="10,0" Command="{Binding SelectCommand}"/>
+                <Button Content="全选" Width="80" Height="30" Margin="10,0" Command="{Binding SelectAllCommand}"/>
+                <Button Content="导出" Width="80" Height="30" Margin="10,0" Command="{Binding ExportCommand}"/>
+                <Button Content="取消" Width="80" Height="30" Margin="10,0" Command="{Binding CancelCommand}"/>
             </StackPanel>
         </Grid>
     </Grid>
