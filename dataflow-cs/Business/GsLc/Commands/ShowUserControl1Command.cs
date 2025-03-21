@@ -1,7 +1,6 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
-using dataflow_cs.Business.GsLc.Views;
 using System;
 using System.Windows;
 
@@ -27,9 +26,9 @@ namespace dataflow_cs.Business.GsLc.Commands
         {
             try
             {
-                editor.WriteMessage("\n正在显示UserControl1面板...");
+                editor.WriteMessage("\n正在显示数据导出面板...");
 
-                // 创建一个新窗口来承载UserControl1
+                // 创建一个新窗口来承载GsLcSysDataFromClient
                 Window window = new Window
                 {
                     Title = "天正数据设计",
@@ -39,8 +38,8 @@ namespace dataflow_cs.Business.GsLc.Commands
                     ResizeMode = ResizeMode.NoResize
                 };
 
-                // 创建UserControl1实例并设置事件处理
-                UserControl1 userControl = new UserControl1();
+                // 创建GsLcSysDataFromClient实例并设置事件处理
+                var userControl = new dataflow_cs.Views.GsLcSysDataFromClient();
                 userControl.ExportCompleted += (sender, e) =>
                 {
                     editor.WriteMessage("\n导出操作已完成");
@@ -60,7 +59,7 @@ namespace dataflow_cs.Business.GsLc.Commands
             }
             catch (Exception ex)
             {
-                editor.WriteMessage($"\n显示UserControl1面板时发生错误: {ex.Message}");
+                editor.WriteMessage($"\n显示数据导出面板时发生错误: {ex.Message}");
                 return false;
             }
         }
