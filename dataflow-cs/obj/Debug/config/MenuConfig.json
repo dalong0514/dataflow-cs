@@ -29,7 +29,7 @@
           "Command": "LINE"
         },
         {
-          "Title": "二级菜单 2-2",
+          "Title": "刷管道来去向绑定相对位置",
           "IconKey": "编辑",
           "Command": "LINE"
         }

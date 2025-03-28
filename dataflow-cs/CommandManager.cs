@@ -29,6 +29,7 @@ namespace dataflow_cs
                 // 注册命令处理器
                 RegisterCommandHandler(new GsPgBatchSyncPipeDataCommand());
                 RegisterCommandHandler(new GsLcSysDataFromClientCommand());
+                RegisterCommandHandler(new GsAddMenuCommand());
                 RegisterCommandHandler(new LocateByHandleCommand());
                 RegisterCommandHandler(new AddCustomMenuCommand());
                 RegisterCommandHandler(new TestCommand());
@@ -151,6 +152,15 @@ namespace dataflow_cs
         public void DLTestTemplateWindow()
         {
             ExecuteCommand("DLTestTemplateWindow");
+        }
+
+        /// <summary>
+        /// 添加工艺数据流面板
+        /// </summary>
+        [CommandMethod("DLGsAddMenu")]
+        public void DLGsAddMenu()
+        {
+            ExecuteCommand("DLGsAddMenu");
         }
 
         // 在这里添加更多命令定义...

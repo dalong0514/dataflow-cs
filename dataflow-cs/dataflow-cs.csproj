@@ -84,6 +84,7 @@
     <Compile Include="Business\Common\Helpers\AutoCADCommandHelper.cs" />
     <Compile Include="Business\Common\Models\MenuConfig.cs" />
     <Compile Include="Business\Common\Services\MenuConfigService.cs" />
+    <Compile Include="Business\GsLc\Commands\GsAddMenuCommand.cs" />
     <Compile Include="Business\GsLc\Commands\GsLcSysDataFromClientCommand.cs" />
     <Compile Include="Business\GsPg\Commands\GsPgBatchSyncPipeDataCommand.cs" />
     <Compile Include="Business\GsPg\Commands\TestCommand.cs" />
