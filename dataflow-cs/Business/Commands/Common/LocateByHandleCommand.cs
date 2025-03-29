@@ -8,7 +8,7 @@ using System.Windows;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace dataflow_cs.Business.Common.Commands
+namespace dataflow_cs.Business.Commands.Common
 {
     /// <summary>
     /// 测试命令

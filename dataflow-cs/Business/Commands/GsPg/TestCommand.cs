@@ -8,7 +8,7 @@ using System.Windows;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace dataflow_cs.Business.GsPg.Commands
+namespace dataflow_cs.Business.Commands.GsPg
 {
     /// <summary>
     /// 测试命令

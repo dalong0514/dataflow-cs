@@ -4,9 +4,9 @@ using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.Helpers;
 using System.Collections.Generic;
-using dataflow_cs.Business.GsPg.Commands;
-using dataflow_cs.Business.Common.Commands;
-using dataflow_cs.Business.GsLc.Commands;
+using dataflow_cs.Business.Commands.GsPg;
+using dataflow_cs.Business.Commands.Common;
+using dataflow_cs.Business.Commands.GsLc;
 
 [assembly: CommandClass(typeof(dataflow_cs.CommandManager))]
 

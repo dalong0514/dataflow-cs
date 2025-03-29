@@ -78,16 +78,19 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Business\Common\Commands\AddCustomMenuCommand.cs" />
-    <Compile Include="Business\Common\Commands\LocateByHandleCommand.cs" />
-    <Compile Include="Business\Common\Commands\TestTemplateCommand.cs" />
+    <Compile Include="Business\Commands\Common\AddCustomMenuCommand.cs" />
+    <Compile Include="Business\Commands\Common\LocateByHandleCommand.cs" />
+    <Compile Include="Business\Commands\Common\TestTemplateCommand.cs" />
     <Compile Include="Business\Common\Helpers\AutoCADCommandHelper.cs" />
     <Compile Include="Business\Common\Models\MenuConfig.cs" />
     <Compile Include="Business\Common\Services\MenuConfigService.cs" />
-    <Compile Include="Business\GsLc\Commands\GsAddMenuCommand.cs" />
-    <Compile Include="Business\GsLc\Commands\GsLcSysDataFromClientCommand.cs" />
-    <Compile Include="Business\GsPg\Commands\GsPgBatchSyncPipeDataCommand.cs" />
-    <Compile Include="Business\GsPg\Commands\TestCommand.cs" />
+    <Compile Include="Domain\Repositories\Interfaces\IMenuConfigRepository.cs" />
+    <Compile Include="Domain\ValueObjects\MenuConfig.cs" />
+    <Compile Include="Business\Services\MenuConfigService.cs" />
+    <Compile Include="Business\Commands\GsLc\GsAddMenuCommand.cs" />
+    <Compile Include="Business\Commands\GsLc\GsLcSysDataFromClientCommand.cs" />
+    <Compile Include="Business\Commands\GsPg\GsPgBatchSyncPipeDataCommand.cs" />
+    <Compile Include="Business\Commands\GsPg\TestCommand.cs" />
     <Compile Include="CommandManager.cs" />
     <Compile Include="Core\Extensions\MetroWindowExtensions.cs" />
     <Compile Include="Core\Interfaces\ICommandHandler.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Core\Services\CommandHandlerBase.cs" />
     <Compile Include="Core\Services\ConfigurationService.cs" />
     <Compile Include="Core\Services\LoggingService.cs" />
+    <Compile Include="Infrastructure\Configuration\FileMenuConfigRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CADUtils\UtilsBlock.cs" />
     <Compile Include="Utils\CADUtils\UtilsCADActive.cs" />
@@ -122,10 +126,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Business\GsPg\Operations\" />
-    <Folder Include="Business\GsPg\Services\" />
-    <Folder Include="Model\" />
-    <Folder Include="Plugins\" />
+    <Folder Include="Presentation\ViewModels\" />
+    <Folder Include="Presentation\Views\Palettes\" />
     <Folder Include="Resources\" />
     <Folder Include="UI\Dialogs\" />
     <Folder Include="UI\Palettes\" />
