@@ -10,7 +10,7 @@ namespace dataflow_cs.Business.Common.Models
         /// <summary>
         /// 面板标题
         /// </summary>
-        public string PaletteTitle { get; set; } = "天正数智设计";
+        public string PaletteTitle { get; set; } = "数智设计";
         
         /// <summary>
         /// 面板宽度

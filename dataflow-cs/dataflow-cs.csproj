@@ -132,6 +132,7 @@
     <Folder Include="Utils\Extensions\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="config\GsMenuConfig.json" />
     <None Include="config\MenuConfig.json" />
     <None Include="packages.config" />
   </ItemGroup>
