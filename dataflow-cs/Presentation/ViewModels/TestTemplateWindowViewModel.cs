@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 
-namespace dataflow_cs.ViewModel
+namespace dataflow_cs.Presentation.ViewModel
 {
     /// <summary>
     /// 测试模板窗口的视图模型

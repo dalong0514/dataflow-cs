@@ -1,9 +1,9 @@
 using System;
 using System.Windows;
 using MahApps.Metro.Controls;
-using dataflow_cs.ViewModel;
+using dataflow_cs.Presentation.ViewModel;
 
-namespace dataflow_cs.Views
+namespace dataflow_cs.Presentation.Views.Windows
 {
     /// <summary>
     /// TestTemplateWindow.xaml 的交互逻辑

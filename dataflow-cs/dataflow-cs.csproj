@@ -121,18 +121,17 @@
     <Compile Include="Utils\CADUtils\UtilsZoom.cs" />
     <Compile Include="Utils\ConstUtils\ConstURL.cs" />
     <Compile Include="Utils\Helpers\ErrorHandler.cs" />
-    <Compile Include="ViewModel\TestTemplateWindowViewModel.cs" />
-    <Compile Include="ViewModel\GsLcSysDataFromClientViewModel.cs" />
-    <Compile Include="Views\TestTemplateWindow.xaml.cs">
+    <Compile Include="Presentation\ViewModels\TestTemplateWindowViewModel.cs" />
+    <Compile Include="Presentation\ViewModels\GsLcSysDataFromClientViewModel.cs" />
+    <Compile Include="Presentation\Views\Windows\TestTemplateWindow.xaml.cs">
       <DependentUpon>TestTemplateWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GsLcSysDataFromClient.xaml.cs">
+    <Compile Include="Presentation\Views\Windows\GsLcSysDataFromClient.xaml.cs">
       <DependentUpon>GsLcSysDataFromClient.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
-    <Folder Include="Presentation\ViewModels\" />
     <Folder Include="Resources\" />
     <Folder Include="Utils\Extensions\" />
   </ItemGroup>
@@ -146,11 +145,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\TestTemplateWindow.xaml">
+    <Page Include="Presentation\Views\Windows\TestTemplateWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\GsLcSysDataFromClient.xaml">
+    <Page Include="Presentation\Views\Windows\GsLcSysDataFromClient.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

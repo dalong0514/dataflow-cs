@@ -6,7 +6,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.DatabaseServices;
 using dataflow_cs.Core.Interfaces;
 using dataflow_cs.Core.Services;
-using dataflow_cs.Views;
+using dataflow_cs.Presentation.Views.Windows;
 
 namespace dataflow_cs.Business.Commands.Common
 {

@@ -32,9 +32,9 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.dll
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\ControlzEx.pdb
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.pdb
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\MahApps.Metro.xml
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.g.cs
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\GsLcSysDataFromClient.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\App.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\dataflow-cs.GeneratedMSBuildEditorConfig.editorconfig
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\TestTemplateWindow.g.cs
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Views\TestTemplateWindow.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Presentation\Views\Windows\TestTemplateWindow.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Presentation\Views\Windows\GsLcSysDataFromClient.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Presentation\Views\Windows\TestTemplateWindow.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Debug\Presentation\Views\Windows\GsLcSysDataFromClient.baml
