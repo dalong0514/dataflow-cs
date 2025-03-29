@@ -13,7 +13,7 @@ using System.IO;
 using System.Drawing.Drawing2D;
 using dataflow_cs.Domain.ValueObjects;
 using dataflow_cs.Business.Services;
-using dataflow_cs.Business.Common.Helpers;
+using dataflow_cs.Infrastructure.AutoCAD.Services;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using Panel = System.Windows.Forms.Panel;
 using Newtonsoft.Json;
@@ -179,7 +179,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                                         .WriteMessage($"\n执行命令: {command}");
 
                                     // 执行AutoCAD命令
-                                    AutoCADCommandHelper.RunCommand(command);
+                                    AutoCADService.RunCommand(command);
                                 }
                             }
                         };
