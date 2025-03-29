@@ -75,11 +75,12 @@ namespace dataflow_cs.Presentation.Views.Controls
             }
 
             int iconOffset = 0;
-            // 绘制图标（如果存在）
+            // 绘制图标（如果存在且不是一级菜单）
             try
             {
                 if (this.ImageList != null && !string.IsNullOrEmpty(e.Node.ImageKey) && 
-                    this.ImageList.Images.ContainsKey(e.Node.ImageKey))
+                    this.ImageList.Images.ContainsKey(e.Node.ImageKey) && 
+                    e.Node.Level > 0) // 仅为二级或更深层级菜单项显示图标
                 {
                     Image nodeImage = this.ImageList.Images[e.Node.ImageKey];
                     if (nodeImage != null)
@@ -105,7 +106,7 @@ namespace dataflow_cs.Presentation.Views.Controls
                 int btnX = e.Bounds.X + 5 + offsetX;
                 int btnY = e.Bounds.Y + (e.Bounds.Height - btnSize) / 2;
                 Rectangle btnRect = new Rectangle(btnX, btnY, btnSize, btnSize);
-                DrawTriangle(e.Graphics, btnRect, e.Node.IsExpanded);
+                DrawCross(e.Graphics, btnRect, e.Node.IsExpanded);
             }
 
             // 绘制节点文本，左侧留出按钮空间
@@ -114,34 +115,25 @@ namespace dataflow_cs.Presentation.Views.Controls
             TextRenderer.DrawText(e.Graphics, e.Node.Text, this.Font, textRect, textColor, TextFormatFlags.VerticalCenter);
         }
 
-        private void DrawTriangle(Graphics g, Rectangle rect, bool expanded)
+        private void DrawCross(Graphics g, Rectangle rect, bool expanded)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            Point[] trianglePoints;
-            if (expanded)
+            
+            // 绘制十字形状
+            using (Pen pen = new Pen(Color.DarkGray, 2))
             {
-                // ▼ 下三角形
-                trianglePoints = new Point[]
+                // 绘制水平线
+                int yMiddle = rect.Top + rect.Height / 2;
+                g.DrawLine(pen, rect.Left, yMiddle, rect.Right, yMiddle);
+                
+                // 如果是收起状态，还需要绘制垂直线形成十字
+                if (!expanded)
                 {
-                    new Point(rect.Left, rect.Top),
-                    new Point(rect.Right, rect.Top),
-                    new Point(rect.Left + rect.Width / 2, rect.Bottom)
-                };
+                    int xMiddle = rect.Left + rect.Width / 2;
+                    g.DrawLine(pen, xMiddle, rect.Top, xMiddle, rect.Bottom);
+                }
             }
-            else
-            {
-                // ► 右三角形
-                trianglePoints = new Point[]
-                {
-                    new Point(rect.Left, rect.Top),
-                    new Point(rect.Right, rect.Top + rect.Height / 2),
-                    new Point(rect.Left, rect.Bottom)
-                };
-            }
-            using (SolidBrush brush = new SolidBrush(Color.DarkGray))
-            {
-                g.FillPolygon(brush, trianglePoints);
-            }
+            
             g.SmoothingMode = SmoothingMode.Default;
         }
     }
