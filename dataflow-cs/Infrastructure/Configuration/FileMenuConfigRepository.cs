@@ -3,6 +3,7 @@ using System.IO;
 using Newtonsoft.Json;
 using dataflow_cs.Domain.ValueObjects;
 using dataflow_cs.Domain.Repositories.Interfaces;
+using System.Collections.Generic;
 
 namespace dataflow_cs.Infrastructure.Configuration
 {
@@ -105,9 +106,9 @@ namespace dataflow_cs.Infrastructure.Configuration
         /// <returns>默认配置文件路径</returns>
         private string GetDefaultConfigPath()
         {
-            // 在应用目录下创建config文件夹，并使用menu_config.json作为配置文件名
+            // 在应用目录下创建config文件夹，并使用MenuConfig.json作为配置文件名
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            return Path.Combine(appDirectory, "config", "menu_config.json");
+            return Path.Combine(appDirectory, "config", "MenuConfig.json");
         }
 
         /// <summary>
@@ -116,8 +117,34 @@ namespace dataflow_cs.Infrastructure.Configuration
         /// <returns>默认菜单配置</returns>
         private MenuConfig CreateDefaultConfig()
         {
-            // 创建并返回默认菜单配置
-            return new MenuConfig();
+            // 创建默认菜单配置
+            MenuConfig config = new MenuConfig
+            {
+                PaletteTitle = "数智设计",
+                PaletteWidth = 250,
+                PaletteHeight = 400,
+                MenuGroups = new List<MenuGroup>()
+            };
+
+            // 添加示例菜单组
+            MenuGroup group1 = new MenuGroup
+            {
+                Title = "示例菜单组",
+                IconKey = "folder",
+                Items = new List<MenuItem>()
+            };
+
+            // 添加示例菜单项
+            group1.Items.Add(new MenuItem
+            {
+                Title = "示例命令",
+                IconKey = "command",
+                Command = "LINE"
+            });
+
+            config.MenuGroups.Add(group1);
+            
+            return config;
         }
     }
 } 

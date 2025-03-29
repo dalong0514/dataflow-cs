@@ -1,10 +1,10 @@
 {
-  "PaletteTitle": "天正数智设计",
+  "PaletteTitle": "数智设计",
   "PaletteWidth": 250,
   "PaletteHeight": 400,
   "MenuGroups": [
     {
-      "Title": "一级菜单 1",
+      "Title": "一级菜单1",
       "IconKey": "folder",
       "Items": [
         {
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "Title": "一级菜单 2",
+      "Title": "一级菜单2",
       "IconKey": "folder",
       "Items": [
         {
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "Title": "一级菜单 3",
+      "Title": "一级菜单3",
       "IconKey": "folder",
       "Items": [
         {
