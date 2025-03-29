@@ -20,6 +20,15 @@ namespace dataflow_cs.Business.Services
         }
         
         /// <summary>
+        /// 获取菜单配置仓储
+        /// </summary>
+        /// <returns>菜单配置仓储</returns>
+        public IMenuConfigRepository GetRepository()
+        {
+            return _repository;
+        }
+        
+        /// <summary>
         /// 加载菜单配置
         /// </summary>
         /// <returns>菜单配置</returns>

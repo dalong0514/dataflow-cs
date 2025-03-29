@@ -132,8 +132,6 @@
     <Folder Include="icons\" />
     <Folder Include="Presentation\ViewModels\" />
     <Folder Include="Resources\" />
-    <Folder Include="UI\Dialogs\" />
-    <Folder Include="UI\Palettes\" />
     <Folder Include="Utils\Extensions\" />
   </ItemGroup>
   <ItemGroup>

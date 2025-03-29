@@ -15,7 +15,7 @@ namespace dataflow_cs.Domain.ValueObjects
         /// <summary>
         /// 面板宽度
         /// </summary>
-        public int PaletteWidth { get; set; } = 250;
+        public int PaletteWidth { get; set; } = 300;
         
         /// <summary>
         /// 面板高度

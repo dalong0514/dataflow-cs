@@ -39,6 +39,14 @@ namespace dataflow_cs.Business.Commands.Common
             // 使用依赖注入原则，初始化服务
             var repository = new FileMenuConfigRepository();
             _menuConfigService = new MenuConfigService(repository);
+            
+            // 如果在AutoCAD环境中，输出初始化信息
+            var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager?.MdiActiveDocument;
+            if (doc != null)
+            {
+                doc.Editor.WriteMessage("\n自定义菜单命令已初始化");
+                doc.Editor.WriteMessage($"\n配置文件路径: {repository.GetConfigFilePath()}");
+            }
         }
 
         /// <summary>
@@ -53,6 +61,11 @@ namespace dataflow_cs.Business.Commands.Common
             {
                 // 显示开始执行信息
                 editor.WriteMessage("\n开始执行添加自定义菜单命令...");
+                
+                // 获取配置文件实际路径用于诊断
+                var repository = (FileMenuConfigRepository)_menuConfigService.GetRepository();
+                string configPath = repository.GetConfigFilePath();
+                editor.WriteMessage($"\n当前配置文件路径: {configPath}");
                 
                 // 加载菜单配置
                 editor.WriteMessage("\n正在加载菜单配置...");

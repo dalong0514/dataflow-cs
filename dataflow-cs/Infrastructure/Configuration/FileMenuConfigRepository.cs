@@ -25,6 +25,15 @@ namespace dataflow_cs.Infrastructure.Configuration
         }
 
         /// <summary>
+        /// 获取当前使用的配置文件路径
+        /// </summary>
+        /// <returns>配置文件路径</returns>
+        public string GetConfigFilePath()
+        {
+            return _configFilePath;
+        }
+
+        /// <summary>
         /// 加载菜单配置
         /// </summary>
         /// <returns>菜单配置对象</returns>
@@ -106,9 +115,52 @@ namespace dataflow_cs.Infrastructure.Configuration
         /// <returns>默认配置文件路径</returns>
         private string GetDefaultConfigPath()
         {
-            // 在应用目录下创建config文件夹，并使用MenuConfig.json作为配置文件名
-            string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            return Path.Combine(appDirectory, "config", "MenuConfig.json");
+            try
+            {
+                const string configFileName = "MenuConfig.json";
+                
+                // 首先尝试获取程序集所在目录
+                string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string assemblyDir = Path.GetDirectoryName(assemblyLocation);
+                
+                // 检查当前程序集目录下是否有config文件夹和配置文件
+                string configDir1 = Path.Combine(assemblyDir, "config");
+                string configPath1 = Path.Combine(configDir1, configFileName);
+                if (Directory.Exists(configDir1) && File.Exists(configPath1))
+                {
+                    return configPath1;
+                }
+                
+                // 回退到上一级目录查找config目录
+                string parentDir = Directory.GetParent(assemblyDir)?.FullName;
+                if (parentDir != null)
+                {
+                    string configDir2 = Path.Combine(parentDir, "config");
+                    string configPath2 = Path.Combine(configDir2, configFileName);
+                    if (Directory.Exists(configDir2) && File.Exists(configPath2))
+                    {
+                        return configPath2;
+                    }
+                }
+                
+                // 尝试从AppDomain的BaseDirectory查找
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string configDir3 = Path.Combine(baseDir, "config");
+                string configPath3 = Path.Combine(configDir3, configFileName);
+                if (Directory.Exists(configDir3) && File.Exists(configPath3))
+                {
+                    return configPath3;
+                }
+                
+                // 如果都未找到，返回默认路径
+                return Path.Combine(assemblyDir, "config", configFileName);
+            }
+            catch
+            {
+                // 出错时返回默认应用程序目录下的配置文件
+                string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                return Path.Combine(appDirectory, "config", "MenuConfig.json");
+            }
         }
 
         /// <summary>
