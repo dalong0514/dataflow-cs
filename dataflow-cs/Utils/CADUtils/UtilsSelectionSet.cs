@@ -112,43 +112,58 @@ namespace dataflow_cs.Utils.CADUtils
 
         public static SelectionSet UtilsGetSelectionSetByFilterByCrossingWindow(string entityType, Extents3d extents, string layerName = null)
         {
-            // Create a new list for filter values
-            List<TypedValue> filterValues = new List<TypedValue>
+            try
             {
-                // Add entity type filter
-                new TypedValue((int)DxfCode.Start, entityType)
-            };
-            // Add layer name filter if layerName is not null
-            if (layerName != null)
-            {
-                filterValues.Add(new TypedValue((int)DxfCode.LayerName, layerName));
-            }
-            // Convert the list to an array
-            TypedValue[] filterList = filterValues.ToArray();
-            SelectionFilter filter = new SelectionFilter(filterList);
-
-            PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);
-            if (selRes.Status != PromptStatus.OK) return null;
-
-            // Now filter the selection set by the extents
-            ObjectIdCollection filteredObjects = new ObjectIdCollection();
-            foreach (SelectedObject obj in selRes.Value)
-            {
-                if (obj.ObjectId.ObjectClass.DxfName == entityType)
+                // Create a new list for filter values
+                List<TypedValue> filterValues = new List<TypedValue>
                 {
-                    Entity ent = (Entity)obj.ObjectId.GetObject(OpenMode.ForRead);
-                    if (ent.GeometricExtents.MinPoint.X >= extents.MinPoint.X &&
-                        ent.GeometricExtents.MinPoint.Y >= extents.MinPoint.Y &&
-                        ent.GeometricExtents.MaxPoint.X <= extents.MaxPoint.X &&
-                        ent.GeometricExtents.MaxPoint.Y <= extents.MaxPoint.Y)
+                    // Add entity type filter
+                    new TypedValue((int)DxfCode.Start, entityType)
+                };
+                // Add layer name filter if layerName is not null
+                if (layerName != null)
+                {
+                    filterValues.Add(new TypedValue((int)DxfCode.LayerName, layerName));
+                }
+                // Convert the list to an array
+                TypedValue[] filterList = filterValues.ToArray();
+                SelectionFilter filter = new SelectionFilter(filterList);
+
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);
+                if (selRes.Status != PromptStatus.OK) return null;
+
+                if (selRes.Value == null) return null;
+
+                // Now filter the selection set by the extents
+                ObjectIdCollection filteredObjects = new ObjectIdCollection();
+                foreach (SelectedObject obj in selRes.Value)
+                {
+                    if (obj.ObjectId.ObjectClass.DxfName == entityType)
                     {
-                        filteredObjects.Add(obj.ObjectId);
+                        Entity ent = (Entity)obj.ObjectId.GetObject(OpenMode.ForRead);
+                        if (ent != null && 
+                            ent.GeometricExtents.MinPoint.X >= extents.MinPoint.X &&
+                            ent.GeometricExtents.MinPoint.Y >= extents.MinPoint.Y &&
+                            ent.GeometricExtents.MaxPoint.X <= extents.MaxPoint.X &&
+                            ent.GeometricExtents.MaxPoint.Y <= extents.MaxPoint.Y)
+                        {
+                            filteredObjects.Add(obj.ObjectId);
+                        }
                     }
                 }
-            }
 
-            // Create a new SelectionSet from the ObjectIdCollection
-            return SelectionSet.FromObjectIds(filteredObjects.Cast<ObjectId>().ToArray());
+                // Create a new SelectionSet from the ObjectIdCollection
+                return SelectionSet.FromObjectIds(filteredObjects.Cast<ObjectId>().ToArray());
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetSelectionSetByFilterByCrossingWindow 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                // 重新抛出异常以便上层处理
+                throw new Exception($"选择对象时发生错误: {ex.Message}", ex);
+            }
         }
     }
 } 

@@ -7,6 +7,8 @@ using System;
 using System.Windows;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace dataflow_cs.Business.Commands.GsPg
 {
@@ -32,41 +34,92 @@ namespace dataflow_cs.Business.Commands.GsPg
             {
                 // 显示测试信息
                 editor.WriteMessage("\n开始执行测试命令...");
+                // 提示用户框选区域
+                editor.WriteMessage("\n请框选一个区域...");
                 
-                // 提示用户输入实体句柄或选择其他测试功能
-                PromptKeywordOptions pKeyOpts = new PromptKeywordOptions("\n请选择功能: ");
-                pKeyOpts.Keywords.Add("LocateByHandle");
-                pKeyOpts.Keywords.Add("ExportData");
-                pKeyOpts.Keywords.Default = "LocateByHandle";
-                pKeyOpts.AllowNone = false;
+                // 创建提示选项
+                PromptPointOptions promptOptions = new PromptPointOptions("\n指定第一个角点: ");
                 
-                PromptResult pKeyRes = editor.GetKeywords(pKeyOpts);
-                if (pKeyRes.Status != PromptStatus.OK)
-                    return false;
-                
-                switch (pKeyRes.StringResult)
+                // 获取第一个点
+                PromptPointResult firstPointResult = editor.GetPoint(promptOptions);
+                if (firstPointResult.Status != PromptStatus.OK)
                 {
-                    case "LocateByHandle":
-                        // 提示用户输入实体句柄
-                        PromptStringOptions pStrOpts = new PromptStringOptions("\n请输入实体句柄(例如:27E2BF): ");
-                        pStrOpts.AllowSpaces = false;
-                        PromptResult pStrRes = editor.GetString(pStrOpts);
-                        
-                        if (pStrRes.Status == PromptStatus.OK)
-                        {
-                            string handle = pStrRes.StringResult;
-                            return LocateEntityByHandle(handle);
-                        }
-                        return false;
-                        
-                    case "ExportData":
-                        // 测试WindowExportData窗口
-                        editor.WriteMessage($"\n执行测试命令时发生错误");
-                        return true;
-                        
-                    default:
-                        return false;
+                    editor.WriteMessage("\n操作已取消。");
+                    return false;
                 }
+                
+                // 创建角点选项
+                PromptCornerOptions cornerOptions = new PromptCornerOptions("\n指定对角点: ", firstPointResult.Value);
+                
+                // 获取第二个点
+                PromptPointResult secondPointResult = editor.GetCorner(cornerOptions);
+                if (secondPointResult.Status != PromptStatus.OK)
+                {
+                    editor.WriteMessage("\n操作已取消。");
+                    return false;
+                }
+                
+                // 创建Extents3d对象
+                Point3d firstPoint = firstPointResult.Value;
+                Point3d secondPoint = secondPointResult.Value;
+                
+                // 确保创建正确的范围（最小点和最大点）
+                double minX = Math.Min(firstPoint.X, secondPoint.X);
+                double minY = Math.Min(firstPoint.Y, secondPoint.Y);
+                double minZ = Math.Min(firstPoint.Z, secondPoint.Z);
+                
+                double maxX = Math.Max(firstPoint.X, secondPoint.X);
+                double maxY = Math.Max(firstPoint.Y, secondPoint.Y);
+                double maxZ = Math.Max(firstPoint.Z, secondPoint.Z);
+                
+                Extents3d extents = new Extents3d(
+                    new Point3d(minX, minY, minZ),
+                    new Point3d(maxX, maxY, maxZ)
+                );
+                
+                editor.WriteMessage($"\n已创建选择范围: ({minX},{minY},{minZ}) 到 ({maxX},{maxY},{maxZ})");
+                try
+                {
+                    List<ObjectId> objectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(extents, "GsLcPipeElementPublicCode", true);
+                    editor.WriteMessage($"\n找到 {objectIds.Count} 个块，块名称为: {string.Join(", ", objectIds.Select(id => UtilsBlock.UtilsGetBlockName(id)))}");
+                
+                    // 检查是否找到了块
+                    if (objectIds.Count > 0)
+                    {
+                        editor.WriteMessage("\n开始更改块的图层...");
+                        
+                        // 调用函数将找到的块的图层更改为"0DataFlow-GsLcValveFreeze"
+                        using (Transaction trans = database.TransactionManager.StartTransaction())
+                        {
+                            try
+                            {
+                                foreach (ObjectId id in objectIds)
+                                {
+                                    // 打开块引用进行写入
+                                    UtilsBlock.UtilsChangeBlockLayerName(id, "0DataFlow-GsLcValveFreeze");
+                                }
+                                
+                                // 提交事务
+                                trans.Commit();
+                                editor.WriteMessage($"\n成功将 {objectIds.Count} 个块的图层更改为 '0DataFlow-GsLcValveFreeze'");
+                            }
+                            catch (Exception ex)
+                            {
+                                editor.WriteMessage($"\n更改图层时发生错误: {ex.Message}");
+                                trans.Abort();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        editor.WriteMessage("\n未找到需要更改图层的块");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    editor.WriteMessage($"\n查找块时发生错误: {ex.Message}");
+                }
+                return true;
             }
             catch (Exception ex)
             {

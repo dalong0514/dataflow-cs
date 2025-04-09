@@ -475,27 +475,39 @@ namespace dataflow_cs.Utils.CADUtils
         /// <returns>匹配的块ObjectId列表</returns>
         public static List<ObjectId> UtilsGetAllObjectIdsByBlockNameByCrossingWindow(Extents3d extents, string blockName, bool isIdentical = true)
         {
-            // 任务1: 在AutoCAD中获得块实体对象的选择集
-            SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSetByCrossingWindow(extents);
-            List<ObjectId> blockIds = new List<ObjectId>();
-
-            // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
-            if (selSet != null)
+            try
             {
-                if (isIdentical)
+                // 任务1: 在AutoCAD中获得块实体对象的选择集
+                SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSetByCrossingWindow(extents);
+                List<ObjectId> blockIds = new List<ObjectId>();
+
+                // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
+                if (selSet != null)
                 {
-                    blockIds = selSet.GetObjectIds()
-                        .Where(objectId => objectId != null && UtilsGetBlockName(objectId) == blockName)
-                        .ToList();
+                    if (isIdentical)
+                    {
+                        blockIds = selSet.GetObjectIds()
+                            .Where(objectId => objectId != null && UtilsGetBlockName(objectId) == blockName)
+                            .ToList();
+                    }
+                    else
+                    {
+                        blockIds = selSet.GetObjectIds()
+                            .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
+                            .ToList();
+                    }
                 }
-                else
-                {
-                    blockIds = selSet.GetObjectIds()
-                        .Where(objectId => objectId != null && UtilsGetBlockName(objectId).Contains(blockName))
-                        .ToList();
-                }
+                return blockIds;
             }
-            return blockIds;
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetAllObjectIdsByBlockNameByCrossingWindow 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                // 重新抛出异常以便上层处理
+                throw new Exception($"选择块时发生错误: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
