@@ -21,14 +21,14 @@ namespace dataflow_cs.Utils.CADUtils
         public static SelectionSet UtilsGetAllPolylineSelectionSetByLayerName(string layerName) => UtilsGetAllSelectionSetByFilter("LWPOLYLINE", layerName);
 
         // get all entity selection set by filter
-        public static SelectionSet UtilsGetAllBlockSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("INSERT", extents);
-        public static SelectionSet UtilsGetAllBlockSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("INSERT", extents, layerName);
-        public static SelectionSet UtilsGetAllMTextSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("MText", extents);
-        public static SelectionSet UtilsGetAllMTextSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("MText", extents, layerName);
-        public static SelectionSet UtilsGetAllTextSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("Text", extents);
-        public static SelectionSet UtilsGetAllTextSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("Text", extents, layerName);
-        public static SelectionSet UtilsGetAllPolylineSelectionSetByCrossingWindow(Extents3d extents) => UtilsGeSelectionSetByFilterByCrossingWindow("LWPOLYLINE", extents);
-        public static SelectionSet UtilsGetAllPolylineSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGeSelectionSetByFilterByCrossingWindow("LWPOLYLINE", extents, layerName);
+        public static SelectionSet UtilsGetAllBlockSelectionSetByCrossingWindow(Extents3d extents) => UtilsGetSelectionSetByFilterByCrossingWindow("INSERT", extents);
+        public static SelectionSet UtilsGetAllBlockSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGetSelectionSetByFilterByCrossingWindow("INSERT", extents, layerName);
+        public static SelectionSet UtilsGetAllMTextSelectionSetByCrossingWindow(Extents3d extents) => UtilsGetSelectionSetByFilterByCrossingWindow("MText", extents);
+        public static SelectionSet UtilsGetAllMTextSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGetSelectionSetByFilterByCrossingWindow("MText", extents, layerName);
+        public static SelectionSet UtilsGetAllTextSelectionSetByCrossingWindow(Extents3d extents) => UtilsGetSelectionSetByFilterByCrossingWindow("Text", extents);
+        public static SelectionSet UtilsGetAllTextSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGetSelectionSetByFilterByCrossingWindow("Text", extents, layerName);
+        public static SelectionSet UtilsGetAllPolylineSelectionSetByCrossingWindow(Extents3d extents) => UtilsGetSelectionSetByFilterByCrossingWindow("LWPOLYLINE", extents);
+        public static SelectionSet UtilsGetAllPolylineSelectionSetByLayerNameByCrossingWindow(Extents3d extents, string layerName) => UtilsGetSelectionSetByFilterByCrossingWindow("LWPOLYLINE", extents, layerName);
 
         // get entity selection set by filter
         public static SelectionSet UtilsGetBlockSelectionSet() => UtilsGetSelectionSetByFilter("INSERT");
@@ -110,7 +110,7 @@ namespace dataflow_cs.Utils.CADUtils
             return selSet;
         }
 
-        public static SelectionSet UtilsGeSelectionSetByFilterByCrossingWindow(string entityType, Extents3d extents, string layerName = null)
+        public static SelectionSet UtilsGetSelectionSetByFilterByCrossingWindow(string entityType, Extents3d extents, string layerName = null)
         {
             // Create a new list for filter values
             List<TypedValue> filterValues = new List<TypedValue>
