@@ -78,11 +78,10 @@ namespace dataflow_cs.Business.Commands.GsPg
                 try
                 {
                     List<ObjectId> objectIds = new List<ObjectId>();
-                    SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSetByCrossingWindow(extents);
-                    objectIds = selSet.GetObjectIds().ToList();
-                    // objectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(extents, "InstrumentP", true);
+                    // SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSetByCrossingWindow(extents);
+                    // objectIds = selSet.GetObjectIds().ToList();
+                    objectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(extents, "InstrumentP", true);
                     editor.WriteMessage($"\n找到 {objectIds.Count} 个块，块名称为: {string.Join(", ", objectIds.Select(id => UtilsBlock.UtilsGetBlockName(id)))}");
-                    // editor.WriteMessage($"\n找到 {objectIds.Count} 个块");   
                 
                     // 检查是否找到了块
                     if (objectIds.Count > 0)
