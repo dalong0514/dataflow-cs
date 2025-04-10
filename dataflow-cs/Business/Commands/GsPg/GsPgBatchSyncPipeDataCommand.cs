@@ -389,7 +389,7 @@ namespace dataflow_cs.Business.Commands.GsPg
             
             // 找出位于双线管道上的所有箭头辅助块
             List<ObjectId> pipeArrowAssistObjectIds = allPipeArrowAssistObjectIds
-                .Where(x => IsPointInLineByDistance(UtilsBlock.UtilsGetBlockBasePoint(x), doubleLinePipePtList[0], doubleLinePipePtList[1], 5))
+                .Where(x => UtilsGeometry.UtilsIsPointInLineByDistance(UtilsBlock.UtilsGetBlockBasePoint(x), doubleLinePipePtList[0], doubleLinePipePtList[1], 5))
                 .ToList();
             
             if (pipeArrowAssistObjectIds.Count > 0)
@@ -444,33 +444,6 @@ namespace dataflow_cs.Business.Commands.GsPg
         }
 
         /// <summary>
-        /// 判断点是否在线上
-        /// </summary>
-        /// <param name="pt1">要检查的点</param>
-        /// <param name="lineStartPt">线起点</param>
-        /// <param name="lineEndPt">线终点</param>
-        /// <param name="tolerance">容差</param>
-        /// <returns>是否在线上</returns>
-        private static bool IsPointInLineByDistance(Point3d pt1, Point3d lineStartPt, Point3d lineEndPt, double tolerance)
-        {
-            // 计算点到线的角度
-            double angle1 = UtilsGeometry.UtilsGetAngleByTwoPoint(lineStartPt, pt1) - UtilsGeometry.UtilsGetAngleByTwoPoint(lineStartPt, lineEndPt);
-            double angle2 = UtilsGeometry.UtilsGetAngleByTwoPoint(lineEndPt, pt1) - UtilsGeometry.UtilsGetAngleByTwoPoint(lineEndPt, lineStartPt);
-            
-            // 计算点到线的最短距离
-            double minDistance = Math.Abs(lineStartPt.DistanceTo(pt1) * Math.Sin(angle1));
-            
-            // 判断点是否在线上
-            bool isNearEndPoints = pt1.DistanceTo(lineStartPt) <= tolerance || pt1.DistanceTo(lineEndPt) <= tolerance;
-            bool isWithinBounds = (pt1.X > Math.Min(lineStartPt.X, lineEndPt.X) - tolerance && 
-                           pt1.X < Math.Max(lineStartPt.X, lineEndPt.X) + tolerance && 
-                           pt1.Y > Math.Min(lineStartPt.Y, lineEndPt.Y) - tolerance && 
-                           pt1.Y < Math.Max(lineStartPt.Y, lineEndPt.Y) + tolerance);
-            
-            return minDistance <= tolerance && (isNearEndPoints || isWithinBounds);
-        }
-
-        /// <summary>
         /// 获取相交的其他双线管道
         /// </summary>
         /// <param name="doublePipeLineObjectId">当前双线管道对象ID</param>
@@ -487,8 +460,8 @@ namespace dataflow_cs.Business.Commands.GsPg
             List<ObjectId> doubleLinePipeElementElbowObjectIds = allDoubleElbowObjectIds
                 .Where(x => {
                     Point3d elbowPosition = UtilsBlock.UtilsGetBlockBasePoint(x);
-                    return IsPointNearPoint(elbowPosition, twoEndPtList[0], 10) || 
-                           IsPointNearPoint(elbowPosition, twoEndPtList[1], 10);
+                    return UtilsGeometry.UtilsIsPointNearPoint(elbowPosition, twoEndPtList[0], 10) || 
+                           UtilsGeometry.UtilsIsPointNearPoint(elbowPosition, twoEndPtList[1], 10);
                 })
                 .ToList();
             
@@ -506,8 +479,8 @@ namespace dataflow_cs.Business.Commands.GsPg
                     .Where(xx => {
                         Point3d elbowPosition = UtilsBlock.UtilsGetBlockBasePoint(x);
                         List<Point3d> doublePipePtList = GetDoubleLinePipePtList(xx);
-                        return IsPointNearPoint(elbowPosition, doublePipePtList[0], 10) || 
-                               IsPointNearPoint(elbowPosition, doublePipePtList[1], 10);
+                        return UtilsGeometry.UtilsIsPointNearPoint(elbowPosition, doublePipePtList[0], 10) || 
+                               UtilsGeometry.UtilsIsPointNearPoint(elbowPosition, doublePipePtList[1], 10);
                     })
                     .ToList();
                 
@@ -515,18 +488,6 @@ namespace dataflow_cs.Business.Commands.GsPg
             });
             
             return resultList;
-        }
-        
-        /// <summary>
-        /// 判断两点是否接近
-        /// </summary>
-        /// <param name="pt1">第一个点</param>
-        /// <param name="pt2">第二个点</param>
-        /// <param name="tolerance">容差</param>
-        /// <returns>两点是否接近</returns>
-        private static bool IsPointNearPoint(Point3d pt1, Point3d pt2, double tolerance)
-        {
-            return pt1.DistanceTo(pt2) <= tolerance;
         }
 
         /// <summary>

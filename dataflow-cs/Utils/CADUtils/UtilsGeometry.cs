@@ -33,7 +33,7 @@ namespace dataflow_cs.Utils.CADUtils
         /// <returns>最短距离值</returns>
         public static double UtilsGetPointToPolylineShortestDistance(Point3d point, ObjectId polylineObjectId)
         {
-            // 获get the closest distance from the basePoint to the polyline
+            // get the closest distance from the basePoint to the polyline
             Polyline polyline = polylineObjectId.GetObject(OpenMode.ForRead) as Polyline;
             Point3d closestPoint = polyline.GetClosestPointTo(point, false);
             return point.DistanceTo(closestPoint);
@@ -71,6 +71,32 @@ namespace dataflow_cs.Utils.CADUtils
             bool isOnEnd = endPoint.DistanceTo(point) < tolerance;
 
             return isOnStart || isOnEnd;
+        }
+        
+        /// <summary>
+        /// 判断点是否在线上
+        /// </summary>
+        /// <param name="pt1">要检查的点</param>
+        /// <param name="lineStartPt">线起点</param>
+        /// <param name="lineEndPt">线终点</param>
+        /// <param name="tolerance">容差</param>
+        /// <returns>是否在线上</returns>
+        public static bool UtilsIsPointInLineByDistance(Point3d pt1, Point3d lineStartPt, Point3d lineEndPt, double tolerance)
+        {
+            // 计算点到线的角度
+            double angle1 = UtilsGetAngleByTwoPoint(lineStartPt, pt1) - UtilsGetAngleByTwoPoint(lineStartPt, lineEndPt);
+            
+            // 计算点到线的最短距离
+            double minDistance = Math.Abs(lineStartPt.DistanceTo(pt1) * Math.Sin(angle1));
+            
+            // 判断点是否在线上
+            bool isNearEndPoints = pt1.DistanceTo(lineStartPt) <= tolerance || pt1.DistanceTo(lineEndPt) <= tolerance;
+            bool isWithinBounds = (pt1.X > Math.Min(lineStartPt.X, lineEndPt.X) - tolerance && 
+                           pt1.X < Math.Max(lineStartPt.X, lineEndPt.X) + tolerance && 
+                           pt1.Y > Math.Min(lineStartPt.Y, lineEndPt.Y) - tolerance && 
+                           pt1.Y < Math.Max(lineStartPt.Y, lineEndPt.Y) + tolerance);
+            
+            return minDistance <= tolerance && (isNearEndPoints || isWithinBounds);
         }
 
         /// <summary>
