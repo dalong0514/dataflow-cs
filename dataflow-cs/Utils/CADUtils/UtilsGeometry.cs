@@ -12,6 +12,19 @@ namespace dataflow_cs.Utils.CADUtils
     /// </summary>
     public static class UtilsGeometry
     {
+
+        /// <summary>
+        /// 判断两点是否接近
+        /// </summary>
+        /// <param name="pt1">第一个点</param>
+        /// <param name="pt2">第二个点</param>
+        /// <param name="tolerance">容差</param>
+        /// <returns>两点是否接近</returns>
+        public static bool UtilsIsPointNearPoint(Point3d pt1, Point3d pt2, double tolerance)
+        {
+            return pt1.DistanceTo(pt2) <= tolerance;
+        }
+
         /// <summary>
         /// 获取点到多段线的最短距离
         /// </summary>

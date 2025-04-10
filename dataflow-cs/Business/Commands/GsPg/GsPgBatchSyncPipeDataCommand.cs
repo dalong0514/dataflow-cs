@@ -313,18 +313,220 @@ namespace dataflow_cs.Business.Commands.GsPg
         /// <param name="allDoubleElbowObjectIds">所有双线弯头对象ID列表</param>
         /// <param name="allPipeArrowAssistObjectIds">所有管道箭头辅助对象ID列表</param>
         /// <param name="allValveObjectIds">所有阀门对象ID列表</param>
+        /// <param name="pipeInfo">管道信息辅助类</param>
         public static void GsPgSynDoublePipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> doublePipeLineObjectIds, List<ObjectId> allDoublePipeLineObjectIds, List<ObjectId> allDoubleElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds, List<ObjectId> allValveObjectIds, PipeInfoHelper pipeInfo)
         {
             if (doublePipeLineObjectIds != null)
             {
+                string pipeDiameter = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
+                
                 doublePipeLineObjectIds.ForEach(x =>
                 {
+                    // 为双线管道添加XData
                     UtilsCADActive.UtilsAddXData(x, pipeData);
-                    // do to
+                    
+                    // 根据管径更新双线管道的状态
+                    Dictionary<string, string> statusDict = new Dictionary<string, string>()
+                    {
+                        { "status", GsPgGetDoubleLineStatusByPipeDiameter(pipeDiameter) }
+                    };
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(x, statusDict);
+                    
+                    // 从所有双线管道列表中移除当前处理的管道
+                    allDoublePipeLineObjectIds = allDoublePipeLineObjectIds.Where(xx => xx != x).ToList();
+                    
+                    // 修改双线管道上的箭头辅助块属性
+                    GsPgSynchroniseOneDoubleLinePipeArrowAssist(pipeData, x, allPipeArrowAssistObjectIds);
+                    
+                    // 获取相交的其他双线管道
+                    List<ObjectId> otherDoubleLineObjectIds = GsPgGetOtherDoubleLinePipeLineByInterset(x, allDoublePipeLineObjectIds, allDoubleElbowObjectIds, pipeData);
+                    
+                    // 递归处理相交的其他双线管道
+                    if (otherDoubleLineObjectIds != null && otherDoubleLineObjectIds.Count > 0)
+                    {
+                        GsPgSynDoublePipeElementForOnePipeAssist(pipeData, otherDoubleLineObjectIds, allDoublePipeLineObjectIds, allDoubleElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
+                    }
+                    
                     UtilsCADActive.Editor.WriteMessage("\n" + "双线管道" + pipeData["pipeNum"] + "数据已同步...");
                 });
             }
+        }
 
+        /// <summary>
+        /// 根据管道直径获取双线管道状态
+        /// </summary>
+        /// <param name="diameter">管道直径</param>
+        /// <returns>双线管道状态</returns>
+        private static string GsPgGetDoubleLineStatusByPipeDiameter(string diameter)
+        {
+            switch (diameter)
+            {
+                case "250": return "DN250";
+                case "300": return "DN300";
+                case "350": return "DN350";
+                case "400": return "DN400";
+                case "450": return "DN450";
+                case "500": return "DN500";
+                case "550": return "DN550";
+                case "600": return "DN600";
+                default: return "DN250";
+            }
+        }
+
+        /// <summary>
+        /// 修改双线管道上的箭头辅助块属性
+        /// </summary>
+        /// <param name="pipeData">管道数据</param>
+        /// <param name="doublePipeLineObjectId">双线管道对象ID</param>
+        /// <param name="allPipeArrowAssistObjectIds">所有管道箭头辅助对象ID列表</param>
+        private static void GsPgSynchroniseOneDoubleLinePipeArrowAssist(Dictionary<string, string> pipeData, ObjectId doublePipeLineObjectId, List<ObjectId> allPipeArrowAssistObjectIds)
+        {
+            // 过滤掉管道数据中的elevation属性
+            Dictionary<string, string> filteredPipeData = pipeData.Where(x => x.Key != "elevation").ToDictionary(x => x.Key, x => x.Value);
+
+            // 获取双线管道的两个端点
+            List<Point3d> doubleLinePipePtList = GetDoubleLinePipePtList(doublePipeLineObjectId);
+            
+            // 找出位于双线管道上的所有箭头辅助块
+            List<ObjectId> pipeArrowAssistObjectIds = allPipeArrowAssistObjectIds
+                .Where(x => IsPointInLineByDistance(UtilsBlock.UtilsGetBlockBasePoint(x), doubleLinePipePtList[0], doubleLinePipePtList[1], 5))
+                .ToList();
+            
+            if (pipeArrowAssistObjectIds.Count > 0)
+            {
+                // 为每个箭头辅助块更新属性
+                pipeArrowAssistObjectIds.ForEach(x =>
+                {
+                    // 更新箭头辅助块的属性
+                    UtilsBlock.UtilsSetPropertyValueByDictData(x, filteredPipeData);
+                    
+                    // 获取箭头辅助块的elevation属性值并更新双线管道的elevation属性
+                    string elevation = UtilsBlock.UtilsGetPropertyValueByPropertyName(x, "elevation");
+                    Dictionary<string, string> elevationDict = new Dictionary<string, string>() { { "elevation", elevation } };
+                    UtilsBlock.UtilsSetPropertyValueByDictData(doublePipeLineObjectId, elevationDict);
+                });
+            }
+        }
+
+        /// <summary>
+        /// 获取双线管道的两个端点
+        /// </summary>
+        /// <param name="entityId">双线管道对象ID</param>
+        /// <returns>端点列表</returns>
+        private static List<Point3d> GetDoubleLinePipePtList(ObjectId entityId)
+        {
+            Point3d firPt = UtilsBlock.UtilsGetBlockBasePoint(entityId);
+            
+            // 获取动态块属性集合
+            BlockReference blockRef = entityId.GetObject(OpenMode.ForRead) as BlockReference;
+            DynamicBlockReferencePropertyCollection props = blockRef.DynamicBlockReferencePropertyCollection;
+            
+            // 找到"length"属性并获取其值
+            double pipeLength = 0;
+            foreach (DynamicBlockReferenceProperty prop in props)
+            {
+                if (string.Equals(prop.PropertyName, "length", StringComparison.OrdinalIgnoreCase))
+                {
+                    pipeLength = Convert.ToDouble(prop.Value);
+                    break;
+                }
+            }
+            
+            double pipeAngle = UtilsBlock.UtilsGetBlockRotaton(entityId);
+            
+            Point3d senPt = new Point3d(
+                firPt.X + pipeLength * Math.Cos(pipeAngle),
+                firPt.Y + pipeLength * Math.Sin(pipeAngle),
+                firPt.Z
+            );
+            
+            return new List<Point3d> { firPt, senPt };
+        }
+
+        /// <summary>
+        /// 判断点是否在线上
+        /// </summary>
+        /// <param name="pt1">要检查的点</param>
+        /// <param name="lineStartPt">线起点</param>
+        /// <param name="lineEndPt">线终点</param>
+        /// <param name="tolerance">容差</param>
+        /// <returns>是否在线上</returns>
+        private static bool IsPointInLineByDistance(Point3d pt1, Point3d lineStartPt, Point3d lineEndPt, double tolerance)
+        {
+            // 计算点到线的角度
+            double angle1 = UtilsGeometry.UtilsGetAngleByTwoPoint(lineStartPt, pt1) - UtilsGeometry.UtilsGetAngleByTwoPoint(lineStartPt, lineEndPt);
+            double angle2 = UtilsGeometry.UtilsGetAngleByTwoPoint(lineEndPt, pt1) - UtilsGeometry.UtilsGetAngleByTwoPoint(lineEndPt, lineStartPt);
+            
+            // 计算点到线的最短距离
+            double minDistance = Math.Abs(lineStartPt.DistanceTo(pt1) * Math.Sin(angle1));
+            
+            // 判断点是否在线上
+            bool isNearEndPoints = pt1.DistanceTo(lineStartPt) <= tolerance || pt1.DistanceTo(lineEndPt) <= tolerance;
+            bool isWithinBounds = (pt1.X > Math.Min(lineStartPt.X, lineEndPt.X) - tolerance && 
+                           pt1.X < Math.Max(lineStartPt.X, lineEndPt.X) + tolerance && 
+                           pt1.Y > Math.Min(lineStartPt.Y, lineEndPt.Y) - tolerance && 
+                           pt1.Y < Math.Max(lineStartPt.Y, lineEndPt.Y) + tolerance);
+            
+            return minDistance <= tolerance && (isNearEndPoints || isWithinBounds);
+        }
+
+        /// <summary>
+        /// 获取相交的其他双线管道
+        /// </summary>
+        /// <param name="doublePipeLineObjectId">当前双线管道对象ID</param>
+        /// <param name="allDoublePipeLineObjectIds">所有双线管道对象ID列表</param>
+        /// <param name="allDoubleElbowObjectIds">所有双线弯头对象ID列表</param>
+        /// <param name="pipeData">管道数据</param>
+        /// <returns>相交的其他双线管道对象ID列表</returns>
+        private static List<ObjectId> GsPgGetOtherDoubleLinePipeLineByInterset(ObjectId doublePipeLineObjectId, List<ObjectId> allDoublePipeLineObjectIds, List<ObjectId> allDoubleElbowObjectIds, Dictionary<string, string> pipeData)
+        {
+            List<ObjectId> resultList = new List<ObjectId>();
+            List<Point3d> twoEndPtList = GetDoubleLinePipePtList(doublePipeLineObjectId);
+            
+            // 找出位于双线管道端点附近的弯头
+            List<ObjectId> doubleLinePipeElementElbowObjectIds = allDoubleElbowObjectIds
+                .Where(x => {
+                    Point3d elbowPosition = UtilsBlock.UtilsGetBlockBasePoint(x);
+                    return IsPointNearPoint(elbowPosition, twoEndPtList[0], 10) || 
+                           IsPointNearPoint(elbowPosition, twoEndPtList[1], 10);
+                })
+                .ToList();
+            
+            // 筛选掉位于禁止数据传递图层上的弯头
+            doubleLinePipeElementElbowObjectIds = doubleLinePipeElementElbowObjectIds
+                .Where(x => UtilsBlock.UtilsGetBlockLayer(x) != "0DataFlow-GsPgPipeLineDPSBreak")
+                .ToList();
+            
+            // 为每个弯头设置属性
+            doubleLinePipeElementElbowObjectIds.ForEach(x => {
+                UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
+                
+                // 找出与弯头相交的其他双线管道
+                List<ObjectId> intersectDoublePipeLines = allDoublePipeLineObjectIds
+                    .Where(xx => {
+                        Point3d elbowPosition = UtilsBlock.UtilsGetBlockBasePoint(x);
+                        List<Point3d> doublePipePtList = GetDoubleLinePipePtList(xx);
+                        return IsPointNearPoint(elbowPosition, doublePipePtList[0], 10) || 
+                               IsPointNearPoint(elbowPosition, doublePipePtList[1], 10);
+                    })
+                    .ToList();
+                
+                resultList.AddRange(intersectDoublePipeLines);
+            });
+            
+            return resultList;
+        }
+        
+        /// <summary>
+        /// 判断两点是否接近
+        /// </summary>
+        /// <param name="pt1">第一个点</param>
+        /// <param name="pt2">第二个点</param>
+        /// <param name="tolerance">容差</param>
+        /// <returns>两点是否接近</returns>
+        private static bool IsPointNearPoint(Point3d pt1, Point3d pt2, double tolerance)
+        {
+            return pt1.DistanceTo(pt2) <= tolerance;
         }
 
         /// <summary>
