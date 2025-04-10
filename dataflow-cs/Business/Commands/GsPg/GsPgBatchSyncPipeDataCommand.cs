@@ -139,6 +139,18 @@ namespace dataflow_cs.Business.Commands.GsPg
         }
 
         /// <summary>
+        /// 获取管道元素所在的所有双管道块
+        /// </summary>
+        /// <param name="pipeElementObjectId">管道元素对象ID</param>
+        /// <param name="doublePipeLineObjectIds">双管道块对象ID列表</param>
+        /// <returns>管道元素所在的所有双管道块对象ID列表</returns>
+        public static List<ObjectId> GsPgGetDoublePipeLinesByOnPL(ObjectId pipeElementObjectId, List<ObjectId> doublePipeLineObjectIds)
+        {
+            doublePipeLineObjectIds = doublePipeLineObjectIds.Where(x => UtilsGeometry.UtilsIsPointWithRectangleBlock(UtilsBlock.UtilsGetBlockBasePoint(pipeElementObjectId), x)).ToList();
+            return doublePipeLineObjectIds;
+        }
+
+        /// <summary>
         /// 获取管道元素所在的所有管道线端点
         /// </summary>
         /// <param name="pipeElementObjectId">管道元素对象ID</param>
@@ -290,6 +302,29 @@ namespace dataflow_cs.Business.Commands.GsPg
                 });
 
             }
+        }
+
+        /// <summary>
+        /// 同步一个管道辅助的双线管道元素
+        /// </summary>
+        /// <param name="pipeData">管道数据</param>
+        /// <param name="doublePipeLineObjectIds">双线管道对象ID列表</param>
+        /// <param name="allDoublePipeLineObjectIds">所有双线管道对象ID列表</param>
+        /// <param name="allDoubleElbowObjectIds">所有双线弯头对象ID列表</param>
+        /// <param name="allPipeArrowAssistObjectIds">所有管道箭头辅助对象ID列表</param>
+        /// <param name="allValveObjectIds">所有阀门对象ID列表</param>
+        public static void GsPgSynDoublePipeElementForOnePipeAssist(Dictionary<string, string> pipeData, List<ObjectId> doublePipeLineObjectIds, List<ObjectId> allDoublePipeLineObjectIds, List<ObjectId> allDoubleElbowObjectIds, List<ObjectId> allPipeArrowAssistObjectIds, List<ObjectId> allValveObjectIds, PipeInfoHelper pipeInfo)
+        {
+            if (doublePipeLineObjectIds != null)
+            {
+                doublePipeLineObjectIds.ForEach(x =>
+                {
+                    UtilsCADActive.UtilsAddXData(x, pipeData);
+                    // do to
+                    UtilsCADActive.Editor.WriteMessage("\n" + "双线管道" + pipeData["pipeNum"] + "数据已同步...");
+                });
+            }
+
         }
 
         /// <summary>
@@ -596,12 +631,15 @@ namespace dataflow_cs.Business.Commands.GsPg
                 List<ObjectId> allBlockIds = UtilsBlock.UtilsGetAllBlockObjectIds();
                 List<ObjectId> allPolylineObjectIds = UtilsPolyline.UtilsGetAllObjectIdsByLayerName("0DataFlow-GsPgPipeLine*");
 
-                List<string> blockNameList = new List<string> { "GeYuanFrame", "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve" };
+                List<string> blockNameList = new List<string> { "GeYuanFrame", "GsPgPipeElementElbow", "GsPgPipeElementArrowAssist", "GsPgValve", "GsPgPipeElementDoublePipeLine", "GsPgPipeElementElbowDoubleLine" };
                 Dictionary<string, List<ObjectId>> allObjectIdsGroups = UtilsBlock.UtilsGetAllObjectIdsGroupsByBlockNameList(allBlockIds, blockNameList, false);
                 List<ObjectId> allGeYuanDrawObjectIds = allObjectIdsGroups["GeYuanFrame"];
                 List<ObjectId> allPipeElbowObjectIds = allObjectIdsGroups["GsPgPipeElementElbow"];
                 List<ObjectId> allPipeArrowAssistObjectIds = allObjectIdsGroups["GsPgPipeElementArrowAssist"];
                 List<ObjectId> allValveObjectIds = allObjectIdsGroups["GsPgValve"];
+                // 2025-04-10 新增双管道块和双管道弯头块
+                List<ObjectId> allDoublePipeLineObjectIds = allObjectIdsGroups["GsPgPipeElementDoublePipeLine"];
+                List<ObjectId> allDoublePipeElbowObjectIds = allObjectIdsGroups["GsPgPipeElementElbowDoubleLine"];
 
                 string projectNum = GsPgGetProjectNum(allGeYuanDrawObjectIds);
                 PipeInfoHelper pipeInfo = UtilsCommon.UtilsGetPipeInfo(projectNum);
@@ -609,8 +647,10 @@ namespace dataflow_cs.Business.Commands.GsPg
                 pipeNumObjectIds.ForEach(x =>
                 {
                     List<ObjectId> pipeLineObjectIds = GsPgGetPipeLinesByOnPL(x, allPolylineObjectIds);
+                    List<ObjectId> doublePipeLineObjectIds = GsPgGetDoublePipeLinesByOnPL(x, allDoublePipeLineObjectIds);
                     Dictionary<string, string> pipeData = GsPgGetPipeData(x);
                     GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
+                    GsPgSynDoublePipeElementForOnePipeAssist(pipeData, doublePipeLineObjectIds, allDoublePipeLineObjectIds, allDoublePipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
                     UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
                     GsPgSynPipeElbowStatus(pipeData, pipeInfo);
                 });
