@@ -30,58 +30,59 @@ namespace dataflow_cs.Business.Commands.GsPg
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
+            // 显示测试信息
+            editor.WriteMessage("\n开始执行测试命令...");
+
+            // 测试UtilsGetAllBlockSelectionSetByCrossingWindow
+            TestUtilsGetAllBlockSelectionSetByCrossingWindow(editor, database);
+            return true;
+
+        }
+        
+        protected bool TestUtilsGetAllBlockSelectionSetByCrossingWindow(Editor editor, Database database)
+        {
             try
             {
-                // 显示测试信息
-                editor.WriteMessage("\n开始执行测试命令...");
                 // 提示用户框选区域
                 editor.WriteMessage("\n请框选一个区域...");
                 
-                // 创建提示选项
-                PromptPointOptions promptOptions = new PromptPointOptions("\n指定第一个角点: ");
+                // 在AutoCAD中框选范围创建一个Extents3d extents
+                PromptSelectionOptions selOpts = new PromptSelectionOptions();
+                selOpts.MessageForAdding = "请选择区域内的对象: ";
+                selOpts.AllowDuplicates = false;
                 
-                // 获取第一个点
-                PromptPointResult firstPointResult = editor.GetPoint(promptOptions);
-                if (firstPointResult.Status != PromptStatus.OK)
+                PromptSelectionResult selResult = editor.GetSelection(selOpts);
+                if (selResult.Status != PromptStatus.OK)
                 {
-                    editor.WriteMessage("\n操作已取消。");
+                    editor.WriteMessage("\n用户取消了选择操作。");
                     return false;
                 }
                 
-                // 创建角点选项
-                PromptCornerOptions cornerOptions = new PromptCornerOptions("\n指定对角点: ", firstPointResult.Value);
-                
-                // 获取第二个点
-                PromptPointResult secondPointResult = editor.GetCorner(cornerOptions);
-                if (secondPointResult.Status != PromptStatus.OK)
+                // 获取选择集的范围
+                Extents3d extents = new Extents3d();
+                using (Transaction tr = database.TransactionManager.StartTransaction())
                 {
-                    editor.WriteMessage("\n操作已取消。");
-                    return false;
+                    foreach (ObjectId id in selResult.Value.GetObjectIds())
+                    {
+                        Entity ent = tr.GetObject(id, OpenMode.ForRead) as Entity;
+                        if (ent != null)
+                        {
+                            extents.AddExtents(ent.GeometricExtents);
+                        }
+                    }
+                    tr.Commit();
                 }
                 
-                // 创建Extents3d对象
-                Point3d firstPoint = firstPointResult.Value;
-                Point3d secondPoint = secondPointResult.Value;
-                
-                // 确保创建正确的范围（最小点和最大点）
-                double minX = Math.Min(firstPoint.X, secondPoint.X);
-                double minY = Math.Min(firstPoint.Y, secondPoint.Y);
-                double minZ = Math.Min(firstPoint.Z, secondPoint.Z);
-                
-                double maxX = Math.Max(firstPoint.X, secondPoint.X);
-                double maxY = Math.Max(firstPoint.Y, secondPoint.Y);
-                double maxZ = Math.Max(firstPoint.Z, secondPoint.Z);
-                
-                Extents3d extents = new Extents3d(
-                    new Point3d(minX, minY, minZ),
-                    new Point3d(maxX, maxY, maxZ)
-                );
-                
-                editor.WriteMessage($"\n已创建选择范围: ({minX},{minY},{minZ}) 到 ({maxX},{maxY},{maxZ})");
+                editor.WriteMessage($"\n已选择区域，范围: ({extents.MinPoint.X:F2},{extents.MinPoint.Y:F2}) 到 ({extents.MaxPoint.X:F2},{extents.MaxPoint.Y:F2})");
+
                 try
                 {
-                    List<ObjectId> objectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(extents, "GsLcPipeElementPublicCode", true);
+                    List<ObjectId> objectIds = new List<ObjectId>();
+                    SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSetByCrossingWindow(extents);
+                    objectIds = selSet.GetObjectIds().ToList();
+                    // objectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockNameByCrossingWindow(extents, "InstrumentP", true);
                     editor.WriteMessage($"\n找到 {objectIds.Count} 个块，块名称为: {string.Join(", ", objectIds.Select(id => UtilsBlock.UtilsGetBlockName(id)))}");
+                    // editor.WriteMessage($"\n找到 {objectIds.Count} 个块");   
                 
                     // 检查是否找到了块
                     if (objectIds.Count > 0)
@@ -127,7 +128,6 @@ namespace dataflow_cs.Business.Commands.GsPg
                 return false;
             }
         }
-        
         
         /// <summary>
         /// 通过实体句柄定位到实体对象

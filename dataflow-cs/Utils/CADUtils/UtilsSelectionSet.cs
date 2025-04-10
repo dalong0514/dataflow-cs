@@ -114,6 +114,23 @@ namespace dataflow_cs.Utils.CADUtils
         {
             try
             {
+                // 检查输入参数
+                if (string.IsNullOrEmpty(entityType))
+                {
+                    throw new ArgumentNullException(nameof(entityType), "实体类型不能为空");
+                }
+
+                if (extents == null)
+                {
+                    throw new ArgumentNullException(nameof(extents), "选择范围不能为空");
+                }
+
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    throw new InvalidOperationException("当前没有打开的AutoCAD文档或编辑器不可用");
+                }
+
                 // Create a new list for filter values
                 List<TypedValue> filterValues = new List<TypedValue>
                 {
@@ -121,7 +138,7 @@ namespace dataflow_cs.Utils.CADUtils
                     new TypedValue((int)DxfCode.Start, entityType)
                 };
                 // Add layer name filter if layerName is not null
-                if (layerName != null)
+                if (!string.IsNullOrEmpty(layerName))
                 {
                     filterValues.Add(new TypedValue((int)DxfCode.LayerName, layerName));
                 }
@@ -129,31 +146,27 @@ namespace dataflow_cs.Utils.CADUtils
                 TypedValue[] filterList = filterValues.ToArray();
                 SelectionFilter filter = new SelectionFilter(filterList);
 
-                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);
-                if (selRes.Status != PromptStatus.OK) return null;
+                // 使用交叉窗口选择
+                Point3d minPoint = new Point3d(extents.MinPoint.X, extents.MinPoint.Y, extents.MinPoint.Z);
+                Point3d maxPoint = new Point3d(extents.MaxPoint.X, extents.MaxPoint.Y, extents.MaxPoint.Z);
 
-                if (selRes.Value == null) return null;
-
-                // Now filter the selection set by the extents
-                ObjectIdCollection filteredObjects = new ObjectIdCollection();
-                foreach (SelectedObject obj in selRes.Value)
+                // 尝试选择对象
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectCrossingWindow(minPoint, maxPoint, filter);
+                
+                // 检查选择结果
+                if (selRes.Status != PromptStatus.OK)
                 {
-                    if (obj.ObjectId.ObjectClass.DxfName == entityType)
-                    {
-                        Entity ent = (Entity)obj.ObjectId.GetObject(OpenMode.ForRead);
-                        if (ent != null && 
-                            ent.GeometricExtents.MinPoint.X >= extents.MinPoint.X &&
-                            ent.GeometricExtents.MinPoint.Y >= extents.MinPoint.Y &&
-                            ent.GeometricExtents.MaxPoint.X <= extents.MaxPoint.X &&
-                            ent.GeometricExtents.MaxPoint.Y <= extents.MaxPoint.Y)
-                        {
-                            filteredObjects.Add(obj.ObjectId);
-                        }
-                    }
+                    System.Diagnostics.Debug.WriteLine($"选择操作未成功完成，状态: {selRes.Status}");
+                    return null;
                 }
 
-                // Create a new SelectionSet from the ObjectIdCollection
-                return SelectionSet.FromObjectIds(filteredObjects.Cast<ObjectId>().ToArray());
+                if (selRes.Value == null || selRes.Value.Count == 0)
+                {
+                    System.Diagnostics.Debug.WriteLine("选择集为空");
+                    return null;
+                }
+
+                return selRes.Value;
             }
             catch (Exception ex)
             {

@@ -41,21 +41,29 @@ namespace dataflow_cs.Utils.CADUtils
         /// <returns>块的名称，如果块无效则返回空字符串</returns>
         public static string UtilsGetBlockName(ObjectId objectId)
         {
-            BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
-            if (blockRef == null)
+            if (!objectId.IsValid || objectId.IsErased)
             {
                 return string.Empty;
             }
 
-            ObjectId blockId = blockRef.IsDynamicBlock ? blockRef.DynamicBlockTableRecord : blockRef.BlockTableRecord;
-
-            if (!blockId.IsValid || blockId.IsErased)
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                return string.Empty;
-            }
+                BlockReference blockRef = tr.GetObject(objectId, OpenMode.ForRead) as BlockReference;
+                if (blockRef == null)
+                {
+                    return string.Empty;
+                }
 
-            BlockTableRecord btr = blockId.GetObject(OpenMode.ForRead) as BlockTableRecord;
-            return btr?.Name ?? string.Empty;
+                ObjectId blockId = blockRef.IsDynamicBlock ? blockRef.DynamicBlockTableRecord : blockRef.BlockTableRecord;
+
+                if (!blockId.IsValid || blockId.IsErased)
+                {
+                    return string.Empty;
+                }
+
+                BlockTableRecord btr = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
+                return btr?.Name ?? string.Empty;
+            }
         }
 
         /// <summary>
