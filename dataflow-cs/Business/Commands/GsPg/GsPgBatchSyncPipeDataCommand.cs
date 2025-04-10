@@ -34,6 +34,16 @@ namespace dataflow_cs.Business.Commands.GsPg
         public static List<ObjectId> _processedPipeElbowObjectIds = new List<ObjectId>();
 
         /// <summary>
+        /// 已处理的双线管道对象ID列表
+        /// </summary>
+        public static List<ObjectId> _processedDoublePipeLineIds = new List<ObjectId>();
+
+        /// <summary>
+        /// 已处理的双线管道弯头对象ID列表
+        /// </summary>
+        public static List<ObjectId> _processedDoublePipeElbowObjectIds = new List<ObjectId>();
+
+        /// <summary>
         /// 执行命令核心逻辑
         /// </summary>
         /// <param name="editor">编辑器</param>
@@ -346,8 +356,7 @@ namespace dataflow_cs.Business.Commands.GsPg
                     {
                         GsPgSynDoublePipeElementForOnePipeAssist(pipeData, otherDoubleLineObjectIds, allDoublePipeLineObjectIds, allDoubleElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
                     }
-                    
-                    UtilsCADActive.Editor.WriteMessage("\n" + "双线管道" + pipeData["pipeNum"] + "数据已同步...");
+                    _processedDoublePipeLineIds.Add(x);
                 });
             }
         }
@@ -473,6 +482,8 @@ namespace dataflow_cs.Business.Commands.GsPg
             // 为每个弯头设置属性
             doubleLinePipeElementElbowObjectIds.ForEach(x => {
                 UtilsBlock.UtilsSetPropertyValueByDictData(x, pipeData);
+                // The elbow that require synchronization have been incorporated into the global variables
+                _processedDoublePipeElbowObjectIds.Add(x);
                 
                 // 找出与弯头相交的其他双线管道
                 List<ObjectId> intersectDoublePipeLines = allDoublePipeLineObjectIds
@@ -763,6 +774,21 @@ namespace dataflow_cs.Business.Commands.GsPg
         }
 
         /// <summary>
+        /// 同步双线管道弯头状态
+        /// </summary>
+        /// <param name="pipeData">管道数据字典</param>
+        /// <param name="pipeInfo">管道信息辅助类</param>
+        public static void GsPgSynDoublePipeElbowStatus(Dictionary<string, string> pipeData, PipeInfoHelper pipeInfo)
+        {
+            string pipeDiameter = GsPgGetPipeDiameter(pipeData["pipeNum"], pipeInfo);
+            _processedDoublePipeElbowObjectIds = _processedDoublePipeElbowObjectIds.Distinct().ToList();
+            _processedDoublePipeLineIds = _processedDoublePipeLineIds.Distinct().ToList();
+
+            // to to
+
+        }
+
+        /// <summary>
         /// 获取项目编号
         /// </summary>
         /// <param name="allGeYuanDrawObjectIds">所有的GeYuan绘图对象ID列表</param>
@@ -788,6 +814,12 @@ namespace dataflow_cs.Business.Commands.GsPg
         {
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
+                // 清空全局变量
+                _processedPipeElbowObjectIds.Clear();
+                _processedPolylineIds.Clear();
+                _processedDoublePipeLineIds.Clear();
+                _processedDoublePipeElbowObjectIds.Clear();
+
                 UtilsCADActive.Editor.WriteMessage("\n请选择绿色箭头辅助管道块");
                 List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetObjectIdsBySelectByBlockName("GsPgPipeElementArrowAssist").ToList();
 
@@ -814,11 +846,11 @@ namespace dataflow_cs.Business.Commands.GsPg
                     Dictionary<string, string> pipeData = GsPgGetPipeData(x);
                     GsPgSynPipeElementForOnePipeAssist(pipeData, pipeLineObjectIds, allPolylineObjectIds, allPipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
                     GsPgSynDoublePipeElementForOnePipeAssist(pipeData, doublePipeLineObjectIds, allDoublePipeLineObjectIds, allDoublePipeElbowObjectIds, allPipeArrowAssistObjectIds, allValveObjectIds, pipeInfo);
-                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
                     GsPgSynPipeElbowStatus(pipeData, pipeInfo);
+                    // GsPgSynDoublePipeElbowStatus(pipeData, pipeInfo);
+                    UtilsCADActive.Editor.WriteMessage("\n" + pipeData["pipeNum"] + "数据已同步...");
                 });
-                _processedPipeElbowObjectIds.Clear();
-                _processedPolylineIds.Clear();
+
 
                 UtilsCADActive.Editor.WriteMessage("\n同步数据完成...");
 
