@@ -2,6 +2,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.CADUtils;
+using static dataflow_cs.Utils.CADUtils.UtilsSelectionSet;
 using dataflow_cs.Utils.Helpers;
 using System;
 using System.Windows;
@@ -33,12 +34,28 @@ namespace dataflow_cs.Business.Commands.GsPg
             // 显示测试信息
             editor.WriteMessage("\n开始执行测试命令...");
 
-            // 测试UtilsGetAllBlockSelectionSetByCrossingWindow
-            TestUtilsGetAllBlockSelectionSetByCrossingWindow(editor, database);
+            TestUtilsGetPreviousSelectionSet(editor, database);
+
             return true;
 
         }
-        
+
+        protected bool TestUtilsGetPreviousSelectionSet(Editor editor, Database database)
+        {
+            SelectionResult selResult = UtilsGetPreviousSelectionSet();
+            if (selResult.Status != PromptStatus.OK)
+            {
+                editor.WriteMessage("\n获取上一次选择集失败");
+                return false;
+            }
+
+            List<ObjectId> objectIds = UtilsGetObjectIdsFromSelectionSet(selResult);
+            editor.WriteMessage($"\n找到 {objectIds.Count} 个对象");
+
+            return true;
+        }
+
+        // 2025-04-09 测试获取所有块选择集
         protected bool TestUtilsGetAllBlockSelectionSetByCrossingWindow(Editor editor, Database database)
         {
             try

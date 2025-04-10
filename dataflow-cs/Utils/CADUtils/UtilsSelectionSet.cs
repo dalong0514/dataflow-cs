@@ -88,11 +88,26 @@ namespace dataflow_cs.Utils.CADUtils
         public static SelectionResult UtilsGetTextSelectionSetByLayerName(string layerName) => UtilsGetSelectionSetByFilter("Text", layerName);
         public static SelectionResult UtilsGetPolylineSelectionSet() => UtilsGetSelectionSetByFilter("LWPOLYLINE");
         public static SelectionResult UtilsGetPolylineSelectionSetByLayerName(string layerName) => UtilsGetSelectionSetByFilter("LWPOLYLINE", layerName);
+        
+        // 2025-04-10 测试获取上一次选择集
+        /// <summary>
+        /// 从选择集获取ObjectId列表
+        /// </summary>
+        /// <param name="selResult">选择结果</param>
+        /// <returns>ObjectId列表</returns>
+        public static List<ObjectId> UtilsGetObjectIdsFromSelectionSet(SelectionResult selResult)
+        {
+            if (selResult.Status != PromptStatus.OK)
+            {
+                return new List<ObjectId>();
+            }
+            return selResult.SelectionSet.GetObjectIds().ToList();
+        }
 
         /// <summary>
         /// 创建选择过滤器
         /// </summary>
-        private static SelectionFilter CreateFilter(string entityType, string layerName = null)
+        public static SelectionFilter UtilsCreateFilter(string entityType, string layerName = null)
         {
             // 验证参数
             if (string.IsNullOrEmpty(entityType))
@@ -121,7 +136,7 @@ namespace dataflow_cs.Utils.CADUtils
         /// <summary>
         /// 创建选择选项
         /// </summary>
-        private static PromptSelectionOptions CreateSelectionOptions(string promptMessage = "Select: ")
+        public static PromptSelectionOptions UtilsCreateSelectionOptions(string promptMessage = "Select: ")
         {
             PromptSelectionOptions opts = new PromptSelectionOptions
             {
@@ -160,10 +175,10 @@ namespace dataflow_cs.Utils.CADUtils
                 }
 
                 // 创建过滤器
-                SelectionFilter filter = CreateFilter(entityType, layerName);
+                SelectionFilter filter = UtilsCreateFilter(entityType, layerName);
 
                 // 创建选择选项
-                PromptSelectionOptions opts = CreateSelectionOptions();
+                PromptSelectionOptions opts = UtilsCreateSelectionOptions();
 
                 // 执行选择操作
                 PromptSelectionResult selRes = UtilsCADActive.Editor.GetSelection(opts, filter);
@@ -198,7 +213,7 @@ namespace dataflow_cs.Utils.CADUtils
                 }
                 
                 // 创建过滤器
-                SelectionFilter filter = CreateFilter(entityType, layerName);
+                SelectionFilter filter = UtilsCreateFilter(entityType, layerName);
 
                 // 执行选择操作
                 PromptSelectionResult selRes = UtilsCADActive.Editor.SelectAll(filter);
@@ -245,7 +260,7 @@ namespace dataflow_cs.Utils.CADUtils
                 }
 
                 // 创建过滤器
-                SelectionFilter filter = CreateFilter(entityType, layerName);
+                SelectionFilter filter = UtilsCreateFilter(entityType, layerName);
 
                 // 使用交叉窗口选择
                 Point3d minPoint = new Point3d(extents.MinPoint.X, extents.MinPoint.Y, extents.MinPoint.Z);
@@ -274,6 +289,230 @@ namespace dataflow_cs.Utils.CADUtils
                 System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
                 
                 return new SelectionResult(null, PromptStatus.Error, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 获取PickFirst选择集（在命令开始前用户已经选择的对象）
+        /// </summary>
+        /// <returns>选择结果</returns>
+        public static SelectionResult UtilsGetPickFirstSelectionSet()
+        {
+            try
+            {
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    return new SelectionResult(null, PromptStatus.Error, "当前没有打开的AutoCAD文档或编辑器不可用");
+                }
+
+                // 获取PickFirst选择集
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectImplied();
+
+                // 返回结果
+                return new SelectionResult(selRes.Value, selRes.Status);
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetPickFirstSelectionSet 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                return new SelectionResult(null, PromptStatus.Error, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 清除当前的PickFirst选择集
+        /// </summary>
+        public static void UtilsClearPickFirstSelectionSet()
+        {
+            try
+            {
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    return;
+                }
+
+                // 创建一个空的ObjectId数组来清除PickFirst选择集
+                ObjectId[] emptyArray = new ObjectId[0];
+                UtilsCADActive.Editor.SetImpliedSelection(emptyArray);
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsClearPickFirstSelectionSet 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+            }
+        }
+
+        /// <summary>
+        /// 获取上一次选择的对象集合
+        /// </summary>
+        /// <returns>选择结果</returns>
+        public static SelectionResult UtilsGetPreviousSelectionSet()
+        {
+            try
+            {
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    return new SelectionResult(null, PromptStatus.Error, "当前没有打开的AutoCAD文档或编辑器不可用");
+                }
+
+                // 获取上一次选择的对象集合
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectPrevious();
+
+                // 返回结果
+                return new SelectionResult(selRes.Value, selRes.Status);
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetPreviousSelectionSet 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                return new SelectionResult(null, PromptStatus.Error, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 获取最后创建的对象
+        /// </summary>
+        /// <returns>选择结果</returns>
+        public static SelectionResult UtilsGetLastCreatedObject()
+        {
+            try
+            {
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    return new SelectionResult(null, PromptStatus.Error, "当前没有打开的AutoCAD文档或编辑器不可用");
+                }
+
+                // 获取最后创建的对象
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectLast();
+
+                // 返回结果
+                return new SelectionResult(selRes.Value, selRes.Status);
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetLastCreatedObject 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                return new SelectionResult(null, PromptStatus.Error, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 使用窗口选择对象
+        /// </summary>
+        /// <param name="firstCorner">窗口的第一个角点</param>
+        /// <param name="secondCorner">窗口的第二个角点</param>
+        /// <param name="filter">选择过滤器，可选</param>
+        /// <returns>选择结果</returns>
+        public static SelectionResult UtilsGetSelectionSetByWindow(Point3d firstCorner, Point3d secondCorner, SelectionFilter filter = null)
+        {
+            try
+            {
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    return new SelectionResult(null, PromptStatus.Error, "当前没有打开的AutoCAD文档或编辑器不可用");
+                }
+
+                // 使用窗口选择
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectWindow(firstCorner, secondCorner, filter);
+
+                // 返回结果
+                return new SelectionResult(selRes.Value, selRes.Status);
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetSelectionSetByWindow 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                return new SelectionResult(null, PromptStatus.Error, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 使用交叉窗口选择对象
+        /// </summary>
+        /// <param name="firstCorner">窗口的第一个角点</param>
+        /// <param name="secondCorner">窗口的第二个角点</param>
+        /// <param name="filter">选择过滤器，可选</param>
+        /// <returns>选择结果</returns>
+        public static SelectionResult UtilsGetSelectionSetByCrossingWindow(Point3d firstCorner, Point3d secondCorner, SelectionFilter filter = null)
+        {
+            try
+            {
+                // 检查当前文档和编辑器是否可用
+                if (UtilsCADActive.Document == null || UtilsCADActive.Editor == null)
+                {
+                    return new SelectionResult(null, PromptStatus.Error, "当前没有打开的AutoCAD文档或编辑器不可用");
+                }
+
+                // 使用交叉窗口选择
+                PromptSelectionResult selRes = UtilsCADActive.Editor.SelectCrossingWindow(firstCorner, secondCorner, filter);
+
+                // 返回结果
+                return new SelectionResult(selRes.Value, selRes.Status);
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsGetSelectionSetByCrossingWindow 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                return new SelectionResult(null, PromptStatus.Error, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 合并多个选择集
+        /// </summary>
+        /// <param name="selectionResults">选择结果数组</param>
+        /// <returns>合并后的ObjectId集合</returns>
+        public static ObjectIdCollection UtilsMergeSelectionSets(params SelectionResult[] selectionResults)
+        {
+            ObjectIdCollection mergedIds = new ObjectIdCollection();
+
+            try
+            {
+                if (selectionResults == null || selectionResults.Length == 0)
+                {
+                    return mergedIds;
+                }
+
+                foreach (SelectionResult result in selectionResults)
+                {
+                    if (result != null && result.IsSuccessful && result.SelectionSet != null)
+                    {
+                        ObjectId[] objectIds = result.SelectionSet.GetObjectIds();
+                        foreach (ObjectId id in objectIds)
+                        {
+                            if (!mergedIds.Contains(id))
+                            {
+                                mergedIds.Add(id);
+                            }
+                        }
+                    }
+                }
+
+                return mergedIds;
+            }
+            catch (Exception ex)
+            {
+                // 记录详细错误信息
+                System.Diagnostics.Debug.WriteLine($"UtilsMergeSelectionSets 发生错误: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                
+                return mergedIds;
             }
         }
 
@@ -323,6 +562,53 @@ namespace dataflow_cs.Utils.CADUtils
                     
                     // 重新抛出异常以便上层处理
                     throw new Exception($"处理选择集时发生错误: {ex.Message}", ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 使用ObjectIdCollection处理对象的通用方法，确保使用事务和资源正确释放
+        /// </summary>
+        /// <typeparam name="T">返回类型</typeparam>
+        /// <param name="objectIds">ObjectId集合</param>
+        /// <param name="processAction">处理ObjectId集合的操作</param>
+        /// <returns>处理结果</returns>
+        public static T ProcessWithTransaction<T>(ObjectIdCollection objectIds, Func<Transaction, ObjectIdCollection, T> processAction)
+        {
+            if (objectIds == null || objectIds.Count == 0)
+            {
+                throw new ArgumentException("ObjectId集合为空或无效", nameof(objectIds));
+            }
+
+            if (UtilsCADActive.Document == null || UtilsCADActive.Database == null)
+            {
+                throw new InvalidOperationException("当前没有打开的AutoCAD文档或数据库不可用");
+            }
+            
+            // 使用事务处理
+            using (Transaction trans = UtilsCADActive.Database.TransactionManager.StartTransaction())
+            {
+                try
+                {
+                    // 执行指定的处理操作
+                    T result = processAction(trans, objectIds);
+                    
+                    // 提交事务
+                    trans.Commit();
+                    
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    // 事务出错时回滚
+                    trans.Abort();
+                    
+                    // 记录详细错误信息
+                    System.Diagnostics.Debug.WriteLine($"处理ObjectId集合时发生错误: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                    
+                    // 重新抛出异常以便上层处理
+                    throw new Exception($"处理ObjectId集合时发生错误: {ex.Message}", ex);
                 }
             }
         }

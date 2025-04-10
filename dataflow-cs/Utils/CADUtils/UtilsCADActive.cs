@@ -202,7 +202,7 @@ namespace dataflow_cs.Utils.CADUtils
         /// 从用户获取一个点坐标
         /// </summary>
         /// <returns>用户选择的点坐标，如果用户取消则返回原点(0,0,0)</returns>
-        public static Point3d GetPointFromUser()
+        public static Point3d UtilsGetPointFromUser()
         {
             // Prompt the user to select a point
             PromptPointResult result = Editor.GetPoint("\nSelect a point: ");
