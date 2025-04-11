@@ -26,7 +26,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
         // 选项卡容器和选项卡面板
         private static TabControl _tabControl;
         private static List<CustomTreeView> _tabTreeViews;
-        private static string[] _tabNames = new string[] { "工艺流程", "设备布置", "二维配管" };
+        // 不再使用硬编码的标签页名称，改为从配置读取
+        private static List<string> _tabNames = new List<string>();
 
         /// <summary>
         /// 显示工艺专业自定义菜单
@@ -38,6 +39,21 @@ namespace dataflow_cs.Presentation.Views.Palettes
             {
                 // 每次都重新加载菜单配置，确保能获取最新修改
                 MenuConfig config = GsMenuConfigService.LoadMenuConfig();
+                
+                // 从配置读取标签页名称
+                _tabNames.Clear();
+                if (config.Tabs != null && config.Tabs.Count > 0)
+                {
+                    foreach (var tab in config.Tabs)
+                    {
+                        _tabNames.Add(tab.TabName);
+                    }
+                }
+                else
+                {
+                    // 如果配置中没有标签页，则使用默认标签页名称
+                    _tabNames.AddRange(new string[] { "工艺流程", "设备布置", "二维配管" });
+                }
 
                 if (_paletteSet == null)
                 {
@@ -109,9 +125,10 @@ namespace dataflow_cs.Presentation.Views.Palettes
 
                     _tabTreeViews = new List<CustomTreeView>();
 
-                    // 初始化三个选项卡页面
-                    foreach (string tabName in _tabNames)
+                    // 初始化标签页
+                    for (int i = 0; i < _tabNames.Count; i++)
                     {
+                        string tabName = _tabNames[i];
                         TabPage tabPage = new TabPage(tabName);
                         tabPage.Padding = new Padding(3);
 
@@ -120,7 +137,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         {
                             Dock = DockStyle.Fill,
                             Font = new System.Drawing.Font("微软雅黑", 10),
-                            BorderStyle = BorderStyle.FixedSingle
+                            BorderStyle = BorderStyle.FixedSingle,
+                            Tag = i // 保存选项卡索引，用于标识
                         };
 
                         // 设置 ImageList（所有选项卡共用同一个图像列表）
@@ -159,26 +177,17 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         _tabControl.TabPages.Add(tabPage);
                     }
 
-                    // 初始加载第一个选项卡的菜单
-                    if (_tabTreeViews.Count > 0)
-                    {
-                        _treeView = _tabTreeViews[0]; // 设置第一个树为主树视图
-                        AddMenuItemsFromConfig(_treeView, config);
-                    }
+                    // 初始加载所有标签页的菜单
+                    LoadAllTabMenus(config);
 
                     // 处理选项卡切换事件
                     _tabControl.SelectedIndexChanged += (sender, e) =>
                     {
-                        // 选项卡切换时可以加载对应的内容
+                        // 选项卡切换时不再需要重新加载内容，因为每个标签页都有自己独立的菜单内容
                         int selectedIndex = _tabControl.SelectedIndex;
                         if (selectedIndex >= 0 && selectedIndex < _tabTreeViews.Count)
                         {
                             _treeView = _tabTreeViews[selectedIndex];
-                            // 如果该选项卡没有内容，可以加载对应的菜单
-                            if (_treeView.Nodes.Count == 0)
-                            {
-                                AddMenuItemsFromConfig(_treeView, config);
-                            }
                         }
                     };
 
@@ -210,14 +219,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 else
                 {
                     // 如果面板已存在，则刷新所有选项卡的菜单
-                    if (_tabTreeViews != null && _tabTreeViews.Count > 0)
-                    {
-                        foreach (var treeView in _tabTreeViews)
-                        {
-                            treeView.Nodes.Clear();
-                            AddMenuItemsFromConfig(treeView, config);
-                        }
-                    }
+                    LoadAllTabMenus(config);
 
                     // 更新面板标题和尺寸
                     _paletteSet.Text = config.PaletteTitle;
@@ -237,15 +239,48 @@ namespace dataflow_cs.Presentation.Views.Palettes
         }
 
         /// <summary>
+        /// 加载所有标签页的菜单
+        /// </summary>
+        /// <param name="config">菜单配置</param>
+        private static void LoadAllTabMenus(MenuConfig config)
+        {
+            // 确保两个集合数量相等
+            if (config.Tabs == null || config.Tabs.Count == 0)
+            {
+                // 如果没有标签页配置，则使用MenuGroups为第一个标签页加载菜单
+                if (_tabTreeViews != null && _tabTreeViews.Count > 0 && config.MenuGroups != null)
+                {
+                    var treeView = _tabTreeViews[0];
+                    treeView.Nodes.Clear();
+                    AddMenuItemsFromConfig(treeView, config.MenuGroups);
+                }
+                return;
+            }
+
+            // 加载每个标签页对应的菜单
+            for (int i = 0; i < _tabTreeViews.Count && i < config.Tabs.Count; i++)
+            {
+                var treeView = _tabTreeViews[i];
+                var tabConfig = config.Tabs[i];
+                
+                treeView.Nodes.Clear();
+                AddMenuItemsFromConfig(treeView, tabConfig.MenuGroups);
+            }
+        }
+
+        /// <summary>
         /// 从配置加载菜单项
         /// </summary>
         /// <param name="treeView">树视图控件</param>
-        /// <param name="config">菜单配置</param>
-        private static void AddMenuItemsFromConfig(CustomTreeView treeView, MenuConfig config)
+        /// <param name="menuGroups">菜单组列表</param>
+        private static void AddMenuItemsFromConfig(CustomTreeView treeView, List<MenuGroup> menuGroups)
         {
             treeView.Nodes.Clear();
 
-            foreach (var group in config.MenuGroups)
+            if (menuGroups == null)
+                return;
+
+            foreach (var group in menuGroups)
             {
                 // 创建一级菜单
                 TreeNode groupNode = new TreeNode(group.Title);
@@ -269,9 +304,9 @@ namespace dataflow_cs.Presentation.Views.Palettes
         }
 
         /// <summary>
-        /// 加载AutoCAD图标
+        /// 加载AutoCAD图标到图像列表
         /// </summary>
-        /// <param name="imgList">图标列表</param>
+        /// <param name="imgList">图像列表</param>
         public static void LoadAutoCADIcons(ImageList imgList)
         {
             imgList.ImageSize = new System.Drawing.Size(16, 16);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using dataflow_cs.Domain.ValueObjects;
 using Newtonsoft.Json;
@@ -88,6 +89,21 @@ namespace dataflow_cs.Business.Services
                 try
                 {
                     var config = JsonConvert.DeserializeObject<MenuConfig>(json);
+                    
+                    // 兼容旧版配置：如果没有Tabs但有MenuGroups，则自动转换
+                    if ((config.Tabs == null || config.Tabs.Count == 0) && config.MenuGroups != null && config.MenuGroups.Any())
+                    {
+                        string[] tabNames = new string[] { "工艺流程", "设备布置", "二维配管" };
+                        config.Tabs = new List<TabConfig>
+                        {
+                            new TabConfig
+                            {
+                                TabName = tabNames[0],
+                                MenuGroups = config.MenuGroups
+                            }
+                        };
+                    }
+                    
                     Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n成功从 {ConfigFilePath} 加载菜单配置");
                     return config;
                 }
@@ -128,31 +144,64 @@ namespace dataflow_cs.Business.Services
         /// <returns>默认菜单配置</returns>
         private static MenuConfig CreateDefaultConfig()
         {
+            string[] tabNames = new string[] { "工艺流程", "设备布置", "二维配管" };
+            
             return new MenuConfig
             {
                 PaletteTitle = "数智设计-工艺",
                 PaletteWidth = 250,
                 PaletteHeight = 400,
-                MenuGroups = new List<MenuGroup>
+                Tabs = new List<TabConfig>
                 {
-                    new MenuGroup
+                    new TabConfig
                     {
-                        Title = "工艺一级菜单1",
-                        IconKey = "folder",
-                        Items = new List<dataflow_cs.Domain.ValueObjects.MenuItem>
+                        TabName = tabNames[0],
+                        MenuGroups = new List<MenuGroup>
                         {
-                            new dataflow_cs.Domain.ValueObjects.MenuItem { Title = "工艺二级菜单1-1", IconKey = "本地生活", Command = "LINE" },
-                            new dataflow_cs.Domain.ValueObjects.MenuItem { Title = "工艺二级菜单1-2", IconKey = "本地生活", Command = "CIRCLE" }
+                            new MenuGroup
+                            {
+                                Title = "工艺流程菜单1",
+                                IconKey = "folder",
+                                Items = new List<MenuItem>
+                                {
+                                    new MenuItem { Title = "工艺流程菜单1-1", IconKey = "本地生活", Command = "LINE" },
+                                    new MenuItem { Title = "工艺流程菜单1-2", IconKey = "本地生活", Command = "CIRCLE" }
+                                }
+                            }
                         }
                     },
-                    new MenuGroup
+                    new TabConfig
                     {
-                        Title = "工艺一级菜单2",
-                        IconKey = "folder",
-                        Items = new List<dataflow_cs.Domain.ValueObjects.MenuItem>
+                        TabName = tabNames[1],
+                        MenuGroups = new List<MenuGroup>
                         {
-                            new dataflow_cs.Domain.ValueObjects.MenuItem { Title = "工艺二级菜单2-1", IconKey = "编辑", Command = "RECTANGLE" },
-                            new dataflow_cs.Domain.ValueObjects.MenuItem { Title = "工艺二级菜单2-2", IconKey = "编辑", Command = "ARC" }
+                            new MenuGroup
+                            {
+                                Title = "设备布置菜单1",
+                                IconKey = "folder",
+                                Items = new List<MenuItem>
+                                {
+                                    new MenuItem { Title = "设备布置菜单1-1", IconKey = "编辑", Command = "RECTANGLE" },
+                                    new MenuItem { Title = "设备布置菜单1-2", IconKey = "编辑", Command = "ARC" }
+                                }
+                            }
+                        }
+                    },
+                    new TabConfig
+                    {
+                        TabName = tabNames[2],
+                        MenuGroups = new List<MenuGroup>
+                        {
+                            new MenuGroup
+                            {
+                                Title = "二维配管菜单1",
+                                IconKey = "folder",
+                                Items = new List<MenuItem>
+                                {
+                                    new MenuItem { Title = "二维配管菜单1-1", IconKey = "second", Command = "TEXT" },
+                                    new MenuItem { Title = "二维配管菜单1-2", IconKey = "second", Command = "MTEXT" }
+                                }
+                            }
                         }
                     }
                 }

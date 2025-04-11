@@ -3,83 +3,90 @@ using System.Collections.Generic;
 namespace dataflow_cs.Domain.ValueObjects
 {
     /// <summary>
-    /// 菜单配置模型
+    /// 菜单配置
     /// </summary>
     public class MenuConfig
     {
         /// <summary>
         /// 面板标题
         /// </summary>
-        public string PaletteTitle { get; set; } = "数智设计";
-        
+        public string PaletteTitle { get; set; }
+
         /// <summary>
         /// 面板宽度
         /// </summary>
-        public int PaletteWidth { get; set; } = 300;
-        
+        public int PaletteWidth { get; set; }
+
         /// <summary>
         /// 面板高度
         /// </summary>
-        public int PaletteHeight { get; set; } = 400;
-        
+        public int PaletteHeight { get; set; }
+
         /// <summary>
-        /// 菜单列表
+        /// 菜单组列表（向后兼容）
         /// </summary>
         public List<MenuGroup> MenuGroups { get; set; } = new List<MenuGroup>();
 
         /// <summary>
-        /// 创建菜单配置的工厂方法
+        /// 标签页配置
         /// </summary>
-        public static MenuConfig Create(string title, int width, int height)
-        {
-            return new MenuConfig
-            {
-                PaletteTitle = title,
-                PaletteWidth = width,
-                PaletteHeight = height,
-                MenuGroups = new List<MenuGroup>()
-            };
-        }
+        public List<TabConfig> Tabs { get; set; } = new List<TabConfig>();
     }
 
     /// <summary>
-    /// 一级菜单组
+    /// 标签页配置
+    /// </summary>
+    public class TabConfig
+    {
+        /// <summary>
+        /// 标签页名称
+        /// </summary>
+        public string TabName { get; set; }
+
+        /// <summary>
+        /// 标签页下的菜单组
+        /// </summary>
+        public List<MenuGroup> MenuGroups { get; set; } = new List<MenuGroup>();
+    }
+
+    /// <summary>
+    /// 菜单组(一级菜单)
     /// </summary>
     public class MenuGroup
     {
         /// <summary>
-        /// 菜单标题
+        /// 标题
         /// </summary>
         public string Title { get; set; }
-        
+
         /// <summary>
-        /// 菜单图标
+        /// 图标键
         /// </summary>
-        public string IconKey { get; set; } = "folder";
-        
+        public string IconKey { get; set; }
+
         /// <summary>
-        /// 子菜单项
+        /// 菜单项集合(二级菜单)
         /// </summary>
         public List<MenuItem> Items { get; set; } = new List<MenuItem>();
     }
 
     /// <summary>
-    /// 菜单项（二级菜单）
+    /// 菜单项(二级菜单)
     /// </summary>
     public class MenuItem
     {
         /// <summary>
-        /// 菜单标题
+        /// 标题
         /// </summary>
         public string Title { get; set; }
-        
+
         /// <summary>
-        /// 菜单图标
+        /// 图标键
         /// </summary>
         public string IconKey { get; set; }
-        
+
         /// <summary>
-        /// 点击执行的AutoCAD命令
+        /// 执行命令
         /// </summary>
         public string Command { get; set; }
     }

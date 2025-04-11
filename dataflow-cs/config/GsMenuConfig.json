@@ -2,47 +2,83 @@
   "PaletteTitle": "数智设计",
   "PaletteWidth": 250,
   "PaletteHeight": 400,
-  "MenuGroups": [
+  "Tabs": [
     {
-      "Title": "一级菜单 1",
-      "IconKey": "folder",
-      "Items": [
+      "TabName": "工艺流程",
+      "MenuGroups": [
         {
-          "Title": "二级菜单 1-1",
-          "IconKey": "本地生活",
-          "Command": "GsLcExportCADData"
+          "Title": "工艺流程菜单1",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "工艺流程菜单1-1",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "工艺流程菜单1-2",
+              "IconKey": "本地生活",
+              "Command": "CIRCLE"
+            }
+          ]
         },
         {
-          "Title": "二级菜单 1-2",
-          "IconKey": "本地生活",
-          "Command": "CIRCLE"
+          "Title": "工艺流程菜单2",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "工艺流程菜单2-1",
+              "IconKey": "编辑",
+              "Command": "GsLcImportDataLisp"
+            },
+            {
+              "Title": "工艺流程菜单2-2",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            }
+          ]
         }
       ]
     },
     {
-      "Title": "一级菜单 2",
-      "IconKey": "folder",
-      "Items": [
+      "TabName": "设备布置",
+      "MenuGroups": [
         {
-          "Title": "二级菜单 2-1",
-          "IconKey": "编辑",
-          "Command": "GsLcImportDataLisp"
-        },
-        {
-          "Title": "二级菜单 2-2",
-          "IconKey": "编辑",
-          "Command": "ARC"
+          "Title": "设备布置菜单1",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "设备布置菜单1-1",
+              "IconKey": "second",
+              "Command": "LINE"
+            },
+            {
+              "Title": "设备布置菜单1-2",
+              "IconKey": "second",
+              "Command": "RECTANGLE"
+            }
+          ]
         }
       ]
     },
     {
-      "Title": "一级菜单 3",
-      "IconKey": "folder",
-      "Items": [
+      "TabName": "二维配管",
+      "MenuGroups": [
         {
-          "Title": "二级菜单 3-1",
-          "IconKey": "second",
-          "Command": "TEXT"
+          "Title": "二维配管菜单1",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "二维配管菜单1-1",
+              "IconKey": "second",
+              "Command": "TEXT"
+            },
+            {
+              "Title": "二维配管菜单1-2",
+              "IconKey": "second",
+              "Command": "MTEXT"
+            }
+          ]
         }
       ]
     }
