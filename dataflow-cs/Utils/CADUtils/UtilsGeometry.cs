@@ -14,6 +14,15 @@ namespace dataflow_cs.Utils.CADUtils
     {
 
         /// <summary>
+        /// 判断点是否在直线的端点上
+        /// </summary>
+        public static bool UtilsIsPointOnLineEnd(Point3d point, List<Point3d> linePoints, double tolerance = 5)
+        {
+            return UtilsIsPointNearPoint(point, linePoints[0], tolerance) ||
+                   UtilsIsPointNearPoint(point, linePoints[1], tolerance);
+        }
+
+        /// <summary>
         /// 判断两点是否接近
         /// </summary>
         /// <param name="pt1">第一个点</param>
