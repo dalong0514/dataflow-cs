@@ -16,5 +16,5 @@ DEBUG;TRACE
 22-1626127343
 App.xaml;Presentation\Views\Windows\TestTemplateWindow.xaml;Presentation\Views\Windows\GsLcSysDataFromClient.xaml;
 
-True
+False
 

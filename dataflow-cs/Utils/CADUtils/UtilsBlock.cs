@@ -89,7 +89,7 @@ namespace dataflow_cs.Utils.CADUtils
         /// </summary>
         /// <param name="objectId">块的ObjectId</param>
         /// <returns>包含块所有属性的键值对字典</returns>
-        public static Dictionary<string, string> UtilsGetAllPropertyDictList(ObjectId objectId)
+        public static Dictionary<string, string> UtilsGetAllPropertyDictList(ObjectId objectId, bool isKeyCaseSensitive = true)
         {
             BlockReference blockRef = objectId.GetObject(OpenMode.ForRead) as BlockReference;
             Dictionary<string, string> blockAttribute = new Dictionary<string, string>();
@@ -101,7 +101,14 @@ namespace dataflow_cs.Utils.CADUtils
                 AttributeReference attRef = attId.GetObject(OpenMode.ForRead) as AttributeReference;
                 if (attRef != null)
                 {
-                    blockAttribute.Add(attRef.Tag, attRef.TextString);
+                    if (isKeyCaseSensitive)
+                    {
+                        blockAttribute.Add(attRef.Tag, attRef.TextString);
+                    }
+                    else
+                    {
+                        blockAttribute.Add(attRef.Tag.ToLower(), attRef.TextString);
+                    }
                 }
             }
             return blockAttribute;

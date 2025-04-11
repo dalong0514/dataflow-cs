@@ -2,7 +2,6 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.CADUtils;
-using static dataflow_cs.Utils.CADUtils.UtilsSelectionSet;
 using dataflow_cs.Utils.Helpers;
 using System;
 using System.Windows;
@@ -34,25 +33,28 @@ namespace dataflow_cs.Business.Commands.GsPg
             // 显示测试信息
             editor.WriteMessage("\n开始执行测试命令...");
 
-            TestUtilsGetPreviousSelectionSet(editor, database);
-
-            return true;
-
-        }
-
-        protected bool TestUtilsGetPreviousSelectionSet(Editor editor, Database database)
-        {
-            SelectionResult selResult = UtilsGetPreviousSelectionSet();
-            if (selResult.Status != PromptStatus.OK)
+            // 拾取一个块并获得其ObjectId
+            PromptEntityOptions options = new PromptEntityOptions("\n请选择一个块: ");
+            options.SetRejectMessage("\n请选择一个块对象!");
+            options.AddAllowedClass(typeof(BlockReference), true);
+            
+            PromptEntityResult result = editor.GetEntity(options);
+            if (result.Status != PromptStatus.OK)
             {
-                editor.WriteMessage("\n获取上一次选择集失败");
+                editor.WriteMessage("\n未选择任何块对象!");
                 return false;
             }
+            
+            ObjectId elbowId = result.ObjectId;
+            editor.WriteMessage($"\n已选择块对象，ObjectId: {elbowId}");
+            UtilsCADActive.UtilsDeleteEntity(elbowId);
 
-            List<ObjectId> objectIds = UtilsGetObjectIdsFromSelectionSet(selResult);
-            editor.WriteMessage($"\n找到 {objectIds.Count} 个对象");
+
+            // Dictionary<string, string> angleDict = new Dictionary<string, string>() { { "angle", "270" } };
+            // UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, angleDict);
 
             return true;
+
         }
 
         // 2025-04-09 测试获取所有块选择集
