@@ -831,16 +831,13 @@ namespace dataflow_cs.Business.Commands.GsPg
                     List<Point3d> secondPipePoints = GetDoubleLinePipePtList(connectedPipes[1]);
                     Point3d secondDoubleLineEndPoint = secondPipePoints.OrderBy(point => point.DistanceTo(elbowPoint)).Last();
                     
-                    // // 判断弯头是否在管道端点上
-                    // bool firstPipeEndPoint = IsPointOnPipeEnd(elbowPoint, firstPipePoints);
-                    // bool secondPipeEndPoint = IsPointOnPipeEnd(elbowPoint, secondPipePoints);
+                    // 判断弯头是否在管道端点上
+                    bool firstPipeEndPoint = UtilsGeometry.UtilsIsPointOnLineEnd(elbowPoint, firstPipePoints, 10);
+                    bool secondPipeEndPoint = UtilsGeometry.UtilsIsPointOnLineEnd(elbowPoint, secondPipePoints, 10);
                     
-                    // // 判断弯头是否在管道中间
-                    // bool firstPipeMiddlePoint = IsPointOnPipeMiddle(elbowPoint, firstPipePoints);
-                    // bool secondPipeMiddlePoint = IsPointOnPipeMiddle(elbowPoint, secondPipePoints);
                     
                     // 弯头处理
-                    if (firstDoubleLineEndPoint != null && secondDoubleLineEndPoint != null)
+                    if (firstPipeEndPoint && secondPipeEndPoint)
                     {
                         double intersectionAngle = UtilsGeometry.UtilsGetAngleByThreePoint(elbowPoint, firstDoubleLineEndPoint, secondDoubleLineEndPoint);
                         
@@ -868,41 +865,6 @@ namespace dataflow_cs.Business.Commands.GsPg
                             ModifyDoubleLinePipeVertElbowStatus(elbowId, elbowPoint, secondDoubleLineEndPoint, firstDoubleLineEndPoint, pipeDiameter);
                         }
                     }
-                    // // 三通处理
-                    // else if (firstPipeEndPoint && secondPipeMiddlePoint)
-                    // {
-                    //     // 水平三通
-                    //     if (Math.Abs(firstElevation - secondElevation) < 0.001)
-                    //     {
-                    //         ModifyDoubleLinePipeHorTeeStatus(elbowId, firstPipePoints, elbowPoint, pipeDiameter);
-                    //     }
-                    //     // 垂直三通
-                    //     else if (firstElevation > secondElevation)
-                    //     {
-                    //         ModifyDoubleLinePipeVerTeeUpStatus(elbowId, firstPipePoints, elbowPoint, pipeDiameter);
-                    //     }
-                    //     else
-                    //     {
-                    //         ModifyDoubleLinePipeVerTeeDownStatus(elbowId, firstPipePoints, elbowPoint, pipeDiameter);
-                    //     }
-                    // }
-                    // else if (firstPipeMiddlePoint && secondPipeEndPoint)
-                    // {
-                    //     // 水平三通
-                    //     if (Math.Abs(firstElevation - secondElevation) < 0.001)
-                    //     {
-                    //         ModifyDoubleLinePipeHorTeeStatus(elbowId, secondPipePoints, elbowPoint, pipeDiameter);
-                    //     }
-                    //     // 垂直三通
-                    //     else if (secondElevation > firstElevation)
-                    //     {
-                    //         ModifyDoubleLinePipeVerTeeUpStatus(elbowId, secondPipePoints, elbowPoint, pipeDiameter);
-                    //     }
-                    //     else
-                    //     {
-                    //         ModifyDoubleLinePipeVerTeeDownStatus(elbowId, secondPipePoints, elbowPoint, pipeDiameter);
-                    //     }
-                    // }
                 }
             }
         }
@@ -915,52 +877,6 @@ namespace dataflow_cs.Business.Commands.GsPg
             return UtilsBlock.UtilsGetAllPropertyDictList(pipeId);
         }
 
-        /// <summary>
-        /// 判断点是否在管道端点上
-        /// </summary>
-        private static bool IsPointOnPipeEnd(Point3d point, List<Point3d> pipePoints)
-        {
-            return UtilsGeometry.UtilsIsPointNearPoint(point, pipePoints[0], 10) ||
-                   UtilsGeometry.UtilsIsPointNearPoint(point, pipePoints[1], 10);
-        }
-
-        /// <summary>
-        /// 判断点是否在管道中间
-        /// </summary>
-        private static bool IsPointOnPipeMiddle(Point3d point, List<Point3d> pipePoints)
-        {
-            // 排除端点，判断点是否在线上
-            if (IsPointOnPipeEnd(point, pipePoints))
-                return false;
-                
-            return UtilsGeometry.UtilsIsPointInLineByDistance(point, pipePoints[0], pipePoints[1], 5);
-        }
-
-        /// <summary>
-        /// 获取两条管道之间的角度和相关点
-        /// </summary>
-        private static Tuple<double, Point3d, Point3d> GetAngleAndPointsByPipes(List<Point3d> firstPipePoints, List<Point3d> secondPipePoints, Point3d elbowPoint)
-        {
-            Point3d pointA = Point3d.Origin;
-            Point3d pointC = Point3d.Origin;
-            
-            // 确定第一条管道上与弯头连接的点
-            if (UtilsGeometry.UtilsIsPointNearPoint(firstPipePoints[0], elbowPoint, 10))
-                pointA = firstPipePoints[1];
-            else
-                pointA = firstPipePoints[0];
-                
-            // 确定第二条管道上与弯头连接的点
-            if (UtilsGeometry.UtilsIsPointNearPoint(secondPipePoints[0], elbowPoint, 10))
-                pointC = secondPipePoints[1];
-            else
-                pointC = secondPipePoints[0];
-                
-            // 计算角度
-            double lineAngle = Math.Abs(UtilsGeometry.UtilsGetAngleByThreePoint(pointA, elbowPoint, pointC));
-            
-            return new Tuple<double, Point3d, Point3d>(lineAngle, pointA, pointC);
-        }
 
         /// <summary>
         /// 判断是否为水平90度弯头
@@ -1033,59 +949,12 @@ namespace dataflow_cs.Business.Commands.GsPg
             double rotation = Math.Atan2(firstDoubleLineEndPoint.Y - elbowPoint.Y, firstDoubleLineEndPoint.X - elbowPoint.X);
             // 弧度转换为角度并设置旋转角度
             UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowId, rotation * 180 / Math.PI);
-            // 打印rotation * 180 / Math.PI
-            UtilsCADActive.Editor.WriteMessage("rotation * 180 / Math.PI: " + rotation * 180 / Math.PI);
 
             // 获取以elbowPoint为基点，elbowPoint和secondDoubleLineEndPoint构成的射线在AutoCAD中的角度
             double rotation2 = Math.Atan2(secondDoubleLineEndPoint.Y - elbowPoint.Y, secondDoubleLineEndPoint.X - elbowPoint.X);
             double angle = rotation2 - rotation;
             Dictionary<string, string> angleDict = new Dictionary<string, string>() { { "angle", angle.ToString() } };
             UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, angleDict);
-        }
-
-        /// <summary>
-        /// 修改水平三通状态
-        /// </summary>
-        private static void ModifyDoubleLinePipeHorTeeStatus(ObjectId elbowId, List<Point3d> pipePoints, Point3d elbowPoint, string pipeDiameter)
-        {
-            string status = GetDoubleLineHorTeeStatusByPipeDiameter(pipeDiameter);
-            Dictionary<string, string> statusDict = new Dictionary<string, string>() { { "status", status } };
-            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, statusDict);
-            
-            // 设置旋转角度
-            double rotation = GetAngleByOneLinePtList(pipePoints, elbowPoint);
-            // 弧度转换为角度
-            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowId, rotation * 180 / Math.PI);
-        }
-
-        /// <summary>
-        /// 修改垂直向上三通状态
-        /// </summary>
-        private static void ModifyDoubleLinePipeVerTeeUpStatus(ObjectId elbowId, List<Point3d> pipePoints, Point3d elbowPoint, string pipeDiameter)
-        {
-            string status = GetDoubleLineVerTeeUpStatusByPipeDiameter(pipeDiameter);
-            Dictionary<string, string> statusDict = new Dictionary<string, string>() { { "status", status } };
-            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, statusDict);
-            
-            // 设置旋转角度
-            double rotation = GetAngleByOneLinePtList(pipePoints, elbowPoint);
-            // 弧度转换为角度
-            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowId, rotation * 180 / Math.PI);
-        }
-
-        /// <summary>
-        /// 修改垂直向下三通状态
-        /// </summary>
-        private static void ModifyDoubleLinePipeVerTeeDownStatus(ObjectId elbowId, List<Point3d> pipePoints, Point3d elbowPoint, string pipeDiameter)
-        {
-            string status = GetDoubleLineVerTeeDownStatusByPipeDiameter(pipeDiameter);
-            Dictionary<string, string> statusDict = new Dictionary<string, string>() { { "status", status } };
-            UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, statusDict);
-            
-            // 设置旋转角度
-            double rotation = GetAngleByOneLinePtList(pipePoints, elbowPoint);
-            // 弧度转换为角度
-            UtilsBlock.UtilsSetBlockRotatonInDegrees(elbowId, rotation * 180 / Math.PI);
         }
 
         /// <summary>
