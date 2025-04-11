@@ -33,25 +33,37 @@ namespace dataflow_cs.Business.Commands.GsPg
             // 显示测试信息
             editor.WriteMessage("\n开始执行测试命令...");
 
-            // 拾取一个块并获得其ObjectId
-            PromptEntityOptions options = new PromptEntityOptions("\n请选择一个块: ");
-            options.SetRejectMessage("\n请选择一个块对象!");
-            options.AddAllowedClass(typeof(BlockReference), true);
-            
-            PromptEntityResult result = editor.GetEntity(options);
-            if (result.Status != PromptStatus.OK)
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                editor.WriteMessage("\n未选择任何块对象!");
-                return false;
+                try
+                {
+                    // 拾取一个块并获得其ObjectId
+                    PromptEntityOptions options = new PromptEntityOptions("\n请选择一个块: ");
+                    options.SetRejectMessage("\n请选择一个块对象!");
+                    options.AddAllowedClass(typeof(BlockReference), true);
+                    
+                    PromptEntityResult result = editor.GetEntity(options);
+                    if (result.Status != PromptStatus.OK)
+                    {
+                        editor.WriteMessage("\n未选择任何块对象!");
+                        return false;
+                    }
+                    
+                    ObjectId elbowId = result.ObjectId;
+                    editor.WriteMessage($"\n已选择块对象，ObjectId: {elbowId}");
+
+                    Dictionary<string, string> angleDict = new Dictionary<string, string>() { { "angle", "270" } };
+                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, angleDict);
+
+                    tr.Commit();
+                }
+                catch (Exception ex)
+                {
+                    editor.WriteMessage($"\n执行命令时发生错误: {ex.Message}");
+                    tr.Abort();
+                    return false;
+                }
             }
-            
-            ObjectId elbowId = result.ObjectId;
-            editor.WriteMessage($"\n已选择块对象，ObjectId: {elbowId}");
-            UtilsCADActive.UtilsDeleteEntity(elbowId);
-
-
-            // Dictionary<string, string> angleDict = new Dictionary<string, string>() { { "angle", "270" } };
-            // UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, angleDict);
 
             return true;
 
