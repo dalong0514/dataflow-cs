@@ -790,6 +790,8 @@ namespace dataflow_cs.Business.Commands.GsPg
             // 遍历所有处理过的弯头
             foreach (var elbowId in _processedDoublePipeElbowObjectIds)
             {
+                // 将弯头对象前置到绘制顺序的最前面
+                UtilsGeometry.UtilsBringToFront(elbowId);
                 // 获取弯头位置
                 Point3d elbowPosition = UtilsBlock.UtilsGetBlockBasePoint(elbowId);
                 

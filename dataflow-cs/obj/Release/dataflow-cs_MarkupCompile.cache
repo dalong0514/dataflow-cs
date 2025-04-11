@@ -10,11 +10,11 @@ none
 false
 TRACE
 
-31351474038
+3-798115140
 
-43-887760790
+44-1838794248
 22-1626127343
-App.xaml;Views\TestTemplateWindow.xaml;Views\GsLcSysDataFromClient.xaml;
+App.xaml;Presentation\Views\Windows\TestTemplateWindow.xaml;Presentation\Views\Windows\GsLcSysDataFromClient.xaml;
 
 False
 

@@ -4,6 +4,7 @@ using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autodesk.AutoCAD.ApplicationServices;
 
 namespace dataflow_cs.Utils.CADUtils
 {
@@ -247,6 +248,46 @@ namespace dataflow_cs.Utils.CADUtils
                 return 0;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// 将指定实体对象前置到绘制顺序的最前面
+        /// </summary>
+        /// <param name="objectId">要前置的实体对象的ObjectId</param>
+        /// <returns>操作是否成功</returns>
+        public static bool UtilsBringToFront(ObjectId objectId)
+        {
+            try
+            {
+                // 获取当前数据库
+                Database db = objectId.Database;
+                
+                // 开启事务
+                using (Transaction transaction = db.TransactionManager.StartTransaction())
+                {
+                    // 获取当前空间的BlockTableRecord
+                    BlockTableRecord blockTableRecord = transaction.GetObject(db.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                    
+                    // 获取绘制顺序表
+                    DrawOrderTable drawOrderTable = transaction.GetObject(blockTableRecord.DrawOrderTableId, OpenMode.ForWrite) as DrawOrderTable;
+                    
+                    // 将指定对象移动到绘制顺序的顶部
+                    ObjectIdCollection idsToMove = new ObjectIdCollection();
+                    idsToMove.Add(objectId);
+                    drawOrderTable.MoveToTop(idsToMove);
+                    
+                    // 提交事务
+                    transaction.Commit();
+                    
+                    return true;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                // 记录错误，但不中断程序执行
+                Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\n前置对象时出错: " + ex.Message);
+                return false;
+            }
         }
     }
 } 

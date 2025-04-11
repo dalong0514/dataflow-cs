@@ -9,8 +9,8 @@ D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs_MarkupCompile.c
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs_MarkupCompile.lref
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.g.resources
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\App.baml
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Views\GsLcSysDataFromClient.g.cs
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Views\GsLcSysDataFromClient.baml
 D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\dataflow-cs.GeneratedMSBuildEditorConfig.editorconfig
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Views\TestTemplateWindow.g.cs
-D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Views\TestTemplateWindow.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Presentation\Views\Windows\TestTemplateWindow.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Presentation\Views\Windows\GsLcSysDataFromClient.g.cs
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Presentation\Views\Windows\TestTemplateWindow.baml
+D:\dataflow.code\dataflow-cs\dataflow-cs\obj\Release\Presentation\Views\Windows\GsLcSysDataFromClient.baml
