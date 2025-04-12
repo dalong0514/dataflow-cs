@@ -45,7 +45,7 @@ namespace dataflow_cs.Business.Commands.Common
             if (doc != null)
             {
                 doc.Editor.WriteMessage("\n自定义菜单命令已初始化");
-                doc.Editor.WriteMessage($"\n配置文件路径: {repository.GetConfigFilePath()}");
+                // doc.Editor.WriteMessage($"\n配置文件路径: {repository.GetConfigFilePath()}");
             }
         }
 

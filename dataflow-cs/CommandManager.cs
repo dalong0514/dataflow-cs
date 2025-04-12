@@ -27,14 +27,17 @@ namespace dataflow_cs
             try
             {
                 // 注册命令处理器
-                RegisterCommandHandler(new GsPgBatchSyncPipeDataCommand());
-                RegisterCommandHandler(new GsLcSysDataFromClientCommand());
-                RegisterCommandHandler(new GsAddMenuCommand());
                 RegisterCommandHandler(new LocateByHandleCommand());
                 RegisterCommandHandler(new AddCustomMenuCommand());
-                RegisterCommandHandler(new TestCommand());
                 RegisterCommandHandler(new TestTemplateWindowCommand());
-                
+                RegisterCommandHandler(new TestCommand());
+                // 工艺二维配管
+                RegisterCommandHandler(new GsPgBatchSyncPipeDataCommand());
+                // 工艺流程图
+                RegisterCommandHandler(new GsAddMenuCommand());
+                RegisterCommandHandler(new GsLcSysDataFromClientCommand());
+                RegisterCommandHandler(new GsLcInsertElementBlockCommand());
+
                 // 将来可在此处添加更多命令
                 
                 LoggingService.Instance.LogInfo($"已成功注册 {_commandHandlers.Count} 个命令。");
@@ -140,7 +143,7 @@ namespace dataflow_cs
         }
         
         /// <summary>
-        /// 显示UserControl1面板
+        /// 同步流程数据
         /// </summary>
         [CommandMethod("DLGsLcSysDataFromClient")]
         public void DLGsLcSysDataFromClient()
@@ -163,6 +166,14 @@ namespace dataflow_cs
             ExecuteCommand("DLGsAddMenu");
         }
 
+        /// <summary>
+        /// 动态插入工艺数据流组件块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertElementBlock")]
+        public void DLGsLcInsertElementBlock()
+        {
+            ExecuteCommand("DLGsLcInsertElementBlock");
+        }
         // 在这里添加更多命令定义...
         
         #endregion

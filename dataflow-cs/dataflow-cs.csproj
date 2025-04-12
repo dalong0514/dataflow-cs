@@ -81,6 +81,7 @@
     <Compile Include="Business\Commands\Common\AddCustomMenuCommand.cs" />
     <Compile Include="Business\Commands\Common\LocateByHandleCommand.cs" />
     <Compile Include="Business\Commands\Common\TestTemplateCommand.cs" />
+    <Compile Include="Business\Commands\GsLc\GsLcInsertElementBlockCommand.cs" />
     <Compile Include="Business\Services\GsMenuConfigService.cs" />
     <Compile Include="Domain\Repositories\Interfaces\IMenuConfigRepository.cs" />
     <Compile Include="Domain\ValueObjects\MenuConfig.cs" />
