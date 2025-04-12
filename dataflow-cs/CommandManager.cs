@@ -37,6 +37,9 @@ namespace dataflow_cs
                 RegisterCommandHandler(new GsAddMenuCommand());
                 RegisterCommandHandler(new GsLcSysDataFromClientCommand());
                 RegisterCommandHandler(new GsLcInsertElementBlockCommand());
+                RegisterCommandHandler(new GsLcInsertInstrumentPBlockCommand());
+                RegisterCommandHandler(new GsLcInsertInstrumentLBlockCommand());
+                RegisterCommandHandler(new GsLcInsertGlobalBlockCommand());
 
                 // 将来可在此处添加更多命令
                 
@@ -107,15 +110,6 @@ namespace dataflow_cs
         #region 命令定义
         
         /// <summary>
-        /// 批量同步管道数据命令
-        /// </summary>
-        [CommandMethod("DPS")]
-        public void DPS()
-        {
-            ExecuteCommand("DPS");
-        }
-        
-        /// <summary>
         /// 测试命令
         /// </summary>
         [CommandMethod("CsTest")]
@@ -142,6 +136,25 @@ namespace dataflow_cs
             ExecuteCommand("DLAddCustomMenu");
         }
         
+        //--------------------------------------------------------------------------------------//
+        // 工艺二维配管
+        //--------------------------------------------------------------------------------------//
+
+        /// <summary>
+        /// 批量同步管道数据命令
+        /// </summary>
+        [CommandMethod("DPS")]
+        public void DPS()
+        {
+            ExecuteCommand("DPS");
+        }
+        
+
+
+        //--------------------------------------------------------------------------------------//
+        // 工艺流程图
+        //--------------------------------------------------------------------------------------//
+
         /// <summary>
         /// 同步流程数据
         /// </summary>
@@ -174,6 +187,34 @@ namespace dataflow_cs
         {
             ExecuteCommand("DLGsLcInsertElementBlock");
         }
+
+        /// <summary>
+        /// 动态插入仪表P块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertInstrumentPBlock")]
+        public void DLGsLcInsertInstrumentPBlock()
+        {
+            ExecuteCommand("DLGsLcInsertInstrumentPBlock");
+        }
+
+        /// <summary>
+        /// 动态插入仪表L块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertInstrumentLBlock")]
+        public void DLGsLcInsertInstrumentLBlock()
+        {
+            ExecuteCommand("DLGsLcInsertInstrumentLBlock");
+        }
+
+        /// <summary>
+        /// 动态插入全局数据流块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertGlobalBlock")]
+        public void DLGsLcInsertGlobalBlock()
+        {
+            ExecuteCommand("DLGsLcInsertGlobalBlock");
+        }
+
         // 在这里添加更多命令定义...
         
         #endregion

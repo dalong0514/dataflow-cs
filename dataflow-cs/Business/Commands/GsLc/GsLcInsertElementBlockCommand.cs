@@ -37,4 +37,91 @@ namespace dataflow_cs.Business.Commands.GsLc
             }
         }
     }
+
+    internal class GsLcInsertGlobalBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertGlobalBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            try
+            {
+                editor.WriteMessage("\n正在插入全局数据流块...");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                editor.WriteMessage($"\n插入全局数据流块时发生错误: {ex.Message}");
+                return false;
+            }
+        }
+    }
+
+    internal class GsLcInsertInstrumentPBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertInstrumentPBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            try
+            {
+                editor.WriteMessage("\n正在插入仪表P块...");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                editor.WriteMessage($"\n插入仪表P块时发生错误: {ex.Message}");
+                return false;
+            }
+        }
+    }
+
+    internal class GsLcInsertInstrumentLBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertInstrumentLBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            try
+            {
+                editor.WriteMessage("\n正在插入仪表L块...");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                editor.WriteMessage($"\n插入仪表L块时发生错误: {ex.Message}");
+                return false;
+            }
+        }
+    }
 }
