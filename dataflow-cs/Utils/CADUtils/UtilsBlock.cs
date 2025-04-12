@@ -673,6 +673,107 @@ namespace dataflow_cs.Utils.CADUtils
             }
         }
 
-        
+        /// <summary>
+        /// 在当前空间中插入块参照
+        /// </summary>
+        /// <param name="blockName">要插入的块名称</param>
+        /// <param name="insertionPoint">插入点坐标</param>
+        /// <param name="xScale">X方向的缩放比例，默认为1.0</param>
+        /// <param name="yScale">Y方向的缩放比例，默认为1.0</param>
+        /// <param name="zScale">Z方向的缩放比例，默认为1.0</param>
+        /// <param name="rotationAngle">旋转角度（弧度），默认为0.0</param>
+        /// <param name="layerName">图层名称，如果不指定则使用当前图层</param>
+        /// <param name="transaction">外部传入的事务对象，由调用方负责管理</param>
+        /// <returns>新插入的块参照的ObjectId，如果插入失败则返回ObjectId.Null</returns>
+        public static ObjectId UtilsInsertBlock(string blockName, Point3d insertionPoint, double xScale = 1.0, double yScale = 1.0, double zScale = 1.0, double rotationAngle = 0.0, string layerName = null, Transaction transaction = null)
+        {
+            Database db = UtilsCADActive.Database;
+            ObjectId blockRefId = ObjectId.Null;
+            
+            try
+            {
+                // 检查是否提供了事务对象
+                bool externalTransaction = transaction != null;
+                Transaction tr = externalTransaction ? transaction : db.TransactionManager.TopTransaction;
+                
+                if (tr == null)
+                {
+                    UtilsCADActive.WriteMessage("\n错误：未提供有效的事务对象，且当前没有活动的事务。");
+                    return ObjectId.Null;
+                }
+                
+                // 打开块表以供读取
+                BlockTable blockTable = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                
+                // 检查指定的块名是否存在
+                if (!blockTable.Has(blockName))
+                {
+                    UtilsCADActive.WriteMessage($"\n错误：找不到名为 '{blockName}' 的块定义。");
+                    return ObjectId.Null;
+                }
+                
+                // 获取块定义的ObjectId
+                ObjectId blockDefId = blockTable[blockName];
+                
+                // 打开当前空间以供写入
+                BlockTableRecord currentSpace = tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                
+                // 创建新的块参照
+                using (BlockReference blockRef = new BlockReference(insertionPoint, blockDefId))
+                {
+                    // 设置块参照的属性
+                    blockRef.ScaleFactors = new Scale3d(xScale, yScale, zScale);
+                    blockRef.Rotation = rotationAngle;
+                    
+                    // 如果指定了图层名，则设置块参照的图层
+                    if (!string.IsNullOrEmpty(layerName))
+                    {
+                        blockRef.Layer = layerName;
+                    }
+                    
+                    // 将块参照添加到当前空间
+                    blockRefId = currentSpace.AppendEntity(blockRef);
+                    tr.AddNewlyCreatedDBObject(blockRef, true);
+                    
+                    // 处理块中的属性定义
+                    BlockTableRecord blockDef = tr.GetObject(blockDefId, OpenMode.ForRead) as BlockTableRecord;
+                    
+                    // 检查块定义中是否有属性定义
+                    if (blockDef.HasAttributeDefinitions)
+                    {
+                        // 遍历块定义中的所有对象
+                        foreach (ObjectId id in blockDef)
+                        {
+                            DBObject obj = tr.GetObject(id, OpenMode.ForRead);
+                            
+                            // 如果对象是属性定义
+                            if (obj is AttributeDefinition attDef)
+                            {
+                                // 创建一个新的属性引用
+                                using (AttributeReference attRef = new AttributeReference())
+                                {
+                                    // 从属性定义中复制属性
+                                    attRef.SetAttributeFromBlock(attDef, blockRef.BlockTransform);
+                                    attRef.Position = attDef.Position.TransformBy(blockRef.BlockTransform);
+                                    attRef.TextString = attDef.TextString; // 使用默认文本
+                                    
+                                    // 将属性引用添加到块参照中
+                                    blockRef.AttributeCollection.AppendAttribute(attRef);
+                                    tr.AddNewlyCreatedDBObject(attRef, true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.WriteMessage($"\n插入块时发生错误: {ex.Message}");
+                blockRefId = ObjectId.Null;
+            }
+            
+            return blockRefId;
+        }
+
     }
 }

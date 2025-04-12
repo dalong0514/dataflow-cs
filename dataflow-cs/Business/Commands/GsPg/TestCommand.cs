@@ -35,39 +35,48 @@ namespace dataflow_cs.Business.Commands.GsPg
 
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                try
-                {
-                    // 拾取一个块并获得其ObjectId
-                    PromptEntityOptions options = new PromptEntityOptions("\n请选择一个块: ");
-                    options.SetRejectMessage("\n请选择一个块对象!");
-                    options.AddAllowedClass(typeof(BlockReference), true);
-                    
-                    PromptEntityResult result = editor.GetEntity(options);
-                    if (result.Status != PromptStatus.OK)
-                    {
-                        editor.WriteMessage("\n未选择任何块对象!");
-                        return false;
-                    }
-                    
-                    ObjectId elbowId = result.ObjectId;
-                    editor.WriteMessage($"\n已选择块对象，ObjectId: {elbowId}");
+                TestUtilsInsertBlock(editor, database);
 
-                    Dictionary<string, string> angleDict = new Dictionary<string, string>() { { "angle", "270" } };
-                    UtilsBlock.UtilsSetDynamicPropertyValueByDictData(elbowId, angleDict);
+                tr.Commit();
 
-                    tr.Commit();
-                }
-                catch (Exception ex)
-                {
-                    editor.WriteMessage($"\n执行命令时发生错误: {ex.Message}");
-                    tr.Abort();
-                    return false;
-                }
             }
 
             return true;
 
         }
+
+        /// <summary>
+        /// 测试插入块
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns> 
+        protected void TestUtilsInsertBlock(Editor editor, Database database)
+        {
+            try
+            {
+                editor.WriteMessage("\n开始测试插入块...");
+
+                // 提示用户选择插入点
+                PromptPointResult result = UtilsCADActive.Editor.GetPoint("\n请指定块的插入点: ");
+                
+                if (result.Status != PromptStatus.OK)
+                {
+                    UtilsCADActive.WriteMessage("\n操作已取消。");
+                    return;
+                }
+                
+                // 调用带有插入点参数的方法
+                UtilsBlock.UtilsInsertBlock("GsPgPipeElementArrowAssist", result.Value, 30, 30, 30, 0, "0");
+
+            }
+            catch (Exception ex)
+            {
+                editor.WriteMessage($"\n测试插入块时发生错误: {ex.Message}");
+            }
+        }
+
+
 
         // 2025-04-09 测试获取所有块选择集
         protected bool TestUtilsGetAllBlockSelectionSetByCrossingWindow(Editor editor, Database database)
