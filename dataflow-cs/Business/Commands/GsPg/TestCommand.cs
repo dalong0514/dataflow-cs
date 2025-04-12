@@ -56,8 +56,9 @@ namespace dataflow_cs.Business.Commands.GsPg
             try
             {
                 editor.WriteMessage("\n开始测试插入块...");
+                // GsPgAllBlocks  GsPgPipeElementArrowAssist
 
-                UtilsBlock.UtilsImportBlockFromExternalDwg(@"D:\dataflowcad\dataflowcad\allBlocks\GsPgBlocks.dwg", "GsPgPipeElementArrowAssist");
+                UtilsBlock.UtilsImportBlockFromExternalDwg(@"D:\dataflowcad\dataflowcad\allBlocks\GsPgBlocks.dwg", "GsPgAllBlocks");
 
                 // 提示用户选择插入点
                 PromptPointResult result = UtilsCADActive.Editor.GetPoint("\n请指定块的插入点: ");
@@ -69,7 +70,7 @@ namespace dataflow_cs.Business.Commands.GsPg
                 }
 
                 // 调用带有插入点参数的方法
-                UtilsBlock.UtilsInsertBlock("GsPgPipeElementArrowAssist", result.Value, 30, 30, 30, 0, "0");
+                UtilsBlock.UtilsInsertBlock("GsPgAllBlocks", result.Value, 30, 30, 30, 0, "0");
 
             }
             catch (Exception ex)
