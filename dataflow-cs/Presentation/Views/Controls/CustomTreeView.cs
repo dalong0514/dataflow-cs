@@ -85,8 +85,8 @@ namespace dataflow_cs.Presentation.Views.Controls
                     Image nodeImage = this.ImageList.Images[e.Node.ImageKey];
                     if (nodeImage != null)
                     {
-                        // 根据节点层级计算图标的X坐标，适当留出边距
-                        int iconX = e.Bounds.X + 5 /*+ (e.Node.Level * 20) + 5*/;
+                        // 根据节点层级计算图标的X坐标，增加二级菜单的缩进
+                        int iconX = e.Bounds.X + (e.Node.Level * this.Indent) + 5;
                         int iconY = e.Bounds.Y + (e.Bounds.Height - this.ImageList.ImageSize.Height) / 2;
                         e.Graphics.DrawImage(nodeImage, iconX, iconY, this.ImageList.ImageSize.Width, this.ImageList.ImageSize.Height);
                         iconOffset = this.ImageList.ImageSize.Width + 2; // 图标宽度加上间距
@@ -102,16 +102,22 @@ namespace dataflow_cs.Presentation.Views.Controls
             if (e.Node.Nodes.Count > 0)
             {
                 int btnSize = 12;
-                int offsetX = e.Node.Level * 20;
+                int offsetX = e.Node.Level * this.Indent / 2; // 使用树控件的缩进值
                 int btnX = e.Bounds.X + 5 + offsetX;
                 int btnY = e.Bounds.Y + (e.Bounds.Height - btnSize) / 2;
                 Rectangle btnRect = new Rectangle(btnX, btnY, btnSize, btnSize);
                 DrawCross(e.Graphics, btnRect, e.Node.IsExpanded);
             }
 
-            // 绘制节点文本，左侧留出按钮空间
-            int textOffset = 5 + (e.Node.Nodes.Count > 0 ? 20 : 0) + (e.Node.Level * 20);
-            Rectangle textRect = new Rectangle(e.Bounds.X + textOffset, e.Bounds.Y, e.Bounds.Width - textOffset, e.Bounds.Height);
+            // 绘制节点文本，根据节点层级和按钮状态调整文本位置
+            int textOffset = e.Node.Nodes.Count > 0 ? 20 : 0;
+            // 二级菜单比一级菜单多缩进一些
+            int levelIndent = e.Node.Level * this.Indent;
+            Rectangle textRect = new Rectangle(
+                e.Bounds.X + 5 + textOffset + levelIndent + iconOffset, 
+                e.Bounds.Y, 
+                e.Bounds.Width - (5 + textOffset + levelIndent + iconOffset), 
+                e.Bounds.Height);
             TextRenderer.DrawText(e.Graphics, e.Node.Text, this.Font, textRect, textColor, TextFormatFlags.VerticalCenter);
         }
 

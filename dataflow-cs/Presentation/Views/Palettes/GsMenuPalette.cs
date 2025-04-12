@@ -138,7 +138,9 @@ namespace dataflow_cs.Presentation.Views.Palettes
                             Dock = DockStyle.Fill,
                             Font = new System.Drawing.Font("微软雅黑", 10),
                             BorderStyle = BorderStyle.FixedSingle,
-                            Tag = i // 保存选项卡索引，用于标识
+                            Tag = i, // 保存选项卡索引，用于标识
+                            Indent = 30, // 设置节点缩进值，使二级菜单明显缩进
+                            ItemHeight = 24 // 增加节点高度，使界面更易读
                         };
 
                         // 设置 ImageList（所有选项卡共用同一个图像列表）
