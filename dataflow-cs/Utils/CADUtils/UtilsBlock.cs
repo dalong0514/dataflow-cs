@@ -775,5 +775,109 @@ namespace dataflow_cs.Utils.CADUtils
             return blockRefId;
         }
 
+        /// <summary>
+        /// 从外部CAD文件引用特定的块定义到当前图形中
+        /// </summary>
+        /// <param name="sourceDwgPath">源CAD文件的完整路径</param>
+        /// <param name="blockName">要引用的块定义名称</param>
+        /// <returns>如果成功，返回新块的ObjectId；如果失败，返回ObjectId.Null</returns>
+public static ObjectId UtilsImportBlockFromExternalDwg(string sourceDwgPath, string blockName)
+        {
+            // 获取当前数据库
+            Database destDb = UtilsCADActive.Database;
+            // 要返回的块定义的ObjectId
+            ObjectId blockId = ObjectId.Null;
+           
+            // 创建一个新的数据库对象来读取源DWG文件
+            using (Database sourceDb = new Database(false, true))
+            {
+                try
+                {
+                    // 读取源DWG文件到sourceDb
+                    sourceDb.ReadDwgFile(sourceDwgPath, FileOpenMode.OpenForReadAndAllShare, false, "");
+                   
+                    // 开始当前数据库的事务
+                    using (Transaction destTr = destDb.TransactionManager.StartTransaction())
+                    {
+                        // 打开目标数据库的块表以供写入
+                        BlockTable destBlockTable = destTr.GetObject(destDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
+                       
+                        // 构建新块的名称（添加文件名作为前缀以避免命名冲突）
+                        string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(sourceDwgPath);
+                        string newBlockName = blockName;
+                       
+                        // 如果目标数据库中已存在同名块，则添加前缀
+                        if (destBlockTable.Has(newBlockName))
+                        {
+                            UtilsCADActive.WriteMessage($"\n块定义 '{newBlockName}' 已存在于当前图形中，将使用现有块。");
+                            blockId = destBlockTable[newBlockName];
+                            destTr.Commit();
+                            return blockId;
+                        }
+                       
+                        // 开始源数据库的事务
+                        using (Transaction sourceTr = sourceDb.TransactionManager.StartTransaction())
+                        {
+                            // 打开源数据库的块表以供读取
+                            BlockTable sourceBlockTable = sourceTr.GetObject(sourceDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                           
+                            // 检查源数据库中是否存在指定的块
+                            if (!sourceBlockTable.Has(blockName))
+                            {
+                                UtilsCADActive.WriteMessage($"\n在源文件中找不到块定义 '{blockName}'。");
+                                sourceTr.Commit();
+                                destTr.Commit();
+                                return ObjectId.Null;
+                            }
+                           
+                            // 获取源块表记录
+                            BlockTableRecord sourceBlockRec = sourceTr.GetObject(sourceBlockTable[blockName], OpenMode.ForRead) as BlockTableRecord;
+                           
+                            // 创建一个新的块表记录对象
+                            using (BlockTableRecord destBlockRec = new BlockTableRecord())
+                            {
+                                // 设置新块的名称和属性
+                                destBlockRec.Name = newBlockName;
+                                destBlockRec.Origin = sourceBlockRec.Origin;
+                                destBlockRec.Comments = $"从 {sourceDwgPath} 导入";
+                               
+                                // 将新块添加到目标块表中
+                                blockId = destBlockTable.Add(destBlockRec);
+                                destTr.AddNewlyCreatedDBObject(destBlockRec, true);
+                               
+                                // 复制源块中的所有实体到目标块
+                                ObjectIdCollection entitySet = new ObjectIdCollection();
+                                foreach (ObjectId entId in sourceBlockRec)
+                                {
+                                    entitySet.Add(entId);
+                                }
+                               
+                                // 创建ID映射表以处理复制操作
+                                IdMapping idMap = new IdMapping();
+                               
+                                // 使用Database.WblockCloneObjects方法复制对象，避免eWrongDatabase错误
+                                sourceDb.WblockCloneObjects(entitySet, destBlockRec.ObjectId, idMap, DuplicateRecordCloning.Replace, false);
+                               
+                                // 注意：WblockCloneObjects已经复制了所有对象，包括属性定义，无需再次手动复制
+                               
+                                UtilsCADActive.WriteMessage($"\n成功从 {sourceDwgPath} 导入块定义 '{blockName}'，现在可以使用名称 '{newBlockName}' 在当前图形中引用该块。");
+                            }
+                           
+                            sourceTr.Commit();
+                        }
+                       
+                        destTr.Commit();
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    UtilsCADActive.WriteMessage($"\n导入块定义时发生错误: {ex.Message}");
+                    return ObjectId.Null;
+                }
+            }
+           
+            return blockId;
+        }
+        
     }
 }
