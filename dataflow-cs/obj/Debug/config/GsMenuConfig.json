@@ -1,83 +1,209 @@
 {
-  "PaletteTitle": "数智设计-工艺",
-  "PaletteWidth": 300,
+  "PaletteTitle": "数智设计",
+  "PaletteWidth": 250,
   "PaletteHeight": 400,
-  "MenuGroups": [
+  "Tabs": [
     {
-      "Title": "数据处理",
-      "IconKey": "folder",
-      "Items": [
+      "TabName": "工艺流程",
+      "MenuGroups": [
         {
-          "Title": "导出数据",
-          "IconKey": "本地生活",
-          "Command": "GsLcExportCADData"
+          "Title": "数据处理",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "导出项目信息关联软件",
+              "IconKey": "本地生活",
+              "Command": "ExportDDProjectInfoBySelect"
+            },
+            {
+              "Title": "导出数据",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "同步数据",
+              "IconKey": "本地生活",
+              "Command": "GsLcImportDataLisp"
+            }
+          ]
         },
         {
-          "Title": "同步数据",
-          "IconKey": "本地生活",
-          "Command": "GsLcImportDataLisp"
+          "Title": "一键修改系列功能",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "导出项目信息关联软件",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "导出数据",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "同步数据",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "工艺流程菜单1-2",
+              "IconKey": "本地生活",
+              "Command": "CIRCLE"
+            }
+          ]
         },
         {
-          "Title": "批量处理数据",
-          "IconKey": "本地生活",
-          "Command": "GsLcExportCADData"
+          "Title": "批量修改系列功能",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "导出项目信息关联软件",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "导出数据",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "同步数据",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "工艺流程菜单1-2",
+              "IconKey": "本地生活",
+              "Command": "CIRCLE"
+            }
+          ]
         },
         {
-          "Title": "一键处理数据",
-          "IconKey": "本地生活",
-          "Command": "GsLcExportCADData"
+          "Title": "插入各组件块",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "插入所有组件块",
+              "IconKey": "本地生活",
+              "Command": "GsLcInsertAllBlock"
+            },
+            {
+              "Title": "插入就地仪表块",
+              "IconKey": "本地生活",
+              "Command": "GsLcInsertBlockInstrumentL"
+            },
+            {
+              "Title": "插入集中仪表块",
+              "IconKey": "本地生活",
+              "Command": "GsLcInsertBlockInstrumentP"
+            },
+            {
+              "Title": "插入SIS仪表块",
+              "IconKey": "本地生活",
+              "Command": "GsLcInsertBlockInstrumentSIS"
+            },
+            {
+              "Title": "插入开关阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入调节阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入球阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入截止阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入闸阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入蝶阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入隔膜阀块",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入旋塞阀块",
+              "IconKey": "本地生活",
+              "Command": "CIRCLE"
+            }
+          ]
+        },
+        {
+          "Title": "工艺流程菜单2",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "工艺流程菜单2-1",
+              "IconKey": "编辑",
+              "Command": "GsLcImportDataLisp"
+            },
+            {
+              "Title": "工艺流程菜单2-2",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            }
+          ]
         }
       ]
     },
     {
-      "Title": "绑定相对位置",
-      "IconKey": "folder",
-      "Items": [
+      "TabName": "设备布置",
+      "MenuGroups": [
         {
-          "Title": "刷仪表所在位置绑定相对位置",
-          "IconKey": "编辑",
-          "Command": "LINE"
-        },
-        {
-          "Title": "刷管道来去向绑定相对位置",
-          "IconKey": "编辑",
-          "Command": "LINE"
+          "Title": "设备布置菜单1",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "设备布置菜单1-1",
+              "IconKey": "second",
+              "Command": "LINE"
+            },
+            {
+              "Title": "设备布置菜单1-2",
+              "IconKey": "second",
+              "Command": "RECTANGLE"
+            }
+          ]
         }
       ]
     },
     {
-      "Title": "一级菜单 3",
-      "IconKey": "folder",
-      "Items": [
+      "TabName": "二维配管",
+      "MenuGroups": [
         {
-          "Title": "二级菜单 3-1",
-          "IconKey": "second",
-          "Command": "TEXT"
-        }
-      ]
-    },
-    {
-      "Title": "一级菜单 4",
-      "IconKey": "folder",
-      "Items": [
-        {
-          "Title": "二级菜单 3-1",
-          "IconKey": "second",
-          "Command": "TEXT"
-        }
-      ]
-    },
-    {
-      "Title": "一级菜单 5",
-      "IconKey": "folder",
-      "Items": [
-        {
-          "Title": "二级菜单 3-1",
-          "IconKey": "second",
-          "Command": "TEXT"
+          "Title": "二维配管菜单1",
+          "IconKey": "folder",
+          "Items": [
+            {
+              "Title": "二维配管菜单1-1",
+              "IconKey": "second",
+              "Command": "TEXT"
+            },
+            {
+              "Title": "二维配管菜单1-2",
+              "IconKey": "second",
+              "Command": "MTEXT"
+            }
+          ]
         }
       ]
     }
-	
   ]
-}
+} 
