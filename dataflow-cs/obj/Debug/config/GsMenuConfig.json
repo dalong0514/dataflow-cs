@@ -28,16 +28,16 @@
           ]
         },
         {
-          "Title": "一键修改系列功能",
+          "Title": "一键修改功能",
           "IconKey": "folder",
           "Items": [
             {
-              "Title": "导出项目信息关联软件",
+              "Title": "一键刷仪表阀门所在位置",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "导出数据",
+              "Title": "一键刷管道来去向",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
@@ -54,33 +54,33 @@
           ]
         },
         {
-          "Title": "批量修改系列功能",
+          "Title": "批量修改功能",
           "IconKey": "folder",
           "Items": [
             {
-              "Title": "导出项目信息关联软件",
+              "Title": "批量编号",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "导出数据",
+              "Title": "批量刷仪表阀门所在位置",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "同步数据",
+              "Title": "批量刷公用管道来去向",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "工艺流程菜单1-2",
+              "Title": "批量刷物料管道来去向",
               "IconKey": "本地生活",
               "Command": "CIRCLE"
             }
           ]
         },
         {
-          "Title": "插入各组件块",
+          "Title": "插入组件块功能",
           "IconKey": "folder",
           "Items": [
             {
@@ -89,64 +89,104 @@
               "Command": "GsLcInsertAllBlock"
             },
             {
-              "Title": "插入就地仪表块",
+              "Title": "插入就地仪表",
               "IconKey": "本地生活",
               "Command": "GsLcInsertBlockInstrumentL"
             },
             {
-              "Title": "插入集中仪表块",
+              "Title": "插入集中仪表",
               "IconKey": "本地生活",
               "Command": "GsLcInsertBlockInstrumentP"
             },
             {
-              "Title": "插入SIS仪表块",
+              "Title": "插入SIS仪表",
               "IconKey": "本地生活",
               "Command": "GsLcInsertBlockInstrumentSIS"
             },
             {
-              "Title": "插入开关阀块",
+              "Title": "插入开关阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入调节阀块",
+              "Title": "插入调节阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入球阀块",
+              "Title": "插入球阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入截止阀块",
+              "Title": "插入截止阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入闸阀块",
+              "Title": "插入闸阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入蝶阀块",
+              "Title": "插入蝶阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入隔膜阀块",
+              "Title": "插入隔膜阀",
               "IconKey": "本地生活",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入旋塞阀块",
+              "Title": "插入旋塞阀",
+              "IconKey": "本地生活",
+              "Command": "CIRCLE"
+            },
+            {
+              "Title": "插入开关阀xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入调节阀xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入球阀xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入截止阀xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入闸阀块xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入蝶阀xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入隔膜阀xx",
+              "IconKey": "本地生活",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入旋塞阀xx",
               "IconKey": "本地生活",
               "Command": "CIRCLE"
             }
           ]
         },
         {
-          "Title": "工艺流程菜单2",
+          "Title": "其他",
           "IconKey": "folder",
           "Items": [
             {
@@ -156,6 +196,31 @@
             },
             {
               "Title": "工艺流程菜单2-2",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            },
+            {
+              "Title": "工艺流程菜单2-3",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            },
+            {
+              "Title": "工艺流程菜单2-4",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            },
+            {
+              "Title": "工艺流程菜单2-5",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            },
+            {
+              "Title": "工艺流程菜单2-6",
+              "IconKey": "编辑",
+              "Command": "ARC"
+            },
+            {
+              "Title": "工艺流程菜单2-7",
               "IconKey": "编辑",
               "Command": "ARC"
             }

@@ -312,7 +312,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
         public static void LoadAutoCADIcons(ImageList imgList)
         {
             imgList.ImageSize = new System.Drawing.Size(16, 16);
-            string baseDir = @"C:\Users\chen-jun\Desktop\ico\";
+            string baseDir = @"D:\dataflowcad\dataflowcad\dataflowNet\DLNet\icons\";
             if (!Directory.Exists(baseDir))
                 return;
             List<string> fileNames = Directory.EnumerateFiles(baseDir).ToList();

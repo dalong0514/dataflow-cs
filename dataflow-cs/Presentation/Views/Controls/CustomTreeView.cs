@@ -118,7 +118,29 @@ namespace dataflow_cs.Presentation.Views.Controls
                 e.Bounds.Y, 
                 e.Bounds.Width - (5 + textOffset + levelIndent + iconOffset), 
                 e.Bounds.Height);
-            TextRenderer.DrawText(e.Graphics, e.Node.Text, this.Font, textRect, textColor, TextFormatFlags.VerticalCenter);
+
+            // 为二级菜单使用较小的字体
+            Font nodeFont;
+            if (e.Node.Level > 0)
+            {
+                // 二级菜单使用较小的字体
+                float smallerSize = this.Font.Size * 0.9f;
+                nodeFont = new Font(this.Font.FontFamily, smallerSize, this.Font.Style);
+            }
+            else
+            {
+                // 一级菜单使用粗体
+                nodeFont = new Font(this.Font, FontStyle.Bold);
+            }
+
+            // 使用适当的字体绘制文本
+            TextRenderer.DrawText(e.Graphics, e.Node.Text, nodeFont, textRect, textColor, TextFormatFlags.VerticalCenter);
+            
+            // 释放临时创建的字体资源
+            if (nodeFont != this.Font)
+            {
+                nodeFont.Dispose();
+            }
         }
 
         private void DrawCross(Graphics g, Rectangle rect, bool expanded)
