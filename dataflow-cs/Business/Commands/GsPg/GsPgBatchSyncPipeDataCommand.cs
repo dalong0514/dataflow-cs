@@ -787,11 +787,11 @@ namespace dataflow_cs.Business.Commands.GsPg
             // 创建弯头和管道的字典映射
             var doubleLinePipeLineEnameDictList = new Dictionary<ObjectId, List<ObjectId>>();
             
+            // 批量将弯头对象前置到绘制顺序的最前面
+            UtilsGeometry.UtilsBringToFrontBatch(_processedDoublePipeElbowObjectIds);
             // 遍历所有处理过的弯头
             foreach (var elbowId in _processedDoublePipeElbowObjectIds)
             {
-                // 将弯头对象前置到绘制顺序的最前面
-                UtilsGeometry.UtilsBringToFront(elbowId);
                 // 获取弯头位置
                 Point3d elbowPosition = UtilsBlock.UtilsGetBlockBasePoint(elbowId);
                 

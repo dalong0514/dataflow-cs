@@ -289,5 +289,47 @@ namespace dataflow_cs.Utils.CADUtils
                 return false;
             }
         }
+
+        /// <summary>
+        /// 批量将指定实体对象前置到绘制顺序的最前面
+        /// </summary>
+        /// <param name="objectIds">要前置的实体对象的ObjectId列表</param>
+        /// <returns>操作是否成功</returns>
+        /// 循环外创建事务明显更好，原因：
+        // AutoCAD的事务操作开销较大，尤其是对大量对象进行操作时
+        // DrawOrderTable.MoveToTop方法本身就设计为可以批量处理ObjectIdCollection
+        // 性能差异显著，尤其是当处理几十、几百个对象时
+        // 批量操作符合AutoCAD API的设计理念
+        public static bool UtilsBringToFrontBatch(List<ObjectId> objectIds)
+        {
+            if (objectIds == null || objectIds.Count == 0)
+                return false;
+                
+            try
+            {
+                Database db = objectIds.First().Database;
+                using (Transaction transaction = db.TransactionManager.StartTransaction())
+                {
+                    BlockTableRecord blockTableRecord = transaction.GetObject(db.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                    DrawOrderTable drawOrderTable = transaction.GetObject(blockTableRecord.DrawOrderTableId, OpenMode.ForWrite) as DrawOrderTable;
+                    
+                    ObjectIdCollection idsToMove = new ObjectIdCollection();
+                    foreach (ObjectId id in objectIds)
+                    {
+                        idsToMove.Add(id);
+                    }
+                    
+                    drawOrderTable.MoveToTop(idsToMove);
+                    transaction.Commit();
+                    return true;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\n批量前置对象时出错: " + ex.Message);
+                return false;
+            }
+        }
+
     }
 } 
