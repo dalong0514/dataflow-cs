@@ -5,11 +5,12 @@ using System.Text;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
-using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Presentation.Views.Windows;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
+using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Utils.JigUtils;
+using dataflow_cs.Utils.ConstUtils;
 
 namespace dataflow_cs.Business.Commands.GsLc
 {
@@ -65,7 +66,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                 editor.WriteMessage("\n正在插入球阀块...");
                 
                 // 引入球阀块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(@"D:\dataflowcad\dataflowcad\allBlocks\GsLcBlocks.dwg", "GsLcValveBall");
+                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, "GsLcValveBall");
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
