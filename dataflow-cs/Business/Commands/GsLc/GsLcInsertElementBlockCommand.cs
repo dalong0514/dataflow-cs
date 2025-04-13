@@ -99,7 +99,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                         sourceBr.Rotation = rotation;
 
                         // 创建拖拽对象并显示
-                        BlockJig jig = new BlockJig(
+                        InsertBlockJig jig = new InsertBlockJig(
                             initialPoint, 
                             sourceBr, 
                             rotation, 

@@ -8,7 +8,7 @@ using Autodesk.AutoCAD.Geometry;
 
 namespace dataflow_cs.Utils.JigUtils
 {
-    internal class BlockJig : EntityJig
+    internal class InsertBlockJig : EntityJig
     {
         private Point3d _insertionPoint; // 插入点
         private double _rotation; // 旋转角度
@@ -22,7 +22,7 @@ namespace dataflow_cs.Utils.JigUtils
         /// <param name="blockReference">块引用对象</param>
         /// <param name="rotation">初始旋转角度</param>
         /// <param name="prompt">提示信息</param>
-        public BlockJig(Point3d position, BlockReference blockReference, double rotation, string prompt)
+        public InsertBlockJig(Point3d position, BlockReference blockReference, double rotation, string prompt)
             : base(blockReference)
         {
             _insertionPoint = position;
