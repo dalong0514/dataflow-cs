@@ -112,38 +112,26 @@ namespace dataflow_cs.Business.Commands.GsLc
                         // 用户确定了位置
                         if (jigResult.Status == PromptStatus.OK)
                         {
-                            // 用户确定了位置，创建实际的块引用
-                            BlockReference finalBr = jig.GetEntity() as BlockReference;
-                            
-                            // 立即将块添加到空间中
-                            BlockTableRecord currentSpace = tr.GetObject(database.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
-                            finalBr = new BlockReference(jig.InsertionPoint, blockId);
-                            finalBr.Layer = "0";
-                            finalBr.Rotation = jig.Rotation;
-                            
-                            ObjectId newBlockId = currentSpace.AppendEntity(finalBr);
-                            tr.AddNewlyCreatedDBObject(finalBr, true);
-                            
-                            // 处理块中的属性定义
-                            BlockTableRecord blockDef = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
-                            if (blockDef.HasAttributeDefinitions)
+                            // 用户确定了位置，使用UtilsInsertBlock函数添加块
+                            // 获取块定义名
+                            string blockName = "GsLcValveBall"; // 默认使用已知的块名
+                            if (blockId != ObjectId.Null)
                             {
-                                foreach (ObjectId id in blockDef)
+                                BlockTableRecord blockDef = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
+                                if (blockDef != null)
                                 {
-                                    DBObject obj = tr.GetObject(id, OpenMode.ForRead);
-                                    if (obj is AttributeDefinition attDef)
-                                    {
-                                        using (AttributeReference attRef = new AttributeReference())
-                                        {
-                                            attRef.SetAttributeFromBlock(attDef, finalBr.BlockTransform);
-                                            attRef.Position = attDef.Position.TransformBy(finalBr.BlockTransform);
-                                            attRef.TextString = attDef.TextString;
-                                            finalBr.AttributeCollection.AppendAttribute(attRef);
-                                            tr.AddNewlyCreatedDBObject(attRef, true);
-                                        }
-                                    }
+                                    blockName = blockDef.Name;
                                 }
                             }
+                            
+                            ObjectId newBlockId = UtilsBlock.UtilsInsertBlock(
+                                blockName,
+                                jig.InsertionPoint,
+                                1.0, 1.0, 1.0, // 使用默认缩放比例
+                                jig.Rotation, // 使用jig中的旋转角度
+                                "0", // 设置图层为0
+                                tr // 传入当前事务
+                            );
                             
                             // 提交事务，使块立即显示
                             tr.Commit();
