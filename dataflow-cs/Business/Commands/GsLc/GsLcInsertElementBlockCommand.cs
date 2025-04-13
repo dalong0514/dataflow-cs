@@ -5,6 +5,7 @@ using System.Text;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
+using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Presentation.Views.Windows;
 
 namespace dataflow_cs.Business.Commands.GsLc
@@ -53,17 +54,35 @@ namespace dataflow_cs.Business.Commands.GsLc
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
-            try
+            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                editor.WriteMessage("\n正在插入全局数据流块...");
+                try
+                {
+                    editor.WriteMessage("\n正在插入全局数据流块...");
+                    UtilsBlock.UtilsImportBlockFromExternalDwg(@"D:\dataflowcad\dataflowcad\allBlocks\GsLcBlocks.dwg", "GsLcValveBall");
+                    // 提示用户选择插入点
+                    PromptPointResult result = UtilsCADActive.Editor.GetPoint("\n请指定块的插入点: ");
+                    
+                    if (result.Status != PromptStatus.OK)
+                    {
+                        UtilsCADActive.WriteMessage("\n操作已取消。");
+                        return false;
+                    }
 
-                return true;
+                    // 调用带有插入点参数的方法
+                    UtilsBlock.UtilsInsertBlock("GsLcValveBall", result.Value, 1, 1, 1, 0, "0");
+
+                    tr.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    editor.WriteMessage($"\n插入全局数据流块时发生错误: {ex.Message}");
+                    return false;
+                }
             }
-            catch (Exception ex)
-            {
-                editor.WriteMessage($"\n插入全局数据流块时发生错误: {ex.Message}");
-                return false;
-            }
+
         }
     }
 
