@@ -280,5 +280,58 @@ namespace dataflow_cs.Utils.JigUtils
                 return hasInsertedAtLeastOnce;
             }
         }
+
+        /// <summary>
+        /// 使用拖拽方式交互式插入块（自动计算初始点）
+        /// </summary>
+        /// <param name="editor">当前编辑器</param>
+        /// <param name="database">当前数据库</param>
+        /// <param name="blockName">要插入的块名称</param>
+        /// <param name="blockId">块定义的ObjectId</param>
+        /// <param name="initialRotation">初始旋转角度（弧度），默认为0</param>
+        /// <param name="layerName">块所在图层（默认为"0"）</param>
+        /// <param name="prompt">拖拽过程中的提示（默认为"请选择插入点或输入[旋转(R)]:"）</param>
+        /// <param name="escapeMessage">用户取消时显示的消息（默认为"命令已取消。"）</param>
+        /// <param name="successMessage">插入成功后显示的消息模板（默认为"{0}已插入，继续拖动放置新的{0}，输入\"R\"可旋转，ESC退出"）</param>
+        /// <param name="rotationMessage">旋转操作后显示的消息模板（默认为"{0}已旋转，当前角度: {1}度"）</param>
+        /// <returns>是否成功完成至少一次插入操作</returns>
+        public static bool DragAndInsertBlock(
+            Editor editor,
+            Database database,
+            string blockName,
+            ObjectId blockId,
+            double initialRotation = 0,
+            string layerName = "0",
+            string prompt = "请选择插入点或输入[旋转(R)]:",
+            string escapeMessage = "命令已取消。",
+            string successMessage = "{0}已插入，继续拖动放置新的{0}，输入\"R\"可旋转，ESC退出",
+            string rotationMessage = "{0}已旋转，当前角度: {1}度")
+        {
+            // 自动获取初始点坐标（从原点转换到WCS）
+            Point3d initialPoint = Point3d.Origin;
+            
+            // 从UCS坐标系转换到WCS坐标系
+            Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            if (doc != null)
+            {
+                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
+                initialPoint = initialPoint.TransformBy(ucsToWcs);
+            }
+            
+            // 调用原方法
+            return DragAndInsertBlock(
+                editor,
+                database,
+                blockName,
+                blockId,
+                initialPoint,
+                initialRotation,
+                layerName,
+                prompt,
+                escapeMessage,
+                successMessage,
+                rotationMessage
+            );
+        }
     }
 }

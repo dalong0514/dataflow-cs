@@ -186,7 +186,7 @@
             {
               "Title": "插入球阀",
               "IconKey": "本地生活",
-              "Command": "GsLcExportCADData"
+              "Command": "DLGsLcInsertGlobalBlock"
             },
             {
               "Title": "插入截止阀",

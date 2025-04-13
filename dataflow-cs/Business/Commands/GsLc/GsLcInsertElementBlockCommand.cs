@@ -41,25 +41,14 @@ namespace dataflow_cs.Business.Commands.GsLc
                     return false;
                 }
 
-                // 创建初始插入点（原点）
-                Point3d initialPoint = Point3d.Origin;
-                // 从UCS坐标系转换到WCS坐标系
-                Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
-                initialPoint = initialPoint.TransformBy(ucsToWcs);
-
-                // 初始旋转角度为0
-                double rotation = 0;
-
-                // 使用封装的拖拽插入方法
+                // 使用封装的拖拽插入方法（自动计算初始点）
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
                     "工艺组件",
                     blockId,
-                    initialPoint,
-                    rotation,
-                    "0",
+                    0, // 初始旋转角度为0
+                    "0", // 图层设置为"0"
                     "请选择插入点或输入[旋转(R)]:",
                     "命令已取消。",
                     "工艺组件已插入，继续拖动放置新的工艺组件，输入\"R\"可旋转，ESC退出",
@@ -103,25 +92,14 @@ namespace dataflow_cs.Business.Commands.GsLc
                     return false;
                 }
 
-                // 创建初始插入点（原点）
-                Point3d initialPoint = Point3d.Origin;
-                // 从UCS坐标系转换到WCS坐标系
-                Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
-                initialPoint = initialPoint.TransformBy(ucsToWcs);
-
-                // 初始旋转角度为0
-                double rotation = 0;
-
-                // 使用封装的拖拽插入方法
+                // 使用封装的拖拽插入方法（自动计算初始点）
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
                     "GsLcValveBall",
                     blockId,
-                    initialPoint,
-                    rotation,
-                    "0",
+                    0, // 初始旋转角度为0
+                    "0", // 图层设置为"0"
                     "请选择插入点或输入[旋转(R)]:",
                     "命令已取消。",
                     "球阀已插入，继续拖动放置新的球阀，输入\"R\"可旋转，ESC退出",
@@ -165,25 +143,14 @@ namespace dataflow_cs.Business.Commands.GsLc
                     return false;
                 }
 
-                // 创建初始插入点（原点）
-                Point3d initialPoint = Point3d.Origin;
-                // 从UCS坐标系转换到WCS坐标系
-                Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
-                initialPoint = initialPoint.TransformBy(ucsToWcs);
-
-                // 初始旋转角度为0
-                double rotation = 0;
-
-                // 使用封装的拖拽插入方法
+                // 使用封装的拖拽插入方法（自动计算初始点）
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
                     "仪表P",
                     blockId,
-                    initialPoint,
-                    rotation,
-                    "0",
+                    0, // 初始旋转角度为0
+                    "0", // 图层设置为"0"
                     "请选择插入点或输入[旋转(R)]:",
                     "命令已取消。",
                     "仪表P已插入，继续拖动放置新的仪表P，输入\"R\"可旋转，ESC退出",
@@ -227,25 +194,14 @@ namespace dataflow_cs.Business.Commands.GsLc
                     return false;
                 }
 
-                // 创建初始插入点（原点）
-                Point3d initialPoint = Point3d.Origin;
-                // 从UCS坐标系转换到WCS坐标系
-                Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
-                initialPoint = initialPoint.TransformBy(ucsToWcs);
-
-                // 初始旋转角度为0
-                double rotation = 0;
-
-                // 使用封装的拖拽插入方法
+                // 使用封装的拖拽插入方法（自动计算初始点）
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
                     "仪表L",
                     blockId,
-                    initialPoint,
-                    rotation,
-                    "0",
+                    0, // 初始旋转角度为0
+                    "0", // 图层设置为"0"
                     "请选择插入点或输入[旋转(R)]:",
                     "命令已取消。",
                     "仪表L已插入，继续拖动放置新的仪表L，输入\"R\"可旋转，ESC退出",
