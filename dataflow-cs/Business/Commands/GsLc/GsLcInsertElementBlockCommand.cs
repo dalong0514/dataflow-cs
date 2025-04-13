@@ -7,6 +7,8 @@ using Autodesk.AutoCAD.EditorInput;
 using dataflow_cs.Core.Services;
 using dataflow_cs.Utils.CADUtils;
 using dataflow_cs.Presentation.Views.Windows;
+using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Runtime;
 
 namespace dataflow_cs.Business.Commands.GsLc
 {
@@ -31,11 +33,141 @@ namespace dataflow_cs.Business.Commands.GsLc
 
                 return true;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 editor.WriteMessage($"\n插入工艺数据流组件块时发生错误: {ex.Message}");
                 return false;
             }
+        }
+    }
+
+    /// <summary>
+    /// 块插入拖拽类，提供交互式拖拽插入功能
+    /// </summary>
+    internal class InsertBlockJig : EntityJig
+    {
+        private Point3d _insertionPoint; // 插入点
+        private double _rotation; // 旋转角度
+        private string _prompt; // 提示信息
+        private bool _rotationRequested; // 是否请求旋转
+
+        /// <summary>
+        /// 初始化新的块插入拖拽对象
+        /// </summary>
+        /// <param name="position">初始插入位置</param>
+        /// <param name="blockReference">块引用对象</param>
+        /// <param name="rotation">初始旋转角度</param>
+        /// <param name="prompt">提示信息</param>
+        public InsertBlockJig(Point3d position, BlockReference blockReference, double rotation, string prompt)
+            : base(blockReference)
+        {
+            _insertionPoint = position;
+            _rotation = rotation;
+            _prompt = prompt;
+            _rotationRequested = false;
+            Update();
+        }
+
+        /// <summary>
+        /// 获取拖拽过程中需要更新的参数
+        /// </summary>
+        /// <param name="prompts">提示信息</param>
+        /// <returns>更新状态</returns>
+        protected override SamplerStatus Sampler(JigPrompts prompts)
+        {
+            // 如果请求旋转，执行旋转并重置标志
+            if (_rotationRequested)
+            {
+                _rotation += Math.PI / 2;
+                _rotationRequested = false;
+                return SamplerStatus.OK;
+            }
+
+            // 设置点选项
+            JigPromptPointOptions pointOpts = new JigPromptPointOptions(_prompt);
+            pointOpts.UseBasePoint = false;
+            
+            // 允许输入其他字符串，设置NoZeroResponseAccepted，屏蔽空格键
+            pointOpts.UserInputControls = UserInputControls.AcceptOtherInputString | UserInputControls.NoZeroResponseAccepted;
+            
+            // 设置关键字
+            pointOpts.Keywords.Clear();
+            pointOpts.Keywords.Add("R");
+
+            // 获取用户输入
+            PromptPointResult result = prompts.AcquirePoint(pointOpts);
+            
+            // 如果用户输入关键字，执行旋转
+            if (result.Status == PromptStatus.Keyword)
+            {
+                if (result.StringResult == "R")
+                {
+                    _rotation += Math.PI / 2;
+                    return SamplerStatus.OK;
+                }
+                return SamplerStatus.NoChange;
+            }
+            
+            // 检查位置是否变化
+            if (result.Status == PromptStatus.OK)
+            {
+                if (_insertionPoint == result.Value)
+                    return SamplerStatus.NoChange;
+
+                _insertionPoint = result.Value;
+                return SamplerStatus.OK;
+            }
+            
+            return SamplerStatus.Cancel;
+        }
+
+        /// <summary>
+        /// 更新拖拽实体的属性
+        /// </summary>
+        /// <returns>是否更新成功</returns>
+        protected override bool Update()
+        {
+            BlockReference blockRef = Entity as BlockReference;
+            if (blockRef != null)
+            {
+                blockRef.Position = _insertionPoint;
+                blockRef.Rotation = _rotation;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 获取当前拖拽的实体
+        /// </summary>
+        /// <returns>实体对象</returns>
+        public Entity GetEntity()
+        {
+            return Entity;
+        }
+        
+        /// <summary>
+        /// 获取当前旋转角度
+        /// </summary>
+        public double Rotation
+        {
+            get { return _rotation; }
+        }
+        
+        /// <summary>
+        /// 获取当前插入点
+        /// </summary>
+        public Point3d InsertionPoint
+        {
+            get { return _insertionPoint; }
+        }
+        
+        /// <summary>
+        /// 请求旋转，将在下一次采样中执行
+        /// </summary>
+        public void RequestRotation()
+        {
+            _rotationRequested = true;
         }
     }
 
@@ -54,35 +186,151 @@ namespace dataflow_cs.Business.Commands.GsLc
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
-            using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
+            // 为防止事务嵌套，先声明但不立即启动事务
+            Transaction tr = null;
+            
+            try
             {
-                try
+                editor.WriteMessage("\n正在插入球阀块...");
+                
+                // 引入球阀块定义
+                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(@"D:\dataflowcad\dataflowcad\allBlocks\GsLcBlocks.dwg", "GsLcValveBall");
+                if (blockId == ObjectId.Null)
                 {
-                    editor.WriteMessage("\n正在插入全局数据流块...");
-                    UtilsBlock.UtilsImportBlockFromExternalDwg(@"D:\dataflowcad\dataflowcad\allBlocks\GsLcBlocks.dwg", "GsLcValveBall");
-                    // 提示用户选择插入点
-                    PromptPointResult result = UtilsCADActive.Editor.GetPoint("\n请指定块的插入点: ");
-                    
-                    if (result.Status != PromptStatus.OK)
-                    {
-                        UtilsCADActive.WriteMessage("\n操作已取消。");
-                        return false;
-                    }
-
-                    // 调用带有插入点参数的方法
-                    UtilsBlock.UtilsInsertBlock("GsLcValveBall", result.Value, 1, 1, 1, 0, "0");
-
-                    tr.Commit();
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    editor.WriteMessage($"\n插入全局数据流块时发生错误: {ex.Message}");
+                    editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
                     return false;
                 }
-            }
 
+                // 创建初始插入点（原点）
+                Point3d initialPoint = Point3d.Origin;
+                // 从UCS坐标系转换到WCS坐标系
+                Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
+                initialPoint = initialPoint.TransformBy(ucsToWcs);
+
+                // 初始旋转角度为0
+                double rotation = 0;
+
+                // 显示命令行提示
+                editor.WriteMessage("\n拖动放置球阀，输入\"R\"可旋转90度，按ESC退出");
+
+                // 进入交互循环
+                while (true)
+                {
+                    try
+                    {
+                        // 开始新事务
+                        tr = database.TransactionManager.StartTransaction();
+                        
+                        // 创建新的块参照用于拖拽
+                        BlockReference sourceBr = new BlockReference(initialPoint, blockId);
+                        sourceBr.Layer = "0"; // 设置默认图层
+                        sourceBr.Rotation = rotation;
+
+                        // 创建拖拽对象并显示
+                        InsertBlockJig jig = new InsertBlockJig(
+                            initialPoint, 
+                            sourceBr, 
+                            rotation, 
+                            "请选择插入点或输入[旋转(R)]:");
+
+                        // 执行拖拽
+                        PromptResult jigResult = editor.Drag(jig);
+
+                        // 用户确定了位置
+                        if (jigResult.Status == PromptStatus.OK)
+                        {
+                            // 用户确定了位置，创建实际的块引用
+                            BlockReference finalBr = jig.GetEntity() as BlockReference;
+                            
+                            // 立即将块添加到空间中
+                            BlockTableRecord currentSpace = tr.GetObject(database.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                            finalBr = new BlockReference(jig.InsertionPoint, blockId);
+                            finalBr.Layer = "0";
+                            finalBr.Rotation = jig.Rotation;
+                            
+                            ObjectId newBlockId = currentSpace.AppendEntity(finalBr);
+                            tr.AddNewlyCreatedDBObject(finalBr, true);
+                            
+                            // 处理块中的属性定义
+                            BlockTableRecord blockDef = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
+                            if (blockDef.HasAttributeDefinitions)
+                            {
+                                foreach (ObjectId id in blockDef)
+                                {
+                                    DBObject obj = tr.GetObject(id, OpenMode.ForRead);
+                                    if (obj is AttributeDefinition attDef)
+                                    {
+                                        using (AttributeReference attRef = new AttributeReference())
+                                        {
+                                            attRef.SetAttributeFromBlock(attDef, finalBr.BlockTransform);
+                                            attRef.Position = attDef.Position.TransformBy(finalBr.BlockTransform);
+                                            attRef.TextString = attDef.TextString;
+                                            finalBr.AttributeCollection.AppendAttribute(attRef);
+                                            tr.AddNewlyCreatedDBObject(attRef, true);
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // 提交事务，使块立即显示
+                            tr.Commit();
+                            tr = null;
+                            
+                            // 更新初始点为当前位置，方便连续插入
+                            initialPoint = jig.InsertionPoint;
+                            rotation = jig.Rotation; // 保持当前旋转角度
+                            
+                            // 显示命令行提示，提醒用户继续操作
+                            editor.WriteMessage("\n球阀已插入，继续拖动放置新的球阀，输入\"R\"可旋转，ESC退出");
+                        }
+                        // 用户输入了关键字
+                        else if (jigResult.Status == PromptStatus.Keyword)
+                        {
+                            // 获取更新后的旋转角度
+                            rotation = jig.Rotation;
+                            
+                            // 放弃当前事务
+                            tr.Dispose();
+                            tr = null;
+                            
+                            // 显示命令行提示，告知用户已旋转
+                            editor.WriteMessage($"\n球阀已旋转，当前角度: {Math.Round(rotation * 180 / Math.PI)}度");
+                        }
+                        // 用户取消或按ESC
+                        else
+                        {
+                            if (tr != null)
+                            {
+                                tr.Dispose();
+                                tr = null;
+                            }
+                            editor.WriteMessage("\n命令已取消。");
+                            break;
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        editor.WriteMessage($"\n执行操作时发生错误: {ex.Message}");
+                        if (tr != null)
+                        {
+                            tr.Dispose();
+                            tr = null;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                editor.WriteMessage($"\n插入块时发生错误: {ex.Message}");
+                if (tr != null)
+                {
+                    tr.Dispose();
+                }
+                return false;
+            }
         }
     }
 
@@ -107,7 +355,7 @@ namespace dataflow_cs.Business.Commands.GsLc
 
                 return true;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 editor.WriteMessage($"\n插入仪表P块时发生错误: {ex.Message}");
                 return false;
@@ -136,7 +384,7 @@ namespace dataflow_cs.Business.Commands.GsLc
 
                 return true;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 editor.WriteMessage($"\n插入仪表L块时发生错误: {ex.Message}");
                 return false;

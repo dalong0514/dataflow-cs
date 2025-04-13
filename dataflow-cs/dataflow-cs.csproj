@@ -129,6 +129,7 @@
     <Compile Include="Presentation\Views\Windows\GsLcSysDataFromClient.xaml.cs">
       <DependentUpon>GsLcSysDataFromClient.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\JigUtils\BlockJig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
