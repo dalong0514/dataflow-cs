@@ -5,6 +5,7 @@ using System.Text;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using dataflow_cs.Utils.CADUtils;
 
 namespace dataflow_cs.Utils.JigUtils
 {
@@ -132,6 +133,152 @@ namespace dataflow_cs.Utils.JigUtils
         public void RequestRotation()
         {
             _rotationRequested = true;
+        }
+
+        /// <summary>
+        /// 使用拖拽方式交互式插入块
+        /// </summary>
+        /// <param name="editor">当前编辑器</param>
+        /// <param name="database">当前数据库</param>
+        /// <param name="blockName">要插入的块名称</param>
+        /// <param name="blockId">块定义的ObjectId</param>
+        /// <param name="initialPoint">初始插入点</param>
+        /// <param name="initialRotation">初始旋转角度（弧度）</param>
+        /// <param name="layerName">块所在图层（默认为"0"）</param>
+        /// <param name="prompt">拖拽过程中的提示（默认为"请选择插入点或输入[旋转(R)]:"）</param>
+        /// <param name="escapeMessage">用户取消时显示的消息（默认为"命令已取消。"）</param>
+        /// <param name="successMessage">插入成功后显示的消息模板（默认为"{0}已插入，继续拖动放置新的{0}，输入\"R\"可旋转，ESC退出"）</param>
+        /// <param name="rotationMessage">旋转操作后显示的消息模板（默认为"{0}已旋转，当前角度: {1}度"）</param>
+        /// <returns>是否成功完成至少一次插入操作</returns>
+        public static bool DragAndInsertBlock(
+            Editor editor,
+            Database database,
+            string blockName,
+            ObjectId blockId,
+            Point3d initialPoint,
+            double initialRotation = 0,
+            string layerName = "0",
+            string prompt = "请选择插入点或输入[旋转(R)]:",
+            string escapeMessage = "命令已取消。",
+            string successMessage = "{0}已插入，继续拖动放置新的{0}，输入\"R\"可旋转，ESC退出",
+            string rotationMessage = "{0}已旋转，当前角度: {1}度")
+        {
+            if (blockId == ObjectId.Null)
+            {
+                editor.WriteMessage("\n无效的块定义。");
+                return false;
+            }
+
+            // 为防止事务嵌套，先声明但不立即启动事务
+            Transaction tr = null;
+            bool hasInsertedAtLeastOnce = false;
+            double rotation = initialRotation;
+
+            try
+            {
+                // 进入交互循环
+                while (true)
+                {
+                    try
+                    {
+                        // 开始新事务
+                        tr = database.TransactionManager.StartTransaction();
+
+                        // 创建新的块参照用于拖拽
+                        BlockReference sourceBr = new BlockReference(initialPoint, blockId);
+                        sourceBr.Layer = layerName;
+                        sourceBr.Rotation = rotation;
+
+                        // 创建拖拽对象并显示
+                        InsertBlockJig jig = new InsertBlockJig(initialPoint, sourceBr, rotation, prompt);
+
+                        // 执行拖拽
+                        PromptResult jigResult = editor.Drag(jig);
+
+                        // 用户确定了位置
+                        if (jigResult.Status == PromptStatus.OK)
+                        {
+                            // 获取块定义名
+                            string currentBlockName = blockName;
+                            if (blockId != ObjectId.Null)
+                            {
+                                BlockTableRecord blockDef = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
+                                if (blockDef != null)
+                                {
+                                    currentBlockName = blockDef.Name;
+                                }
+                            }
+
+                            ObjectId newBlockId = UtilsBlock.UtilsInsertBlock(
+                                currentBlockName,
+                                jig.InsertionPoint,
+                                1.0, 1.0, 1.0, // 使用默认缩放比例
+                                jig.Rotation, // 使用jig中的旋转角度
+                                layerName, // 设置指定图层
+                                tr // 传入当前事务
+                            );
+
+                            // 提交事务，使块立即显示
+                            tr.Commit();
+                            tr = null;
+
+                            // 标记已成功插入至少一次
+                            hasInsertedAtLeastOnce = true;
+
+                            // 更新初始点为当前位置，方便连续插入
+                            initialPoint = jig.InsertionPoint;
+                            rotation = jig.Rotation; // 保持当前旋转角度
+
+                            // 显示成功消息
+                            editor.WriteMessage("\n" + string.Format(successMessage, blockName));
+                        }
+                        // 用户输入了关键字
+                        else if (jigResult.Status == PromptStatus.Keyword)
+                        {
+                            // 获取更新后的旋转角度
+                            rotation = jig.Rotation;
+
+                            // 放弃当前事务
+                            tr.Dispose();
+                            tr = null;
+
+                            // 显示旋转消息
+                            editor.WriteMessage("\n" + string.Format(rotationMessage, blockName, Math.Round(rotation * 180 / Math.PI)));
+                        }
+                        // 用户取消或按ESC
+                        else
+                        {
+                            if (tr != null)
+                            {
+                                tr.Dispose();
+                                tr = null;
+                            }
+                            editor.WriteMessage("\n" + escapeMessage);
+                            break;
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        editor.WriteMessage($"\n执行操作时发生错误: {ex.Message}");
+                        if (tr != null)
+                        {
+                            tr.Dispose();
+                            tr = null;
+                        }
+                    }
+                }
+
+                return hasInsertedAtLeastOnce;
+            }
+            catch (System.Exception ex)
+            {
+                editor.WriteMessage($"\n拖拽插入块时发生错误: {ex.Message}");
+                if (tr != null)
+                {
+                    tr.Dispose();
+                }
+                return hasInsertedAtLeastOnce;
+            }
         }
     }
 }
