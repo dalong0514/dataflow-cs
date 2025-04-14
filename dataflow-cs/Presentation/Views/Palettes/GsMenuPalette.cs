@@ -65,7 +65,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                                 PaletteSetStyles.ShowCloseButton |
                                 PaletteSetStyles.ShowAutoHideButton |
                                 PaletteSetStyles.SingleColDock,
-                        KeepFocus = true,
+                        KeepFocus = false,
                         Dock = DockSides.Left,
                         DockEnabled = DockSides.Left
                     };
@@ -167,6 +167,9 @@ namespace dataflow_cs.Presentation.Views.Palettes
 
                                     // 执行AutoCAD命令
                                     AutoCADService.RunCommand(command);
+
+                                    // 将焦点切换回AutoCAD主窗口
+                                    Application.MainWindow.Focus();
                                 }
                             }
                         };
