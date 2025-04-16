@@ -5,7 +5,7 @@ using dataflow_cs.Domain.ValueObjects;
 using dataflow_cs.Domain.Repositories.Interfaces;
 using System.Collections.Generic;
 
-namespace dataflow_cs.Infrastructure.Configuration
+namespace dataflow_cs.Utils.Configuration
 {
     /// <summary>
     /// 菜单配置仓储的文件实现
