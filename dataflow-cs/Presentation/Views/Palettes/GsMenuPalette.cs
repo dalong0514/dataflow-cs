@@ -265,7 +265,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 {
                     var treeView = _tabTreeViews[0];
                     treeView.Nodes.Clear();
-                    AddMenuItemsFromConfig(treeView, config.MenuGroups);
+                    AddMenuItemsFromConfig(treeView, config.MenuGroups, true); // 只对第一个标签页启用调试输出
                 }
                 return;
             }
@@ -277,7 +277,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 var tabConfig = config.Tabs[i];
                 
                 treeView.Nodes.Clear();
-                AddMenuItemsFromConfig(treeView, tabConfig.MenuGroups);
+                AddMenuItemsFromConfig(treeView, tabConfig.MenuGroups, i == 0); // 只对第一个标签页启用调试输出
             }
         }
 
@@ -286,7 +286,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
         /// </summary>
         /// <param name="treeView">树视图控件</param>
         /// <param name="menuGroups">菜单组列表</param>
-        private static void AddMenuItemsFromConfig(CustomTreeView treeView, List<MenuGroup> menuGroups)
+        /// <param name="showDebugInfo">是否显示调试信息</param>
+        private static void AddMenuItemsFromConfig(CustomTreeView treeView, List<MenuGroup> menuGroups, bool showDebugInfo = false)
         {
             treeView.Nodes.Clear();
 
@@ -359,8 +360,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 treeView.Nodes.Add(groupNode);
             }
             
-            // 调试信息：显示所有图标键和可用图标键
-            if (treeView.ImageList != null)
+            // 调试信息：只在指定时显示图标键信息
+            if (showDebugInfo && treeView.ImageList != null)
             {
                 Application.DocumentManager.MdiActiveDocument?.Editor
                     .WriteMessage($"\n菜单中使用的图标键: {string.Join(", ", allIconKeys)}");
@@ -432,8 +433,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
                             imgList.Images.Add(iconKeyWithExt, new Bitmap(originalImage));
                         }
                         
-                        Application.DocumentManager.MdiActiveDocument?.Editor
-                            .WriteMessage($"\n成功加载图标: {filename}");
+                        // Application.DocumentManager.MdiActiveDocument?.Editor
+                        //     .WriteMessage($"\n成功加载图标: {filename}");
                     }
                 }
                 catch (Exception ex)
