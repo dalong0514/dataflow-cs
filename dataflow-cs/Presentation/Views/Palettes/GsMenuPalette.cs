@@ -377,25 +377,19 @@ namespace dataflow_cs.Presentation.Views.Palettes
             imgList.ImageSize = new System.Drawing.Size(16, 16);
             imgList.ColorDepth = ColorDepth.Depth32Bit; // 提高图标质量
             
-            // 首先尝试从应用程序目录加载图标
-            string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icons");
-            
-            // 如果应用程序目录下没有icons文件夹，再尝试硬编码路径
-            if (!Directory.Exists(baseDir))
+            // 获取图标目录路径
+            string iconsDir = GetIconsDirectory();
+            if (string.IsNullOrEmpty(iconsDir))
             {
-                baseDir = @"D:\dataflowcad\dataflowcad\dataflowNet\DLNet\icons\";
-                if (!Directory.Exists(baseDir))
-                {
-                    Application.DocumentManager.MdiActiveDocument?.Editor
-                        .WriteMessage($"\n未找到图标目录: {baseDir}");
-                    return;
-                }
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n未找到有效的图标目录");
+                return;
             }
             
             // 记录找到的图标文件数量
-            List<string> fileNames = Directory.EnumerateFiles(baseDir).ToList();
+            List<string> fileNames = Directory.EnumerateFiles(iconsDir).ToList();
             Application.DocumentManager.MdiActiveDocument?.Editor
-                .WriteMessage($"\n正在从 {baseDir} 加载图标，找到 {fileNames.Count} 个图标文件");
+                .WriteMessage($"\n正在从 {iconsDir} 加载图标，找到 {fileNames.Count} 个图标文件");
             
             // 添加默认文件夹图标
             try
@@ -444,6 +438,71 @@ namespace dataflow_cs.Presentation.Views.Palettes
             
             Application.DocumentManager.MdiActiveDocument?.Editor
                 .WriteMessage($"\n图标加载完成，共加载 {imgList.Images.Count} 个图标");
+        }
+
+        /// <summary>
+        /// 获取图标目录路径
+        /// </summary>
+        /// <returns>图标目录的完整路径，如果找不到则返回null</returns>
+        private static string GetIconsDirectory()
+        {
+            try
+            {
+                // 首先尝试获取程序集所在目录
+                string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string assemblyDir = Path.GetDirectoryName(assemblyLocation);
+                
+                // 检查当前程序集目录下是否有icons文件夹
+                string iconsDir1 = Path.Combine(assemblyDir, "icons");
+                if (Directory.Exists(iconsDir1))
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor
+                        .WriteMessage($"\n找到程序集目录下的图标目录: {iconsDir1}");
+                    return iconsDir1;
+                }
+                
+                // 回退到上一级目录查找icons目录
+                string parentDir = Directory.GetParent(assemblyDir)?.FullName;
+                if (parentDir != null)
+                {
+                    string iconsDir2 = Path.Combine(parentDir, "icons");
+                    if (Directory.Exists(iconsDir2))
+                    {
+                        Application.DocumentManager.MdiActiveDocument?.Editor
+                            .WriteMessage($"\n找到上级目录下的图标目录: {iconsDir2}");
+                        return iconsDir2;
+                    }
+                }
+                
+                // 如果仍然找不到，尝试App域的基目录
+                string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icons");
+                if (Directory.Exists(baseDir))
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor
+                        .WriteMessage($"\n找到应用程序基目录下的图标目录: {baseDir}");
+                    return baseDir;
+                }
+                
+                // 如果以上方法都找不到，尝试检查固定路径作为最后的备选
+                string legacyDir = @"D:\dataflowcad\dataflowcad\dataflowNet\DLNet\icons\";
+                if (Directory.Exists(legacyDir))
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor
+                        .WriteMessage($"\n找到传统路径下的图标目录: {legacyDir}");
+                    return legacyDir;
+                }
+                
+                // 如果所有路径都找不到，返回null
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n在所有可能的路径中均未找到icons目录");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n获取图标目录时出错: {ex.Message}");
+                return null;
+            }
         }
     }
 } 

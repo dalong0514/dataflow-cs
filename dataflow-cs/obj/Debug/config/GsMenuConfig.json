@@ -175,42 +175,42 @@
             },
             {
               "Title": "插入开关阀",
-              "IconKey": "本地生活",
+              "IconKey": "开关阀.bmp",
               "Command": "GsLcInsertValveOnOff"
             },
             {
               "Title": "插入调节阀",
-              "IconKey": "本地生活",
+              "IconKey": "调节阀.bmp",
               "Command": "GsLcInsertValveControl"
             },
             {
               "Title": "插入球阀",
-              "IconKey": "闸阀.bmp",
+              "IconKey": "球阀.bmp",
               "Command": "DLGsLcInsertGlobalBlock"
             },
             {
               "Title": "插入截止阀",
-              "IconKey": "本地生活",
+              "IconKey": "截止阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
               "Title": "插入闸阀",
-              "IconKey": "本地生活",
+              "IconKey": "闸阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
               "Title": "插入蝶阀",
-              "IconKey": "本地生活",
+              "IconKey": "蝶阀.png",
               "Command": "GsLcExportCADData"
             },
             {
               "Title": "插入隔膜阀",
-              "IconKey": "本地生活",
+              "IconKey": "隔膜阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
               "Title": "插入旋塞阀",
-              "IconKey": "本地生活",
+              "IconKey": "旋塞阀",
               "Command": "CIRCLE"
             },
             {
