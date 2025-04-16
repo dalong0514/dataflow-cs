@@ -35,7 +35,11 @@ namespace dataflow_cs.Business.Commands.GsPg
 
             using (var tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                TestUtilsInsertBlock(editor, database);
+                // TestUtilsInsertBlock(editor, database);
+                SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
+                List<ObjectId> objectIds = selSet.GetObjectIds().ToList();
+                objectIds.ForEach(id => UtilsBlock.UtilsConvertBlockLinesToPolylines(id, 0.5));
+                editor.WriteMessage("\n转换完成");
 
                 tr.Commit();
 
