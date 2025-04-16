@@ -363,8 +363,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
             // 调试信息：只在指定时显示图标键信息
             if (showDebugInfo && treeView.ImageList != null)
             {
-                Application.DocumentManager.MdiActiveDocument?.Editor
-                    .WriteMessage($"\n菜单中使用的图标键: {string.Join(", ", allIconKeys)}");
+                // Application.DocumentManager.MdiActiveDocument?.Editor
+                //     .WriteMessage($"\n菜单中使用的图标键: {string.Join(", ", allIconKeys)}");
                 
                 List<string> availableKeys = new List<string>();
                 foreach (string key in treeView.ImageList.Images.Keys)
@@ -372,8 +372,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
                     availableKeys.Add(key);
                 }
                 
-                Application.DocumentManager.MdiActiveDocument?.Editor
-                    .WriteMessage($"\n可用的图标键: {string.Join(", ", availableKeys)}");
+                // Application.DocumentManager.MdiActiveDocument?.Editor
+                //     .WriteMessage($"\n可用的图标键: {string.Join(", ", availableKeys)}");
             }
         }
 

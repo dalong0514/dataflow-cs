@@ -1,6 +1,6 @@
 {
   "PaletteTitle": "数智设计",
-  "PaletteWidth": 400,
+  "PaletteWidth": 500,
   "PaletteHeight": 500,
   "Tabs": [
     {
@@ -8,169 +8,169 @@
       "MenuGroups": [
         {
           "Title": "数据处理",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "导出项目信息关联软件",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "ExportDDProjectInfoBySelect"
             },
             {
               "Title": "导出数据",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcExportCADData"
             },
             {
               "Title": "同步数据",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcImportDataLisp"
             }
           ]
         },
         {
           "Title": "一键修改功能",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "一键刷仪表所在位置",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcAutoBrushInstrumentLocation"
             },
             {
               "Title": "一键刷阀门所在位置",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcAutoBrushValveLocation"
             },
             {
               "Title": "一键刷管道来去向",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcAutoBrushPipelineFromTo"
             },
             {
               "Title": "一键更新数据所在流程图号",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "UpdateDrawGsLcDrawNumData"
             },
             {
               "Title": "一键更新公用工程块物料代号",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcAutoBrushPublicPipelineCode"
             },
             {
               "Title": "一键打断流程图管道仪表交叉",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcInterruptPipeline"
             },
             {
               "Title": "一键生成流程底部设备位号",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "InsertAllGsLcEquipTag"
             },
             {
               "Title": "一键关联外管箭头块与管道块",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcAutoAssociateOuterPipeArrowBlockAndPipeBlock"
             },
             {
               "Title": "一键前置仪表阀门块",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcFrontInstrumentAndValve"
             }
           ]
         },
         {
           "Title": "批量修改功能",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "批量转换业主流程块为数据流块",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcReplaceBlock"
             },
             {
               "Title": "批量编号",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcEnhancedNumber"
             },
             {
               "Title": "批量刷仪表阀门所在位置",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcBrushInstrumentLocationAndFreeze"
             },
             {
               "Title": "根据相对位置更新校验仪表所在位置",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcUpdateInstrumentLocation"
             },
             {
               "Title": "根据相对位置更新校验阀门所在位置",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcUpdateValveLocation"
             },
             {
               "Title": "批量刷公用管道来去向",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcBrushStartOrEndAndRePositionForPipe"
             },
             {
               "Title": "批量刷物料管道来去向",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcBushStartEndAndRePositionForPipe"
             },
             {
               "Title": "根据相对位置更新校验管道来去向",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcUpdatePipelineFromTo"
             },
             {
               "Title": "自动生成接图箭头",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcGenerateJoinDrawArrow"
             },
             {
               "Title": "批量刷接图箭头信息",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcBrushJoinDrawArrowndFreeze"
             },
             {
               "Title": "根据数据ID更新接图箭头信息",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcUpdateJoinDrawArrowByRePosition"
             },
             {
               "Title": "批量刷管道仪表块变等级号信息",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcbrushPipeClassChangeMacro"
             },
             {
               "Title": "批量刷管道仪表块变管径信息",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcbrushReducerInfoMacro"
             }
           ]
         },
         {
           "Title": "插入组件块功能",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "插入所有组件块",
-              "IconKey": "本地生活",
+              "IconKey": "xx.bmp",
               "Command": "GsLcInsertAllBlock"
             },
             {
               "Title": "插入就地仪表",
-              "IconKey": "本地生活",
+              "IconKey": "就地仪表.bmp",
               "Command": "GsLcInsertBlockInstrumentL"
             },
             {
               "Title": "插入集中仪表",
-              "IconKey": "本地生活",
+              "IconKey": "DCS回路.bmp",
               "Command": "GsLcInsertBlockInstrumentP"
             },
             {
               "Title": "插入SIS仪表",
-              "IconKey": "本地生活",
+              "IconKey": "SIS回路.bmp",
               "Command": "GsLcInsertBlockInstrumentSIS"
             },
             {
@@ -184,8 +184,58 @@
               "Command": "GsLcInsertValveControl"
             },
             {
+              "Title": "插入自力式调节阀",
+              "IconKey": "自力式调节阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入底阀",
+              "IconKey": "底阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入隔膜调节阀",
+              "IconKey": "隔膜调节阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入三通调节阀",
+              "IconKey": "三通调节阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入三通开关阀",
+              "IconKey": "三通开关阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入三通隔膜开关阀",
+              "IconKey": "三通隔膜开关阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入蝶阀开关阀",
+              "IconKey": "蝶阀开关阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入隔膜开关阀",
+              "IconKey": "隔膜开关阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
+              "Title": "插入插板开关阀",
+              "IconKey": "插板开关阀.bmp",
+              "Command": "GsLcInsertValveControl"
+            },
+            {
               "Title": "插入球阀",
               "IconKey": "球阀.bmp",
+              "Command": "DLGsLcInsertGlobalBlock"
+            },
+            {
+              "Title": "插入三通球阀",
+              "IconKey": "三通球阀.bmp",
               "Command": "DLGsLcInsertGlobalBlock"
             },
             {
@@ -194,18 +244,23 @@
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入闸阀",
-              "IconKey": "闸阀.bmp",
+              "Title": "插入波纹管截止阀",
+              "IconKey": "波纹管截止阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入蝶阀",
-              "IconKey": "蝶阀.png",
+              "Title": "插入减压阀",
+              "IconKey": "减压阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入隔膜阀",
-              "IconKey": "隔膜阀.bmp",
+              "Title": "插入止回阀",
+              "IconKey": "止回阀.bmp",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入旋启式止回阀",
+              "IconKey": "旋启式止回阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
@@ -214,50 +269,75 @@
               "Command": "CIRCLE"
             },
             {
-              "Title": "插入开关阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入柱塞阀",
+              "IconKey": "柱塞阀",
+              "Command": "CIRCLE"
+            },
+            {
+              "Title": "插入针型阀",
+              "IconKey": "针型阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入调节阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入闸阀",
+              "IconKey": "闸阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入球阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入插板阀",
+              "IconKey": "插板阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入截止阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入隔膜阀",
+              "IconKey": "隔膜阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入闸阀块xx",
-              "IconKey": "本地生活",
+              "Title": "插入蝶阀",
+              "IconKey": "蝶阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入蝶阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入安全阀",
+              "IconKey": "安全阀.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入隔膜阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入爆破片",
+              "IconKey": "爆破片.bmp",
               "Command": "GsLcExportCADData"
             },
             {
-              "Title": "插入旋塞阀xx",
-              "IconKey": "本地生活",
+              "Title": "插入疏水阀",
+              "IconKey": "疏水阀.bmp",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入呼吸阀",
+              "IconKey": "呼吸阀.bmp",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入带阻火器呼吸阀",
+              "IconKey": "带阻火器呼吸阀.bmp",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入金属软管",
+              "IconKey": "金属软管.bmp",
+              "Command": "GsLcExportCADData"
+            },
+            {
+              "Title": "插入挠性软管",
+              "IconKey": "挠性软管.bmp",
               "Command": "CIRCLE"
             }
           ]
         },
         {
           "Title": "其他",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "工艺流程菜单2-1",
@@ -303,7 +383,7 @@
       "MenuGroups": [
         {
           "Title": "设备布置菜单1",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "设备布置菜单1-1",
@@ -324,7 +404,7 @@
       "MenuGroups": [
         {
           "Title": "二维配管菜单1",
-          "IconKey": "folder",
+          "IconKey": "xx.bmp",
           "Items": [
             {
               "Title": "二维配管菜单1-1",
