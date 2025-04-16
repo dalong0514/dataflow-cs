@@ -305,12 +305,9 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 }
                 else
                 {
-                    // 使用默认图标
-                    groupNode.ImageKey = "folder";
-                    groupNode.SelectedImageKey = "folder";
-                    
+                    // 图标不存在时不设置图标
                     Application.DocumentManager.MdiActiveDocument?.Editor
-                        .WriteMessage($"\n一级菜单图标未找到: {groupIconKey}，使用默认图标");
+                        .WriteMessage($"\n一级菜单图标未找到: {groupIconKey}，不加载图标");
                 }
 
                 // 添加二级菜单
@@ -339,12 +336,9 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         }
                         else
                         {
-                            // 使用默认图标
-                            itemNode.ImageKey = "folder";
-                            itemNode.SelectedImageKey = "folder";
-                            
+                            // 图标不存在时不设置图标
                             Application.DocumentManager.MdiActiveDocument?.Editor
-                                .WriteMessage($"\n二级菜单图标未找到: {itemIconKey}，使用默认图标");
+                                .WriteMessage($"\n二级菜单图标未找到: {itemIconKey}，不加载图标");
                         }
                     }
                     

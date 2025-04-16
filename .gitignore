@@ -20,9 +20,7 @@ CommonUtils/obj/Debug/*
 *.dll
 
 /dataflow-cs/TargetDLL/*
-/dataflow-cs/obj/Debug/*
-/dataflow-cs/bin/Debug/*
-/dataflow-cs/obj/Release/*
-/dataflow-cs/bin/Release/*
+/dataflow-cs/obj/*
+/dataflow-cs/bin/*
 
 /dataflow-cs/icons/*
