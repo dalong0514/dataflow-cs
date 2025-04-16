@@ -1019,105 +1019,90 @@ namespace dataflow_cs.Utils.CADUtils
         /// 将块参照中的所有直线实体(LINE)转换为多段线实体(LWPOLYLINE)，并设置线宽
         /// </summary>
         /// <param name="blockRefId">块参照的ObjectId</param>
+        /// <param name="tr">外部事务对象</param>
         /// <param name="polylineWidth">多段线的线宽，默认为0.0</param>
         /// <returns>转换成功的直线数量</returns>
-        public static int UtilsConvertBlockLinesToPolylines(ObjectId blockRefId, double polylineWidth = 0.0)
+        public static void UtilsConvertBlockLinesToPolylines(ObjectId blockRefId, Transaction tr, double polylineWidth = 0.0)
         {
-            int convertedCount = 0;
-            Database db = UtilsCADActive.Database;
             
-            using (Transaction tr = db.TransactionManager.StartTransaction())
+            try
             {
-                try
+                // 获取块参照对象
+                BlockReference blockRef = tr.GetObject(blockRefId, OpenMode.ForRead) as BlockReference;
+                if (blockRef == null)
                 {
-                    // 获取块参照对象
-                    BlockReference blockRef = tr.GetObject(blockRefId, OpenMode.ForRead) as BlockReference;
-                    if (blockRef == null)
-                    {
-                        UtilsCADActive.WriteMessage("\n无效的块参照ObjectId。");
-                        tr.Commit();
-                        return 0;
-                    }
-                    
-                    // 获取块定义
-                    BlockTableRecord blockDef = tr.GetObject(blockRef.BlockTableRecord, OpenMode.ForWrite) as BlockTableRecord;
-                    if (blockDef == null)
-                    {
-                        UtilsCADActive.WriteMessage("\n无法获取块定义。");
-                        tr.Commit();
-                        return 0;
-                    }
-                    
-                    // 创建集合以存储要处理的直线对象
-                    List<ObjectId> lineIds = new List<ObjectId>();
-                    List<Line> lineEntities = new List<Line>();
-                    
-                    // 遍历块定义中的所有实体
-                    foreach (ObjectId entId in blockDef)
-                    {
-                        Entity entity = tr.GetObject(entId, OpenMode.ForRead) as Entity;
-                        if (entity is Line)
-                        {
-                            lineIds.Add(entId);
-                            lineEntities.Add(entity as Line);
-                        }
-                    }
-                    
-                    // 如果没有找到直线实体，则返回
-                    if (lineIds.Count == 0)
-                    {
-                        UtilsCADActive.WriteMessage("\n块中未找到直线实体。");
-                        tr.Commit();
-                        return 0;
-                    }
-                    
-                    // 处理每条直线
-                    for (int i = 0; i < lineIds.Count; i++)
-                    {
-                        Line line = lineEntities[i];
-                        
-                        // 创建新的多段线
-                        Polyline polyline = new Polyline();
-                        
-                        // 设置多段线的基本属性（从原始直线复制）
-                        polyline.Layer = line.Layer;
-                        polyline.Color = line.Color;
-                        polyline.Linetype = line.Linetype;
-                        polyline.LinetypeScale = line.LinetypeScale;
-                        
-                        // 添加多段线的顶点（转换直线的两个端点）
-                        // 为每个端点设置起点和终点宽度
-                        polyline.AddVertexAt(0, new Point2d(line.StartPoint.X, line.StartPoint.Y), 0, polylineWidth, polylineWidth);
-                        polyline.AddVertexAt(1, new Point2d(line.EndPoint.X, line.EndPoint.Y), 0, polylineWidth, polylineWidth);
-                        
-                        // 确保设置全局线宽 (这只对均匀宽度的多段线有效)
-                        polyline.ConstantWidth = polylineWidth;
-                        
-                        // 添加新的多段线到块定义
-                        blockDef.AppendEntity(polyline);
-                        tr.AddNewlyCreatedDBObject(polyline, true);
-                        
-                        // 删除原始直线
-                        Entity lineEntity = tr.GetObject(lineIds[i], OpenMode.ForWrite) as Entity;
-                        lineEntity.Erase();
-                        
-                        convertedCount++;
-                    }
-                    
-                    // 更新显示
-                    UtilsCADActive.Editor.UpdateScreen();
-                    
-                    UtilsCADActive.WriteMessage($"\n已成功将 {convertedCount} 条直线转换为多段线。");
-                }
-                catch (Exception ex)
-                {
-                    UtilsCADActive.WriteMessage($"\n转换直线为多段线时发生错误: {ex.Message}");
+                    UtilsCADActive.WriteMessage("\n无效的块参照ObjectId。");
                 }
                 
-                tr.Commit();
+                // 获取块定义
+                BlockTableRecord blockDef = tr.GetObject(blockRef.BlockTableRecord, OpenMode.ForWrite) as BlockTableRecord;
+                if (blockDef == null)
+                {
+                    UtilsCADActive.WriteMessage("\n无法获取块定义。");
+                }
+                
+                // 创建集合以存储要处理的直线对象
+                List<ObjectId> lineIds = new List<ObjectId>();
+                List<Line> lineEntities = new List<Line>();
+                
+                // 遍历块定义中的所有实体
+                foreach (ObjectId entId in blockDef)
+                {
+                    Entity entity = tr.GetObject(entId, OpenMode.ForRead) as Entity;
+                    if (entity is Line)
+                    {
+                        lineIds.Add(entId);
+                        lineEntities.Add(entity as Line);
+                    }
+                }
+                
+                // 如果没有找到直线实体，则返回
+                if (lineIds.Count == 0)
+                {
+                    UtilsCADActive.WriteMessage("\n块中未找到直线实体。");
+                }
+                
+                // 处理每条直线
+                for (int i = 0; i < lineIds.Count; i++)
+                {
+                    Line line = lineEntities[i];
+                    
+                    // 创建新的多段线
+                    Polyline polyline = new Polyline();
+                    
+                    // 设置多段线的基本属性（从原始直线复制）
+                    polyline.Layer = line.Layer;
+                    polyline.Color = line.Color;
+                    polyline.Linetype = line.Linetype;
+                    polyline.LinetypeScale = line.LinetypeScale;
+                    
+                    // 添加多段线的顶点（转换直线的两个端点）
+                    // 为每个端点设置起点和终点宽度
+                    polyline.AddVertexAt(0, new Point2d(line.StartPoint.X, line.StartPoint.Y), 0, polylineWidth, polylineWidth);
+                    polyline.AddVertexAt(1, new Point2d(line.EndPoint.X, line.EndPoint.Y), 0, polylineWidth, polylineWidth);
+                    
+                    // 确保设置全局线宽 (这只对均匀宽度的多段线有效)
+                    polyline.ConstantWidth = polylineWidth;
+                    
+                    // 添加新的多段线到块定义
+                    blockDef.AppendEntity(polyline);
+                    tr.AddNewlyCreatedDBObject(polyline, true);
+                    
+                    // 删除原始直线
+                    Entity lineEntity = tr.GetObject(lineIds[i], OpenMode.ForWrite) as Entity;
+                    lineEntity.Erase();
+                    
+                }
+                
+                // 更新显示
+                UtilsCADActive.Editor.UpdateScreen();
+                
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.WriteMessage($"\n转换直线为多段线时发生错误: {ex.Message}");
             }
             
-            return convertedCount;
         }
     }
 }

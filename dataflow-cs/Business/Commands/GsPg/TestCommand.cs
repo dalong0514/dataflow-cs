@@ -38,7 +38,7 @@ namespace dataflow_cs.Business.Commands.GsPg
                 // TestUtilsInsertBlock(editor, database);
                 SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
                 List<ObjectId> objectIds = selSet.GetObjectIds().ToList();
-                objectIds.ForEach(id => UtilsBlock.UtilsConvertBlockLinesToPolylines(id, 0.5));
+                objectIds.ForEach(id => UtilsBlock.UtilsConvertBlockLinesToPolylines(id, tr, 0.5));
                 editor.WriteMessage("\n转换完成");
 
                 tr.Commit();
