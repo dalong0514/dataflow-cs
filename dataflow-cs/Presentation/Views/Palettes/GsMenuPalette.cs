@@ -204,7 +204,62 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         }
                     };
 
+                    // 在标题标签下方添加搜索栏
+                    TextBox searchBox = new TextBox
+                    {
+                        Dock = DockStyle.Top,
+                        Height = 30,
+                        Font = new System.Drawing.Font("微软雅黑", 10),
+                        Text = "输入关键词搜索..."
+                    };
+
+                    // 搜索框焦点行为
+                    searchBox.GotFocus += (sender, e) =>
+                    {
+                        if (searchBox.Text == "输入关键词搜索...")
+                        {
+                            searchBox.Text = "";
+                        }
+                    };
+
+                    searchBox.LostFocus += (sender, e) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(searchBox.Text))
+                        {
+                            searchBox.Text = "输入关键词搜索...";
+                        }
+                    };
+
+                    // 添加搜索逻辑
+                    searchBox.TextChanged += (sender, e) => 
+                    {
+                        if (searchBox.Text != "输入关键词搜索...")
+                        {
+                            FilterMenuItems(searchBox.Text);
+                        }
+                        else
+                        {
+                            // 当搜索框为默认文本时，恢复原始菜单
+                            int selectedIndex = _tabControl.SelectedIndex;
+                            if (selectedIndex >= 0 && selectedIndex < _tabTreeViews.Count)
+                            {
+                                _treeView = _tabTreeViews[selectedIndex];
+                                if (config.Tabs != null && config.Tabs.Count > selectedIndex)
+                                {
+                                    _treeView.Nodes.Clear();
+                                    AddMenuItemsFromConfig(_treeView, config.Tabs[selectedIndex].MenuGroups, false);
+                                }
+                                else if (selectedIndex == 0 && config.MenuGroups != null)
+                                {
+                                    _treeView.Nodes.Clear();
+                                    AddMenuItemsFromConfig(_treeView, config.MenuGroups, false);
+                                }
+                            }
+                        }
+                    };
+
                     _menuPanel.Controls.Add(_tabControl);
+                    _menuPanel.Controls.Add(searchBox);
                     _menuPanel.Controls.Add(titleLabel);
                     // 将 Panel 添加到 PaletteSet
                     _paletteSet.Add("我的面板", _menuPanel);
@@ -511,6 +566,100 @@ namespace dataflow_cs.Presentation.Views.Palettes
                     .WriteMessage($"\n获取图标目录时出错: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 根据关键词过滤菜单项
+        /// </summary>
+        /// <param name="searchText">搜索关键词</param>
+        public static void FilterMenuItems(string searchText)
+        {
+            if (_treeView == null) return;
+
+            // 获取当前选中的标签页索引
+            int selectedIndex = _tabControl.SelectedIndex;
+            if (selectedIndex < 0) return;
+
+            MenuConfig config = GsMenuConfigService.LoadMenuConfig();
+            List<MenuGroup> menuGroups = null;
+
+            // 从配置获取当前标签页的菜单组
+            if (config.Tabs != null && config.Tabs.Count > selectedIndex)
+            {
+                menuGroups = config.Tabs[selectedIndex].MenuGroups;
+            }
+            else if (selectedIndex == 0)
+            {
+                menuGroups = config.MenuGroups;
+            }
+
+            if (menuGroups == null) return;
+
+            _treeView.BeginUpdate();
+            _treeView.Nodes.Clear();
+
+            if (string.IsNullOrWhiteSpace(searchText) || searchText == "输入关键词搜索...")
+            {
+                // 重新加载原始菜单
+                AddMenuItemsFromConfig(_treeView, menuGroups, false);
+            }
+            else
+            {
+                // 过滤菜单并显示匹配项
+                foreach (var group in menuGroups)
+                {
+                    TreeNode groupNode = new TreeNode(group.Title);
+                    
+                    // 设置一级菜单图标
+                    if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(group.IconKey))
+                    {
+                        groupNode.ImageKey = group.IconKey;
+                        groupNode.SelectedImageKey = group.IconKey;
+                    }
+
+                    bool groupHasMatch = false;
+
+                    foreach (var item in group.Items)
+                    {
+                        if (item.Title.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            TreeNode itemNode = new TreeNode(item.Title);
+                            
+                            // 设置二级菜单图标
+                            if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(item.IconKey))
+                            {
+                                itemNode.ImageKey = item.IconKey;
+                                itemNode.SelectedImageKey = item.IconKey;
+                            }
+                            else
+                            {
+                                // 尝试不带扩展名的图标键
+                                string itemIconKeyWithoutExt = Path.GetFileNameWithoutExtension(item.IconKey);
+                                if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(itemIconKeyWithoutExt))
+                                {
+                                    itemNode.ImageKey = itemIconKeyWithoutExt;
+                                    itemNode.SelectedImageKey = itemIconKeyWithoutExt;
+                                }
+                            }
+                            
+                            // 在Tag中存储命令，以便点击时执行
+                            itemNode.Tag = item.Command;
+
+                            groupNode.Nodes.Add(itemNode);
+                            groupHasMatch = true;
+                        }
+                    }
+
+                    // 只有当该组中存在匹配项时，才显示该组
+                    if (groupHasMatch)
+                    {
+                        _treeView.Nodes.Add(groupNode);
+                        groupNode.Expand(); // 自动展开包含匹配项的组
+                    }
+                }
+            }
+
+            _treeView.EndUpdate();
         }
     }
 } 
