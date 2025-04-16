@@ -6,9 +6,9 @@ using System.Linq;
 using System.Windows.Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
-using dataflow_cs.Infrastructure.AutoCAD.Services;
 using dataflow_cs.Domain.ValueObjects;
 using dataflow_cs.Presentation.Views.Controls;
+using dataflow_cs.Utils.CADUtils;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace dataflow_cs.Presentation.Views.Palettes
@@ -114,7 +114,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                                     .WriteMessage($"\n执行命令: {command}");
                                 
                                 // 执行AutoCAD命令
-                                AutoCADService.RunCommand(command);
+                                UtilsCADActive.RunCommand(command);
                             }
                         }
                     };
@@ -238,7 +238,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 }
                 catch (Exception ex)
                 {
-                    AutoCADService.WriteMessage($"\n添加folder图标时出错: {ex.Message}");
+                    UtilsCADActive.WriteMessage($"\n添加folder图标时出错: {ex.Message}");
                 }
 
                 try
@@ -248,7 +248,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 }
                 catch (Exception ex)
                 {
-                    AutoCADService.WriteMessage($"\n添加command图标时出错: {ex.Message}");
+                    UtilsCADActive.WriteMessage($"\n添加command图标时出错: {ex.Message}");
                 }
                 
                 // 尝试从应用目录下的icons文件夹加载图标
@@ -256,7 +256,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 if (Directory.Exists(baseDir))
                 {
                     List<string> fileNames = Directory.EnumerateFiles(baseDir).ToList();
-                    AutoCADService.WriteMessage($"\n正在从 {baseDir} 加载图标，找到 {fileNames.Count} 个图标文件");
+                    UtilsCADActive.WriteMessage($"\n正在从 {baseDir} 加载图标，找到 {fileNames.Count} 个图标文件");
                     
                     foreach (var file in fileNames)
                     {
@@ -269,25 +269,25 @@ namespace dataflow_cs.Presentation.Views.Palettes
                             {
                                 string iconKey = filename.Replace(extension, "");
                                 imgList.Images.Add(iconKey, new Bitmap(originalImage));
-                                AutoCADService.WriteMessage($"\n成功加载图标: {iconKey}");
+                                UtilsCADActive.WriteMessage($"\n成功加载图标: {iconKey}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            AutoCADService.WriteMessage($"\n加载图标 {filename} 时出错: {ex.Message}");
+                            UtilsCADActive.WriteMessage($"\n加载图标 {filename} 时出错: {ex.Message}");
                             // 继续处理下一个图标
                         }
                     }
                 }
                 else
                 {
-                    AutoCADService.WriteMessage($"\n未找到图标目录: {baseDir}");
+                    UtilsCADActive.WriteMessage($"\n未找到图标目录: {baseDir}");
                     
                     // 尝试使用固定路径作为备用选项
                     string backupDir = @"C:\Users\chen-jun\Desktop\ico\";
                     if (Directory.Exists(backupDir))
                     {
-                        AutoCADService.WriteMessage($"\n尝试从备用路径加载图标: {backupDir}");
+                        UtilsCADActive.WriteMessage($"\n尝试从备用路径加载图标: {backupDir}");
                         List<string> fileNames = Directory.EnumerateFiles(backupDir).ToList();
                         foreach (var file in fileNames)
                         {
@@ -304,22 +304,22 @@ namespace dataflow_cs.Presentation.Views.Palettes
                             }
                             catch (Exception ex)
                             {
-                                AutoCADService.WriteMessage($"\n加载备用图标 {filename} 时出错: {ex.Message}");
+                                UtilsCADActive.WriteMessage($"\n加载备用图标 {filename} 时出错: {ex.Message}");
                                 // 继续处理下一个图标
                             }
                         }
                     }
                     else
                     {
-                        AutoCADService.WriteMessage($"\n备用图标路径也不存在: {backupDir}");
+                        UtilsCADActive.WriteMessage($"\n备用图标路径也不存在: {backupDir}");
                     }
                 }
                 
-                AutoCADService.WriteMessage($"\n图标加载完成，共加载 {imgList.Images.Count} 个图标");
+                UtilsCADActive.WriteMessage($"\n图标加载完成，共加载 {imgList.Images.Count} 个图标");
             }
             catch (Exception ex)
             {
-                AutoCADService.WriteMessage($"\n加载图标时出现异常: {ex.Message}");
+                UtilsCADActive.WriteMessage($"\n加载图标时出现异常: {ex.Message}");
             }
         }
     }

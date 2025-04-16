@@ -7,9 +7,9 @@ using System.Windows.Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Windows;
 using dataflow_cs.Domain.ValueObjects;
-using dataflow_cs.Infrastructure.AutoCAD.Services;
 using dataflow_cs.Business.Services;
 using dataflow_cs.Presentation.Views.Controls;
+using dataflow_cs.Utils.CADUtils;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace dataflow_cs.Presentation.Views.Palettes
@@ -166,7 +166,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
                                         .WriteMessage($"\n执行命令: {command}");
 
                                     // 执行AutoCAD命令
-                                    AutoCADService.RunCommand(command);
+                                    UtilsCADActive.RunCommand(command);
 
                                     // 将焦点切换回AutoCAD主窗口
                                     Application.MainWindow.Focus();

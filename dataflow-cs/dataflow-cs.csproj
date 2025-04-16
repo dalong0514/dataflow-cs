@@ -101,7 +101,6 @@
     <Compile Include="Core\Services\CommandHandlerBase.cs" />
     <Compile Include="Core\Services\ConfigurationService.cs" />
     <Compile Include="Core\Services\LoggingService.cs" />
-    <Compile Include="Infrastructure\AutoCAD\Services\AutoCADService.cs" />
     <Compile Include="Infrastructure\Configuration\FileMenuConfigRepository.cs" />
     <Compile Include="Presentation\Views\Controls\CustomTreeView.cs">
       <SubType>Component</SubType>
@@ -136,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
+    <Folder Include="Lisp\" />
     <Folder Include="Resources\" />
     <Folder Include="Utils\Extensions\" />
   </ItemGroup>
