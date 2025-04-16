@@ -28,6 +28,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
         private static List<CustomTreeView> _tabTreeViews;
         // 不再使用硬编码的标签页名称，改为从配置读取
         private static List<string> _tabNames = new List<string>();
+        // 添加静态ImageList字段以便所有TreeView共享
+        private static ImageList _sharedImageList;
 
         /// <summary>
         /// 显示工艺专业自定义菜单
@@ -57,6 +59,14 @@ namespace dataflow_cs.Presentation.Views.Palettes
 
                 if (_paletteSet == null)
                 {
+                    // 创建共享的ImageList并只加载一次图标
+                    _sharedImageList = new ImageList
+                    {
+                        ImageSize = new System.Drawing.Size(16, 16),
+                        ColorDepth = ColorDepth.Depth32Bit
+                    };
+                    LoadAutoCADIcons(_sharedImageList);
+                    
                     // 创建 PaletteSet 作为 AutoCAD 固定面板
                     _paletteSet = new PaletteSet(config.PaletteTitle)
                     {
@@ -143,10 +153,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
                             ItemHeight = 24 // 增加节点高度，使界面更易读
                         };
 
-                        // 设置 ImageList（所有选项卡共用同一个图像列表）
-                        ImageList imgList = new ImageList();
-                        LoadAutoCADIcons(imgList);
-                        tabTreeView.ImageList = imgList;
+                        // 使用共享的ImageList而不是为每个TreeView创建新的
+                        tabTreeView.ImageList = _sharedImageList;
 
                         // 添加节点点击事件
                         tabTreeView.NodeMouseClick += (sender, e) =>
@@ -306,8 +314,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 else
                 {
                     // 图标不存在时不设置图标
-                    Application.DocumentManager.MdiActiveDocument?.Editor
-                        .WriteMessage($"\n一级菜单图标未找到: {groupIconKey}，不加载图标");
+                    // Application.DocumentManager.MdiActiveDocument?.Editor
+                    //     .WriteMessage($"\n一级菜单图标未找到: {groupIconKey}，不加载图标");
                 }
 
                 // 添加二级菜单
@@ -336,9 +344,9 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         }
                         else
                         {
-                            // 图标不存在时不设置图标
-                            Application.DocumentManager.MdiActiveDocument?.Editor
-                                .WriteMessage($"\n二级菜单图标未找到: {itemIconKey}，不加载图标");
+                            // // 图标不存在时不设置图标
+                            // Application.DocumentManager.MdiActiveDocument?.Editor
+                            //     .WriteMessage($"\n二级菜单图标未找到: {itemIconKey}，不加载图标");
                         }
                     }
                     
@@ -374,8 +382,7 @@ namespace dataflow_cs.Presentation.Views.Palettes
         /// <param name="imgList">图像列表</param>
         public static void LoadAutoCADIcons(ImageList imgList)
         {
-            imgList.ImageSize = new System.Drawing.Size(16, 16);
-            imgList.ColorDepth = ColorDepth.Depth32Bit; // 提高图标质量
+            // 不需要再设置ImageSize和ColorDepth，已在创建时设置
             
             // 获取图标目录路径
             string iconsDir = GetIconsDirectory();
