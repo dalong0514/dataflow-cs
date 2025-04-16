@@ -185,7 +185,7 @@
             },
             {
               "Title": "插入球阀",
-              "IconKey": "本地生活",
+              "IconKey": "闸阀.bmp",
               "Command": "DLGsLcInsertGlobalBlock"
             },
             {

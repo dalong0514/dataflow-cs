@@ -15,12 +15,14 @@
 *.sln.docstates
 
 *.vsidx
-TargetDLL/*
 CommonUtils/obj/Debug/*
 *.pdb
 *.dll
 
-/obj/Debug/*
-/bin/Debug/*
-/obj/Release/*
-/bin/Release/*
+/dataflow-cs/TargetDLL/*
+/dataflow-cs/obj/Debug/*
+/dataflow-cs/bin/Debug/*
+/dataflow-cs/obj/Release/*
+/dataflow-cs/bin/Release/*
+
+/dataflow-cs/icons/*

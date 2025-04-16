@@ -285,19 +285,69 @@ namespace dataflow_cs.Presentation.Views.Palettes
             if (menuGroups == null)
                 return;
 
+            // 记录读取到的不同图标键，用于调试
+            HashSet<string> allIconKeys = new HashSet<string>();
+            
             foreach (var group in menuGroups)
             {
                 // 创建一级菜单
                 TreeNode groupNode = new TreeNode(group.Title);
-                groupNode.ImageKey = group.IconKey;
-                groupNode.SelectedImageKey = group.IconKey;
+                
+                // 设置一级菜单图标
+                string groupIconKey = group.IconKey;
+                allIconKeys.Add(groupIconKey);
+                
+                // 确保ImageList中有这个图标
+                if (treeView.ImageList != null && treeView.ImageList.Images.ContainsKey(groupIconKey))
+                {
+                    groupNode.ImageKey = groupIconKey;
+                    groupNode.SelectedImageKey = groupIconKey;
+                }
+                else
+                {
+                    // 使用默认图标
+                    groupNode.ImageKey = "folder";
+                    groupNode.SelectedImageKey = "folder";
+                    
+                    Application.DocumentManager.MdiActiveDocument?.Editor
+                        .WriteMessage($"\n一级菜单图标未找到: {groupIconKey}，使用默认图标");
+                }
 
                 // 添加二级菜单
                 foreach (var item in group.Items)
                 {
                     TreeNode itemNode = new TreeNode(item.Title);
-                    itemNode.ImageKey = item.IconKey;
-                    itemNode.SelectedImageKey = item.IconKey;
+                    
+                    // 设置二级菜单图标
+                    string itemIconKey = item.IconKey;
+                    allIconKeys.Add(itemIconKey);
+                    
+                    // 确保ImageList中有这个图标
+                    if (treeView.ImageList != null && treeView.ImageList.Images.ContainsKey(itemIconKey))
+                    {
+                        itemNode.ImageKey = itemIconKey;
+                        itemNode.SelectedImageKey = itemIconKey;
+                    }
+                    else
+                    {
+                        // 尝试不带扩展名的图标键
+                        string itemIconKeyWithoutExt = Path.GetFileNameWithoutExtension(itemIconKey);
+                        if (treeView.ImageList != null && treeView.ImageList.Images.ContainsKey(itemIconKeyWithoutExt))
+                        {
+                            itemNode.ImageKey = itemIconKeyWithoutExt;
+                            itemNode.SelectedImageKey = itemIconKeyWithoutExt;
+                        }
+                        else
+                        {
+                            // 使用默认图标
+                            itemNode.ImageKey = "folder";
+                            itemNode.SelectedImageKey = "folder";
+                            
+                            Application.DocumentManager.MdiActiveDocument?.Editor
+                                .WriteMessage($"\n二级菜单图标未找到: {itemIconKey}，使用默认图标");
+                        }
+                    }
+                    
                     // 在Tag中存储命令，以便点击时执行
                     itemNode.Tag = item.Command;
 
@@ -305,6 +355,22 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 }
 
                 treeView.Nodes.Add(groupNode);
+            }
+            
+            // 调试信息：显示所有图标键和可用图标键
+            if (treeView.ImageList != null)
+            {
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n菜单中使用的图标键: {string.Join(", ", allIconKeys)}");
+                
+                List<string> availableKeys = new List<string>();
+                foreach (string key in treeView.ImageList.Images.Keys)
+                {
+                    availableKeys.Add(key);
+                }
+                
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n可用的图标键: {string.Join(", ", availableKeys)}");
             }
         }
 
@@ -315,24 +381,75 @@ namespace dataflow_cs.Presentation.Views.Palettes
         public static void LoadAutoCADIcons(ImageList imgList)
         {
             imgList.ImageSize = new System.Drawing.Size(16, 16);
-            string baseDir = @"D:\dataflowcad\dataflowcad\dataflowNet\DLNet\icons\";
+            imgList.ColorDepth = ColorDepth.Depth32Bit; // 提高图标质量
+            
+            // 首先尝试从应用程序目录加载图标
+            string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icons");
+            
+            // 如果应用程序目录下没有icons文件夹，再尝试硬编码路径
             if (!Directory.Exists(baseDir))
-                return;
+            {
+                baseDir = @"D:\dataflowcad\dataflowcad\dataflowNet\DLNet\icons\";
+                if (!Directory.Exists(baseDir))
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor
+                        .WriteMessage($"\n未找到图标目录: {baseDir}");
+                    return;
+                }
+            }
+            
+            // 记录找到的图标文件数量
             List<string> fileNames = Directory.EnumerateFiles(baseDir).ToList();
+            Application.DocumentManager.MdiActiveDocument?.Editor
+                .WriteMessage($"\n正在从 {baseDir} 加载图标，找到 {fileNames.Count} 个图标文件");
+            
+            // 添加默认文件夹图标
+            try
+            {
+                Icon folderIcon = SystemIcons.Information;
+                imgList.Images.Add("folder", folderIcon);
+            }
+            catch
+            {
+                // 忽略无法加载的图标
+            }
+            
             foreach (var file in fileNames)
             {
                 string filename = Path.GetFileName(file);
                 string extension = Path.GetExtension(file);
+                string iconKeyWithoutExt = filename.Replace(extension, "");
+                string iconKeyWithExt = filename; // 保留扩展名的键名
+                
                 try
                 {
-                    System.Drawing.Image image = System.Drawing.Image.FromFile(file);
-                    imgList.Images.Add(filename.Replace(extension, ""), image);
+                    using (Bitmap originalImage = new Bitmap(file))
+                    {
+                        // 添加两个版本的图标键，一个带扩展名，一个不带扩展名
+                        // 这样无论配置中是哪种格式都能找到图标
+                        if (!imgList.Images.ContainsKey(iconKeyWithoutExt))
+                        {
+                            imgList.Images.Add(iconKeyWithoutExt, new Bitmap(originalImage));
+                        }
+                        
+                        if (!imgList.Images.ContainsKey(iconKeyWithExt))
+                        {
+                            imgList.Images.Add(iconKeyWithExt, new Bitmap(originalImage));
+                        }
+                        
+                        Application.DocumentManager.MdiActiveDocument?.Editor
+                            .WriteMessage($"\n成功加载图标: {filename}");
+                    }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // 忽略无法加载的图标
+                    Application.DocumentManager.MdiActiveDocument?.Editor
+                        .WriteMessage($"\n加载图标 {filename} 失败: {ex.Message}");
                 }
             }
+            
+            Application.DocumentManager.MdiActiveDocument?.Editor
+                .WriteMessage($"\n图标加载完成，共加载 {imgList.Images.Count} 个图标");
         }
     }
 } 
