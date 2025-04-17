@@ -89,15 +89,15 @@ namespace dataflow_cs.Presentation.Views.Palettes
                     };
 
                     // 添加一个标题标签（与 TreeView 分开，留出间距）
-                    Label titleLabel = new Label
-                    {
-                        Text = "数智设计-工艺",
-                        Dock = DockStyle.Top,
-                        Height = 30,
-                        TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                        BackColor = System.Drawing.Color.Gray,
-                        ForeColor = System.Drawing.Color.White
-                    };
+                    // Label titleLabel = new Label
+                    // {
+                    //     Text = "数智设计-工艺",
+                    //     Dock = DockStyle.Top,
+                    //     Height = 30,
+                    //     TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                    //     BackColor = System.Drawing.Color.Gray,
+                    //     ForeColor = System.Drawing.Color.White
+                    // };
 
                     // 创建选项卡控件
                     _tabControl = new TabControl
@@ -205,10 +205,24 @@ namespace dataflow_cs.Presentation.Views.Palettes
                     };
 
                     // 在标题标签下方添加搜索栏
-                    TextBox searchBox = new TextBox
+                    Panel searchPanel = new Panel
                     {
                         Dock = DockStyle.Top,
-                        Height = 30,
+                        Height = 30
+                    };
+                    
+                    Label searchLabel = new Label
+                    {
+                        Text = "搜索命令：",
+                        Dock = DockStyle.Left,
+                        AutoSize = true,
+                        TextAlign = System.Drawing.ContentAlignment.MiddleLeft,
+                        Font = new System.Drawing.Font("微软雅黑", 10)
+                    };
+                    
+                    TextBox searchBox = new TextBox
+                    {
+                        Dock = DockStyle.Fill,
                         Font = new System.Drawing.Font("微软雅黑", 10),
                         Text = "输入关键词搜索..."
                     };
@@ -259,8 +273,10 @@ namespace dataflow_cs.Presentation.Views.Palettes
                     };
 
                     _menuPanel.Controls.Add(_tabControl);
-                    _menuPanel.Controls.Add(searchBox);
-                    _menuPanel.Controls.Add(titleLabel);
+                    _menuPanel.Controls.Add(searchPanel);
+                    searchPanel.Controls.Add(searchBox);
+                    searchPanel.Controls.Add(searchLabel);
+                    // _menuPanel.Controls.Add(titleLabel);  // 删除顶部的大标题【数智设计-工艺】
                     // 将 Panel 添加到 PaletteSet
                     _paletteSet.Add("我的面板", _menuPanel);
 
