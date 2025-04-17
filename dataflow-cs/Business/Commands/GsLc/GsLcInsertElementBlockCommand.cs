@@ -51,11 +51,10 @@ namespace dataflow_cs.Business.Commands.GsLc
                         editor.WriteMessage("\n拾取点失败，请重新选择。");
                         return false;
                     }
-                    UtilsBlock.UtilsInsertBlock(ConstBlockName.GsLcAllBlocks, pointResult.Value, 1.0, 1.0, 1.0, 0.0, "0", tr);
+                    UtilsBlock.UtilsInsertBlock(ConstBlockName.GsLcAllBlocks, pointResult.Value);
                     // 获取最后插入的块引用ID
                     SelectionSet selSet = UtilsSelectionSet.UtilsGetLastCreatedObject();
                     ObjectId insertedBlockId = selSet.GetObjectIds().FirstOrDefault();
-                    // UtilsCADActive.Document.SendStringToExecute("\n", true, false, true);
                     UtilsBlock.UtilsExplodeBlock(insertedBlockId, tr);
                     // 方法2: 使用带连字符的命令版本以避免显示对话框
                     UtilsCADActive.Document.SendStringToExecute("WIPEOUT F OFF ", true, false, false);

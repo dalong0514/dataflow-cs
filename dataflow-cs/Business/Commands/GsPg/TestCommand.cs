@@ -74,7 +74,7 @@ namespace dataflow_cs.Business.Commands.GsPg
                 }
 
                 // 调用带有插入点参数的方法
-                UtilsBlock.UtilsInsertBlock("GsPgAllBlocks", result.Value, 30, 30, 30, 0, "0");
+                UtilsBlock.UtilsInsertBlock("GsPgAllBlocks", result.Value, 30, 30, 30);
 
             }
             catch (Exception ex)

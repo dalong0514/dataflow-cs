@@ -844,7 +844,8 @@ namespace dataflow_cs.Utils.CADUtils
                                 // 复制块定义及其所有相关对象（包括动态块相关数据）
                                 // 使用CopyObjects方法可以更完整地复制整个块的定义，包括动态块属性
                                 // 注意：直接复制块表记录比单独复制其内部实体更可靠
-                                sourceDb.WblockCloneObjects(blockIds, destBlockTable.ObjectId, idMap, DuplicateRecordCloning.MangleName, false);
+                                // sourceDb.WblockCloneObjects(blockIds, destBlockTable.ObjectId, idMap, DuplicateRecordCloning.MangleName, false);
+                                sourceDb.WblockCloneObjects(blockIds, destBlockTable.ObjectId, idMap, DuplicateRecordCloning.Replace, false);
                                 
                                 // 在映射中查找新创建的块ID
                                 foreach (IdPair pair in idMap)
