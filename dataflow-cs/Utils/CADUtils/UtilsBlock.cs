@@ -1104,5 +1104,106 @@ namespace dataflow_cs.Utils.CADUtils
             }
             
         }
+
+        /// <summary>
+        /// 打散块引用为其组成部分
+        /// </summary>
+        /// <param name="objectId">块的ObjectId</param>
+        /// <param name="transaction">外部传入的事务对象，如果为null则创建新事务</param>
+        /// <returns>打散后的实体集合的ObjectId列表</returns>
+        public static List<ObjectId> UtilsExplodeBlock(ObjectId objectId, Transaction transaction = null)
+        {
+            List<ObjectId> explodedEntityIds = new List<ObjectId>();
+            Database db = UtilsCADActive.Database;
+            
+            try
+            {
+                // 检查是否提供了事务对象
+                bool externalTransaction = transaction != null;
+                Transaction tr = externalTransaction ? transaction : db.TransactionManager.StartTransaction();
+                
+                try
+                {
+                    // 获取块引用对象
+                    BlockReference blockRef = tr.GetObject(objectId, OpenMode.ForWrite) as BlockReference;
+                    if (blockRef == null)
+                    {
+                        UtilsCADActive.WriteMessage("\n无效的块引用ObjectId。");
+                        return explodedEntityIds;
+                    }
+                    
+                    // 获取块所在的空间（模型空间或图纸空间）
+                    BlockTableRecord space = tr.GetObject(blockRef.BlockId, OpenMode.ForWrite) as BlockTableRecord;
+                    if (space == null)
+                    {
+                        space = tr.GetObject(blockRef.OwnerId, OpenMode.ForWrite) as BlockTableRecord;
+                        if (space == null)
+                        {
+                            UtilsCADActive.WriteMessage("\n无法获取块所在的空间。");
+                            return explodedEntityIds;
+                        }
+                    }
+                    
+                    // 创建一个DBObjectCollection来存储打散后的实体
+                    DBObjectCollection explodedObjects = new DBObjectCollection();
+                    
+                    // 打散块引用
+                    blockRef.Explode(explodedObjects);
+                    
+                    // 添加打散后的实体到空间中
+                    foreach (DBObject obj in explodedObjects)
+                    {
+                        if (obj is Entity entity)
+                        {
+                            // 设置实体的属性
+                            // 由于打散的实体继承了块引用的属性，我们可能不需要手动设置这些属性
+                            // 但如果需要，可以在这里设置：
+                            // entity.Layer = blockRef.Layer;
+                            // entity.Color = blockRef.Color;
+                            // 等等
+                            
+                            // 将实体添加到空间中
+                            ObjectId entityId = space.AppendEntity(entity);
+                            tr.AddNewlyCreatedDBObject(entity, true);
+                            
+                            // 将新实体的ID添加到返回列表
+                            explodedEntityIds.Add(entityId);
+                        }
+                    }
+                    
+                    // 删除原始块引用
+                    blockRef.Erase();
+                    
+                    // 如果使用了内部事务，则提交它
+                    if (!externalTransaction)
+                    {
+                        tr.Commit();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UtilsCADActive.WriteMessage($"\n打散块时发生错误: {ex.Message}");
+                    // 如果使用了内部事务，则终止它
+                    if (!externalTransaction)
+                    {
+                        tr.Abort();
+                    }
+                }
+                finally
+                {
+                    // 如果使用了内部事务，需要处理它
+                    if (!externalTransaction)
+                    {
+                        tr.Dispose();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.WriteMessage($"\n处理打散块时发生错误: {ex.Message}");
+            }
+            
+            return explodedEntityIds;
+        }
     }
 }

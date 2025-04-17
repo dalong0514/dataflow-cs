@@ -41,21 +41,43 @@ namespace dataflow_cs.Business.Commands.GsLc
                     return false;
                 }
 
-                // 使用封装的拖拽插入方法（自动计算初始点）
-                bool result = InsertBlockJig.DragAndInsertBlock(
-                    editor,
-                    database,
-                    "工艺组件",
-                    blockId,
-                    0, // 初始旋转角度为0
-                    "0", // 图层设置为"0"
-                    "请选择插入点或输入[旋转(R)]:",
-                    "命令已取消。",
-                    "已插入，继续拖动放置新的工艺组件，输入\"R\"可旋转，ESC退出",
-                    "已旋转，当前角度: {1}度"
-                );
-
-                return result;
+                // 使用拖拽插入方法并获取插入的块ID
+                using (Transaction tr = database.TransactionManager.StartTransaction())
+                {
+                    try
+                    {
+                        // 拖拽插入块
+                        bool result = InsertBlockJig.DragAndInsertBlock(
+                            editor,
+                            database,
+                            "工艺组件",
+                            blockId,
+                            0, // 初始旋转角度为0
+                            "0", // 图层设置为"0"
+                            "请选择插入点或输入[旋转(R)]:",
+                            "命令已取消。",
+                            "已插入，继续拖动放置新的工艺组件，输入\"R\"可旋转，ESC退出",
+                            "已旋转，当前角度: {1}度"
+                        );
+                        
+                        // 如果插入成功，执行打散操作
+                        if (result)
+                        {
+                            // 获取最后插入的块引用ID
+                            SelectionSet selSet = UtilsSelectionSet.UtilsGetLastCreatedObject();
+                            ObjectId insertedBlockId = selSet.GetObjectIds().FirstOrDefault();
+                            UtilsBlock.UtilsExplodeBlock(insertedBlockId, tr);
+                        }
+                        
+                        tr.Commit();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        editor.WriteMessage($"\n打散块时发生错误: {ex.Message}");
+                        tr.Abort();
+                    }
+                }
+                return true;
             }
             catch (System.Exception ex)
             {
