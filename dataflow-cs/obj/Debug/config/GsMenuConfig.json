@@ -156,7 +156,7 @@
             {
               "Title": "插入所有组件块",
               "IconKey": "xx.bmp",
-              "Command": "GsLcInsertAllBlock"
+              "Command": "DLGsLcInsertAllElementBlock"
             },
             {
               "Title": "插入就地仪表",

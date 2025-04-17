@@ -36,9 +36,9 @@ namespace dataflow_cs
                 // 工艺流程图
                 RegisterCommandHandler(new GsAddMenuCommand());
                 RegisterCommandHandler(new GsLcSysDataFromClientCommand());
-                RegisterCommandHandler(new GsLcInsertElementBlockCommand());
-                RegisterCommandHandler(new GsLcInsertInstrumentPBlockCommand());
+                RegisterCommandHandler(new GsLcInsertAllElementBlockCommand());
                 RegisterCommandHandler(new GsLcInsertInstrumentLBlockCommand());
+                RegisterCommandHandler(new GsLcInsertInstrumentPBlockCommand());
                 RegisterCommandHandler(new GsLcInsertGlobalBlockCommand());
 
                 // 将来可在此处添加更多命令
@@ -182,10 +182,10 @@ namespace dataflow_cs
         /// <summary>
         /// 动态插入工艺数据流组件块
         /// </summary>
-        [CommandMethod("DLGsLcInsertElementBlock")]
+        [CommandMethod("DLGsLcInsertAllElementBlock")]
         public void DLGsLcInsertElementBlock()
         {
-            ExecuteCommand("DLGsLcInsertElementBlock");
+            ExecuteCommand("DLGsLcInsertAllElementBlock");
         }
 
         /// <summary>

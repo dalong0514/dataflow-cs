@@ -14,12 +14,12 @@ using dataflow_cs.Utils.ConstUtils;
 
 namespace dataflow_cs.Business.Commands.GsLc
 {
-    internal class GsLcInsertElementBlockCommand : CommandHandlerBase
+    internal class GsLcInsertAllElementBlockCommand : CommandHandlerBase
     {
         /// <summary>
         /// 命令名称
         /// </summary>
-        public override string CommandName => "DLGsLcInsertElementBlock";
+        public override string CommandName => "DLGsLcInsertAllElementBlock";
 
         /// <summary>
         /// 执行命令核心逻辑
@@ -34,7 +34,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                 editor.WriteMessage("\n正在插入工艺数据流组件块...");
                 
                 // 引入工艺数据流组件块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, "GsLcElement");
+                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, ConstBlockName.GsLcAllBlocks);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -51,8 +51,8 @@ namespace dataflow_cs.Business.Commands.GsLc
                     "0", // 图层设置为"0"
                     "请选择插入点或输入[旋转(R)]:",
                     "命令已取消。",
-                    "工艺组件已插入，继续拖动放置新的工艺组件，输入\"R\"可旋转，ESC退出",
-                    "工艺组件已旋转，当前角度: {1}度"
+                    "已插入，继续拖动放置新的工艺组件，输入\"R\"可旋转，ESC退出",
+                    "已旋转，当前角度: {1}度"
                 );
 
                 return result;
