@@ -57,7 +57,8 @@ namespace dataflow_cs.Business.Commands.GsLc
                     ObjectId insertedBlockId = selSet.GetObjectIds().FirstOrDefault();
                     // UtilsCADActive.Document.SendStringToExecute("\n", true, false, true);
                     UtilsBlock.UtilsExplodeBlock(insertedBlockId, tr);
-                    UtilsCADActive.Document.SendStringToExecute("WIPEOUT F OFF", true, false, false);
+                    // 方法2: 使用带连字符的命令版本以避免显示对话框
+                    UtilsCADActive.Document.SendStringToExecute("WIPEOUT F OFF ", true, false, false);
                     
                     tr.Commit();
                 }
