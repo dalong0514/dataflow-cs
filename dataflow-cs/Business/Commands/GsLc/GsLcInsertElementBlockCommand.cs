@@ -29,58 +29,45 @@ namespace dataflow_cs.Business.Commands.GsLc
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
-            try
+            // 使用拖拽插入方法并获取插入的块ID
+            using (Transaction tr = database.TransactionManager.StartTransaction())
             {
-                editor.WriteMessage("\n正在插入工艺数据流组件块...");
-                
-                // 引入工艺数据流组件块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, ConstBlockName.GsLcAllBlocks);
-                if (blockId == ObjectId.Null)
-                {
-                    editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
-                    return false;
-                }
 
-                // 使用拖拽插入方法并获取插入的块ID
-                using (Transaction tr = database.TransactionManager.StartTransaction())
+                try
                 {
-                    try
+                    editor.WriteMessage("\n正在插入工艺数据流组件块...");
+                    
+                    // 引入工艺数据流组件块定义
+                    ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, ConstBlockName.GsLcAllBlocks);
+                    if (blockId == ObjectId.Null)
                     {
-                        // 拖拽插入块
-                        bool result = InsertBlockJig.DragAndInsertBlockOnce (
-                            editor,
-                            database,
-                            ConstBlockName.GsLcAllBlocks,
-                            blockId,
-                            0, // 初始旋转角度为0
-                            "0", // 图层设置为"0"
-                            "请选择插入点："
-                        );
-                        
-                        // 如果插入成功，执行打散操作
-                        if (result)
-                        {
-                            // 获取最后插入的块引用ID
-                            SelectionSet selSet = UtilsSelectionSet.UtilsGetLastCreatedObject();
-                            ObjectId insertedBlockId = selSet.GetObjectIds().FirstOrDefault();
-                            UtilsBlock.UtilsExplodeBlock(insertedBlockId, tr);
-                        }
-                        
-                        tr.Commit();
+                        editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
+                        return false;
                     }
-                    catch (System.Exception ex)
+                    // 拾取一个点
+                    PromptPointResult pointResult = editor.GetPoint("\n请选择插入点:");
+                    if (pointResult.Status != PromptStatus.OK)
                     {
-                        editor.WriteMessage($"\n打散块时发生错误: {ex.Message}");
-                        tr.Abort();
+                        editor.WriteMessage("\n拾取点失败，请重新选择。");
+                        return false;
                     }
+                    UtilsBlock.UtilsInsertBlock(ConstBlockName.GsLcAllBlocks, pointResult.Value, 1.0, 1.0, 1.0, 0.0, "0", tr);
+                    // 获取最后插入的块引用ID
+                    SelectionSet selSet = UtilsSelectionSet.UtilsGetLastCreatedObject();
+                    ObjectId insertedBlockId = selSet.GetObjectIds().FirstOrDefault();
+                    // UtilsCADActive.Document.SendStringToExecute("\n", true, false, true);
+                    UtilsBlock.UtilsExplodeBlock(insertedBlockId, tr);
+                    UtilsCADActive.Document.SendStringToExecute("WIPEOUT F OFF", true, false, false);
+                    
+                    tr.Commit();
                 }
-                return true;
+                catch (System.Exception ex)
+                {
+                    editor.WriteMessage($"\n插入工艺数据流组件块时发生错误: {ex.Message}");
+                    tr.Abort();
+                }
             }
-            catch (System.Exception ex)
-            {
-                editor.WriteMessage($"\n插入工艺数据流组件块时发生错误: {ex.Message}");
-                return false;
-            }
+            return true;
         }
     }
 
