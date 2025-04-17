@@ -233,26 +233,14 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         Text = "输入关键词搜索..."
                     };
 
-                    // 搜索框焦点行为
-                    searchBox.GotFocus += (sender, e) =>
-                    {
-                        if (searchBox.Text == "输入关键词搜索...")
-                        {
-                            searchBox.Text = "";
-                        }
-                    };
-
-                    searchBox.LostFocus += (sender, e) =>
-                    {
-                        if (string.IsNullOrWhiteSpace(searchBox.Text))
-                        {
-                            searchBox.Text = "输入关键词搜索...";
-                        }
-                    };
-
                     // 添加搜索逻辑
-                    searchBox.TextChanged += (sender, e) => 
+                    // 使用一个防抖计时器延迟响应搜索，避免频繁重建菜单造成卡顿
+                    System.Windows.Forms.Timer searchTimer = new System.Windows.Forms.Timer();
+                    searchTimer.Interval = 300; // 设置延迟300毫秒
+                    searchTimer.Tick += (s, timerEvent) => 
                     {
+                        searchTimer.Stop(); // 停止计时器
+                        
                         // 确保_treeView已正确设置为当前标签页的TreeView
                         int selectedIndex = _tabControl.SelectedIndex;
                         if (selectedIndex >= 0 && selectedIndex < _tabTreeViews.Count)
@@ -262,30 +250,105 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         
                         if (_treeView == null) return;
                         
-                        if (searchBox.Text != "输入关键词搜索...")
+                        if (searchBox.Text != "输入关键词搜索..." && !string.IsNullOrWhiteSpace(searchBox.Text))
                         {
                             FilterMenuItems(searchBox.Text);
                         }
                         else
                         {
-                            // 当搜索框为默认文本时，恢复原始菜单
+                            // 当搜索框为默认文本时，恢复原始菜单，但保持展开状态
                             selectedIndex = _tabControl.SelectedIndex;
                             if (selectedIndex >= 0 && selectedIndex < _tabTreeViews.Count)
                             {
                                 _treeView = _tabTreeViews[selectedIndex];
                                 
-                                // 禁用日志显示避免打印大量日志
-                                var menuConfig = GsMenuConfigService.LoadMenuConfig(false);
-                                if (menuConfig.Tabs != null && menuConfig.Tabs.Count > selectedIndex)
+                                try
                                 {
-                                    _treeView.Nodes.Clear();
-                                    AddMenuItemsFromConfig(_treeView, menuConfig.Tabs[selectedIndex].MenuGroups, false);
+                                    // 记录当前展开的节点
+                                    List<string> expandedNodeTitles = new List<string>();
+                                    foreach (TreeNode node in _treeView.Nodes)
+                                    {
+                                        if (node.IsExpanded)
+                                        {
+                                            expandedNodeTitles.Add(node.Text);
+                                        }
+                                    }
+                                    
+                                    // 禁用日志显示避免打印大量日志
+                                    var menuConfig = GsMenuConfigService.LoadMenuConfig(false);
+                                    if (menuConfig.Tabs != null && menuConfig.Tabs.Count > selectedIndex)
+                                    {
+                                        // 使用BeginUpdate/EndUpdate包裹大量界面操作，减少界面刷新
+                                        _treeView.BeginUpdate();
+                                        _treeView.Nodes.Clear();
+                                        AddMenuItemsFromConfig(_treeView, menuConfig.Tabs[selectedIndex].MenuGroups, false);
+                                        
+                                        // 恢复节点展开状态
+                                        foreach (TreeNode node in _treeView.Nodes)
+                                        {
+                                            if (expandedNodeTitles.Contains(node.Text))
+                                            {
+                                                node.Expand();
+                                            }
+                                        }
+                                        _treeView.EndUpdate();
+                                    }
+                                    else if (selectedIndex == 0 && menuConfig.MenuGroups != null)
+                                    {
+                                        // 使用BeginUpdate/EndUpdate包裹大量界面操作，减少界面刷新
+                                        _treeView.BeginUpdate();
+                                        _treeView.Nodes.Clear();
+                                        AddMenuItemsFromConfig(_treeView, menuConfig.MenuGroups, false);
+                                        
+                                        // 恢复节点展开状态
+                                        foreach (TreeNode node in _treeView.Nodes)
+                                        {
+                                            if (expandedNodeTitles.Contains(node.Text))
+                                            {
+                                                node.Expand();
+                                            }
+                                        }
+                                        _treeView.EndUpdate();
+                                    }
                                 }
-                                else if (selectedIndex == 0 && menuConfig.MenuGroups != null)
+                                catch (Exception ex)
                                 {
-                                    _treeView.Nodes.Clear();
-                                    AddMenuItemsFromConfig(_treeView, menuConfig.MenuGroups, false);
+                                    // 捕获可能的异常，防止界面卡死
+                                    Application.DocumentManager.MdiActiveDocument?.Editor
+                                        .WriteMessage($"\n搜索框文本变化处理出错: {ex.Message}");
                                 }
+                            }
+                        }
+                    };
+                    
+                    searchBox.TextChanged += (sender, e) => 
+                    {
+                        // 重新启动计时器，实现搜索延迟防抖
+                        searchTimer.Stop();
+                        searchTimer.Start();
+                    };
+
+                    // 搜索框焦点行为优化，防止重复触发文本变化事件
+                    string lastSearchText = string.Empty;
+                    searchBox.GotFocus += (sender, e) =>
+                    {
+                        if (searchBox.Text == "输入关键词搜索...")
+                        {
+                            lastSearchText = searchBox.Text;
+                            searchBox.Text = "";
+                        }
+                    };
+
+                    searchBox.LostFocus += (sender, e) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(searchBox.Text))
+                        {
+                            string oldText = searchBox.Text;
+                            searchBox.Text = "输入关键词搜索...";
+                            // 如果文本实际上没变化，不要触发不必要的菜单重建
+                            if (oldText == lastSearchText)
+                            {
+                                searchTimer.Stop(); // 确保不会触发搜索
                             }
                         }
                     };
@@ -614,93 +677,121 @@ namespace dataflow_cs.Presentation.Views.Palettes
         /// <param name="searchText">搜索关键词</param>
         public static void FilterMenuItems(string searchText)
         {
-            if (_treeView == null) return;
-
-            // 获取当前选中的标签页索引
-            int selectedIndex = _tabControl.SelectedIndex;
-            if (selectedIndex < 0) return;
-
-            // 加载配置时禁用日志显示，避免在搜索时打印大量日志
-            MenuConfig config = GsMenuConfigService.LoadMenuConfig(false);
-            List<MenuGroup> menuGroups = null;
-
-            // 从配置获取当前标签页的菜单组
-            if (config.Tabs != null && config.Tabs.Count > selectedIndex)
+            try
             {
-                menuGroups = config.Tabs[selectedIndex].MenuGroups;
-            }
-            else if (selectedIndex == 0)
-            {
-                menuGroups = config.MenuGroups;
-            }
-
-            if (menuGroups == null) return;
-
-            _treeView.BeginUpdate();
-            _treeView.Nodes.Clear();
-
-            if (string.IsNullOrWhiteSpace(searchText) || searchText == "输入关键词搜索...")
-            {
-                // 重新加载原始菜单
-                AddMenuItemsFromConfig(_treeView, menuGroups, false);
-            }
-            else
-            {
-                // 过滤菜单并显示匹配项
-                foreach (var group in menuGroups)
+                if (_treeView == null) return;
+    
+                // 获取当前选中的标签页索引
+                int selectedIndex = _tabControl.SelectedIndex;
+                if (selectedIndex < 0) return;
+                
+                // 记录当前展开的节点
+                List<string> expandedNodeTitles = new List<string>();
+                foreach (TreeNode node in _treeView.Nodes)
                 {
-                    TreeNode groupNode = new TreeNode(group.Title);
-                    
-                    // 设置一级菜单图标
-                    if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(group.IconKey))
+                    if (node.IsExpanded)
                     {
-                        groupNode.ImageKey = group.IconKey;
-                        groupNode.SelectedImageKey = group.IconKey;
-                    }
-
-                    bool groupHasMatch = false;
-
-                    foreach (var item in group.Items)
-                    {
-                        if (item.Title.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            TreeNode itemNode = new TreeNode(item.Title);
-                            
-                            // 设置二级菜单图标
-                            if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(item.IconKey))
-                            {
-                                itemNode.ImageKey = item.IconKey;
-                                itemNode.SelectedImageKey = item.IconKey;
-                            }
-                            else
-                            {
-                                // 尝试不带扩展名的图标键
-                                string itemIconKeyWithoutExt = Path.GetFileNameWithoutExtension(item.IconKey);
-                                if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(itemIconKeyWithoutExt))
-                                {
-                                    itemNode.ImageKey = itemIconKeyWithoutExt;
-                                    itemNode.SelectedImageKey = itemIconKeyWithoutExt;
-                                }
-                            }
-                            
-                            // 在Tag中存储命令，以便点击时执行
-                            itemNode.Tag = item.Command;
-
-                            groupNode.Nodes.Add(itemNode);
-                            groupHasMatch = true;
-                        }
-                    }
-
-                    // 只有当该组中存在匹配项时，才显示该组
-                    if (groupHasMatch)
-                    {
-                        _treeView.Nodes.Add(groupNode);
-                        groupNode.Expand(); // 自动展开包含匹配项的组
+                        expandedNodeTitles.Add(node.Text);
                     }
                 }
+    
+                // 加载配置时禁用日志显示，避免在搜索时打印大量日志
+                MenuConfig config = GsMenuConfigService.LoadMenuConfig(false);
+                List<MenuGroup> menuGroups = null;
+    
+                // 从配置获取当前标签页的菜单组
+                if (config.Tabs != null && config.Tabs.Count > selectedIndex)
+                {
+                    menuGroups = config.Tabs[selectedIndex].MenuGroups;
+                }
+                else if (selectedIndex == 0)
+                {
+                    menuGroups = config.MenuGroups;
+                }
+    
+                if (menuGroups == null) return;
+    
+                _treeView.BeginUpdate();
+                _treeView.Nodes.Clear();
+    
+                if (string.IsNullOrWhiteSpace(searchText) || searchText == "输入关键词搜索...")
+                {
+                    // 重新加载原始菜单
+                    AddMenuItemsFromConfig(_treeView, menuGroups, false);
+                    
+                    // 恢复节点展开状态
+                    foreach (TreeNode node in _treeView.Nodes)
+                    {
+                        if (expandedNodeTitles.Contains(node.Text))
+                        {
+                            node.Expand();
+                        }
+                    }
+                }
+                else
+                {
+                    // 过滤菜单并显示匹配项
+                    foreach (var group in menuGroups)
+                    {
+                        TreeNode groupNode = new TreeNode(group.Title);
+                        
+                        // 设置一级菜单图标
+                        if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(group.IconKey))
+                        {
+                            groupNode.ImageKey = group.IconKey;
+                            groupNode.SelectedImageKey = group.IconKey;
+                        }
+    
+                        bool groupHasMatch = false;
+    
+                        foreach (var item in group.Items)
+                        {
+                            if (item.Title.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                TreeNode itemNode = new TreeNode(item.Title);
+                                
+                                // 设置二级菜单图标
+                                if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(item.IconKey))
+                                {
+                                    itemNode.ImageKey = item.IconKey;
+                                    itemNode.SelectedImageKey = item.IconKey;
+                                }
+                                else
+                                {
+                                    // 尝试不带扩展名的图标键
+                                    string itemIconKeyWithoutExt = Path.GetFileNameWithoutExtension(item.IconKey);
+                                    if (_treeView.ImageList != null && _treeView.ImageList.Images.ContainsKey(itemIconKeyWithoutExt))
+                                    {
+                                        itemNode.ImageKey = itemIconKeyWithoutExt;
+                                        itemNode.SelectedImageKey = itemIconKeyWithoutExt;
+                                    }
+                                }
+                                
+                                // 在Tag中存储命令，以便点击时执行
+                                itemNode.Tag = item.Command;
+    
+                                groupNode.Nodes.Add(itemNode);
+                                groupHasMatch = true;
+                            }
+                        }
+    
+                        // 只有当该组中存在匹配项时，才显示该组
+                        if (groupHasMatch)
+                        {
+                            _treeView.Nodes.Add(groupNode);
+                            groupNode.Expand(); // 自动展开包含匹配项的组
+                        }
+                    }
+                }
+    
+                _treeView.EndUpdate();
             }
-
-            _treeView.EndUpdate();
+            catch (Exception ex)
+            {
+                // 捕获可能的异常，防止界面卡死
+                Application.DocumentManager.MdiActiveDocument?.Editor
+                    .WriteMessage($"\n过滤菜单项时出错: {ex.Message}");
+            }
         }
     }
 } 
