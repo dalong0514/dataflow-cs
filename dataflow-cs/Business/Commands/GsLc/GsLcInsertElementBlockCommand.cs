@@ -47,17 +47,14 @@ namespace dataflow_cs.Business.Commands.GsLc
                     try
                     {
                         // 拖拽插入块
-                        bool result = InsertBlockJig.DragAndInsertBlock(
+                        bool result = InsertBlockJig.DragAndInsertBlockOnce (
                             editor,
                             database,
-                            "工艺组件",
+                            ConstBlockName.GsLcAllBlocks,
                             blockId,
                             0, // 初始旋转角度为0
                             "0", // 图层设置为"0"
-                            "请选择插入点或输入[旋转(R)]:",
-                            "命令已取消。",
-                            "已插入，继续拖动放置新的工艺组件，输入\"R\"可旋转，ESC退出",
-                            "已旋转，当前角度: {1}度"
+                            "请选择插入点："
                         );
                         
                         // 如果插入成功，执行打散操作

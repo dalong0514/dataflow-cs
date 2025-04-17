@@ -333,5 +333,168 @@ namespace dataflow_cs.Utils.JigUtils
                 rotationMessage
             );
         }
+
+        /// <summary>
+        /// 使用拖拽方式插入单个块（无旋转交互）
+        /// </summary>
+        /// <param name="editor">当前编辑器</param>
+        /// <param name="database">当前数据库</param>
+        /// <param name="blockName">要插入的块名称</param>
+        /// <param name="blockId">块定义的ObjectId</param>
+        /// <param name="initialPoint">初始插入点</param>
+        /// <param name="initialRotation">初始旋转角度（弧度），默认为0</param>
+        /// <param name="layerName">块所在图层（默认为"0"）</param>
+        /// <param name="prompt">拖拽过程中的提示（默认为"请选择插入点:"）</param>
+        /// <param name="escapeMessage">用户取消时显示的消息（默认为"命令已取消。"）</param>
+        /// <param name="successMessage">插入成功后显示的消息模板（默认为"{0}已插入。"）</param>
+        /// <returns>是否成功插入块</returns>
+        public static bool DragAndInsertBlockOnce (
+            Editor editor,
+            Database database,
+            string blockName,
+            ObjectId blockId,
+            Point3d initialPoint,
+            double initialRotation = 0,
+            string layerName = "0",
+            string prompt = "请选择插入点:",
+            string escapeMessage = "命令已取消。",
+            string successMessage = "{0}已插入。")
+        {
+            if (blockId == ObjectId.Null)
+            {
+                editor.WriteMessage("\n无效的块定义。");
+                return false;
+            }
+
+            Transaction tr = null;
+            bool hasInserted = false;
+
+            try
+            {
+                // 开始新事务
+                tr = database.TransactionManager.StartTransaction();
+
+                // 创建新的块参照用于拖拽
+                BlockReference sourceBr = new BlockReference(initialPoint, blockId);
+                sourceBr.Layer = layerName;
+                sourceBr.Rotation = initialRotation;
+
+                // 创建简化版拖拽对象（不需要旋转功能）
+                JigPromptPointOptions pointOpts = new JigPromptPointOptions(prompt);
+                pointOpts.UseBasePoint = false;
+
+                // 创建拖拽对象
+                InsertBlockJig jig = new InsertBlockJig(initialPoint, sourceBr, initialRotation, prompt);
+
+                // 执行拖拽
+                PromptResult jigResult = editor.Drag(jig);
+
+                // 用户确定了位置
+                if (jigResult.Status == PromptStatus.OK)
+                {
+                    // 获取块定义名
+                    string currentBlockName = blockName;
+                    if (blockId != ObjectId.Null)
+                    {
+                        BlockTableRecord blockDef = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
+                        if (blockDef != null)
+                        {
+                            currentBlockName = blockDef.Name;
+                        }
+                    }
+
+                    // 插入块
+                    ObjectId newBlockId = UtilsBlock.UtilsInsertBlock(
+                        currentBlockName,
+                        jig.InsertionPoint,
+                        1.0, 1.0, 1.0, // 使用默认缩放比例
+                        jig.Rotation, // 使用jig中的旋转角度
+                        layerName, // 设置指定图层
+                        tr // 传入当前事务
+                    );
+
+                    // 提交事务，使块立即显示
+                    tr.Commit();
+                    tr = null;
+
+                    // 标记已成功插入
+                    hasInserted = true;
+
+                    // 显示成功消息
+                    editor.WriteMessage("\n" + string.Format(successMessage, blockName));
+                }
+                // 用户取消或按ESC
+                else
+                {
+                    if (tr != null)
+                    {
+                        tr.Dispose();
+                        tr = null;
+                    }
+                    editor.WriteMessage("\n" + escapeMessage);
+                }
+
+                return hasInserted;
+            }
+            catch (System.Exception ex)
+            {
+                editor.WriteMessage($"\n拖拽插入块时发生错误: {ex.Message}");
+                if (tr != null)
+                {
+                    tr.Dispose();
+                }
+                return hasInserted;
+            }
+        }
+
+        /// <summary>
+        /// 使用拖拽方式插入单个块（无旋转交互，自动计算初始点）
+        /// </summary>
+        /// <param name="editor">当前编辑器</param>
+        /// <param name="database">当前数据库</param>
+        /// <param name="blockName">要插入的块名称</param>
+        /// <param name="blockId">块定义的ObjectId</param>
+        /// <param name="initialRotation">初始旋转角度（弧度），默认为0</param>
+        /// <param name="layerName">块所在图层（默认为"0"）</param>
+        /// <param name="prompt">拖拽过程中的提示（默认为"请选择插入点:"）</param>
+        /// <param name="escapeMessage">用户取消时显示的消息（默认为"命令已取消。"）</param>
+        /// <param name="successMessage">插入成功后显示的消息模板（默认为"{0}已插入。"）</param>
+        /// <returns>是否成功插入块</returns>
+        public static bool DragAndInsertBlockOnce (
+            Editor editor,
+            Database database,
+            string blockName,
+            ObjectId blockId,
+            double initialRotation = 0,
+            string layerName = "0",
+            string prompt = "请选择插入点:",
+            string escapeMessage = "命令已取消。",
+            string successMessage = "{0}已插入。")
+        {
+            // 自动获取初始点坐标（从原点转换到WCS）
+            Point3d initialPoint = Point3d.Origin;
+            
+            // 从UCS坐标系转换到WCS坐标系
+            Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            if (doc != null)
+            {
+                Matrix3d ucsToWcs = doc.Editor.CurrentUserCoordinateSystem;
+                initialPoint = initialPoint.TransformBy(ucsToWcs);
+            }
+            
+            // 调用带初始点的方法
+            return DragAndInsertBlockOnce (
+                editor,
+                database,
+                blockName,
+                blockId,
+                initialPoint,
+                initialRotation,
+                layerName,
+                prompt,
+                escapeMessage,
+                successMessage
+            );
+        }
     }
 }
