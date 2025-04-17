@@ -1,6 +1,6 @@
 {
   "PaletteTitle": "数智设计",
-  "PaletteWidth": 500,
+  "PaletteWidth": 300,
   "PaletteHeight": 500,
   "Tabs": [
     {
@@ -165,11 +165,16 @@
             },
             {
               "Title": "插入集中仪表",
-              "IconKey": "DCS回路.bmp",
+              "IconKey": "集中仪表.bmp",
               "Command": "DLGsLcInsertBlockInstrumentP"
             },
             {
               "Title": "插入SIS仪表",
+              "IconKey": "SIS仪表.bmp",
+              "Command": "DLGsLcInsertBlockInstrumentSIS"
+            },
+            {
+              "Title": "插入SIS回路",
               "IconKey": "SIS回路.bmp",
               "Command": "DLGsLcInsertBlockInstrumentSIS"
             },

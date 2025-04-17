@@ -173,8 +173,8 @@ namespace dataflow_cs.Utils.Configuration
             MenuConfig config = new MenuConfig
             {
                 PaletteTitle = "数智设计",
-                PaletteWidth = 250,
-                PaletteHeight = 400,
+                PaletteWidth = 300,
+                PaletteHeight = 500,
                 MenuGroups = new List<MenuGroup>()
             };
 

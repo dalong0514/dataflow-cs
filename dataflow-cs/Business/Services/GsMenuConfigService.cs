@@ -159,8 +159,8 @@ namespace dataflow_cs.Business.Services
             return new MenuConfig
             {
                 PaletteTitle = "数智设计-工艺",
-                PaletteWidth = 250,
-                PaletteHeight = 400,
+                PaletteWidth = 300,
+                PaletteHeight = 500,
                 Tabs = new List<TabConfig>
                 {
                     new TabConfig

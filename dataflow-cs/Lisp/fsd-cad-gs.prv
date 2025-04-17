@@ -1,0 +1,12 @@
+;;; Visual LISP 生成文件 [V1.0] fsd-cad-gs saved to:[D:/dataflow.code/dataflow-cs/dataflow-cs/Lisp] at:[4/17/25] 
+(PRV-DEF (:target . "fsd-cad-gs.VLX")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "FsdCadGsConfig.lsp"))
+	 (:require-file-list)
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . st)
+)
+;; EOF
