@@ -203,6 +203,12 @@ namespace dataflow_cs.Presentation.Views.Palettes
                             _treeView = _tabTreeViews[selectedIndex];
                         }
                     };
+                    
+                    // 确保初始时设置当前选中的树视图控件
+                    if (_tabControl.SelectedIndex >= 0 && _tabControl.SelectedIndex < _tabTreeViews.Count)
+                    {
+                        _treeView = _tabTreeViews[_tabControl.SelectedIndex];
+                    }
 
                     // 在标题标签下方添加搜索栏
                     Panel searchPanel = new Panel
@@ -247,6 +253,15 @@ namespace dataflow_cs.Presentation.Views.Palettes
                     // 添加搜索逻辑
                     searchBox.TextChanged += (sender, e) => 
                     {
+                        // 确保_treeView已正确设置为当前标签页的TreeView
+                        int selectedIndex = _tabControl.SelectedIndex;
+                        if (selectedIndex >= 0 && selectedIndex < _tabTreeViews.Count)
+                        {
+                            _treeView = _tabTreeViews[selectedIndex];
+                        }
+                        
+                        if (_treeView == null) return;
+                        
                         if (searchBox.Text != "输入关键词搜索...")
                         {
                             FilterMenuItems(searchBox.Text);
@@ -254,19 +269,22 @@ namespace dataflow_cs.Presentation.Views.Palettes
                         else
                         {
                             // 当搜索框为默认文本时，恢复原始菜单
-                            int selectedIndex = _tabControl.SelectedIndex;
+                            selectedIndex = _tabControl.SelectedIndex;
                             if (selectedIndex >= 0 && selectedIndex < _tabTreeViews.Count)
                             {
                                 _treeView = _tabTreeViews[selectedIndex];
-                                if (config.Tabs != null && config.Tabs.Count > selectedIndex)
+                                
+                                // 禁用日志显示避免打印大量日志
+                                var menuConfig = GsMenuConfigService.LoadMenuConfig(false);
+                                if (menuConfig.Tabs != null && menuConfig.Tabs.Count > selectedIndex)
                                 {
                                     _treeView.Nodes.Clear();
-                                    AddMenuItemsFromConfig(_treeView, config.Tabs[selectedIndex].MenuGroups, false);
+                                    AddMenuItemsFromConfig(_treeView, menuConfig.Tabs[selectedIndex].MenuGroups, false);
                                 }
-                                else if (selectedIndex == 0 && config.MenuGroups != null)
+                                else if (selectedIndex == 0 && menuConfig.MenuGroups != null)
                                 {
                                     _treeView.Nodes.Clear();
-                                    AddMenuItemsFromConfig(_treeView, config.MenuGroups, false);
+                                    AddMenuItemsFromConfig(_treeView, menuConfig.MenuGroups, false);
                                 }
                             }
                         }
@@ -349,6 +367,12 @@ namespace dataflow_cs.Presentation.Views.Palettes
                 
                 treeView.Nodes.Clear();
                 AddMenuItemsFromConfig(treeView, tabConfig.MenuGroups, i == 0); // 只对第一个标签页启用调试输出
+            }
+            
+            // 设置当前活动的树视图控件
+            if (_tabControl.SelectedIndex >= 0 && _tabControl.SelectedIndex < _tabTreeViews.Count)
+            {
+                _treeView = _tabTreeViews[_tabControl.SelectedIndex];
             }
         }
 
@@ -596,7 +620,8 @@ namespace dataflow_cs.Presentation.Views.Palettes
             int selectedIndex = _tabControl.SelectedIndex;
             if (selectedIndex < 0) return;
 
-            MenuConfig config = GsMenuConfigService.LoadMenuConfig();
+            // 加载配置时禁用日志显示，避免在搜索时打印大量日志
+            MenuConfig config = GsMenuConfigService.LoadMenuConfig(false);
             List<MenuGroup> menuGroups = null;
 
             // 从配置获取当前标签页的菜单组

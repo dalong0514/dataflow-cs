@@ -70,8 +70,9 @@ namespace dataflow_cs.Business.Services
         /// <summary>
         /// 读取菜单配置
         /// </summary>
+        /// <param name="showLog">是否显示日志信息</param>
         /// <returns>菜单配置对象</returns>
-        public static MenuConfig LoadMenuConfig()
+        public static MenuConfig LoadMenuConfig(bool showLog = true)
         {
             try
             {
@@ -104,18 +105,27 @@ namespace dataflow_cs.Business.Services
                         };
                     }
                     
-                    Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n成功从 {ConfigFilePath} 加载菜单配置");
+                    if (showLog)
+                    {
+                        Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n成功从 {ConfigFilePath} 加载菜单配置");
+                    }
                     return config;
                 }
                 catch (Exception jsonEx)
                 {
-                    Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\nJSON解析错误: {jsonEx.Message}");
+                    if (showLog)
+                    {
+                        Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\nJSON解析错误: {jsonEx.Message}");
+                    }
                     return CreateDefaultConfig();
                 }
             }
             catch (Exception ex)
             {
-                Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n读取工艺专业菜单配置时出错: {ex.Message}");
+                if (showLog)
+                {
+                    Application.DocumentManager.MdiActiveDocument?.Editor.WriteMessage($"\n读取工艺专业菜单配置时出错: {ex.Message}");
+                }
                 return CreateDefaultConfig();
             }
         }
