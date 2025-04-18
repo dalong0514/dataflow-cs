@@ -6,6 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
+using Autodesk.AutoCAD.DatabaseServices;
+using dataflow_cs.Utils.CADUtils;
 
 namespace dataflow_cs.Presentation.ViewModel
 {
@@ -84,25 +86,63 @@ namespace dataflow_cs.Presentation.ViewModel
         
         public void SelectData()
         {
-            // 同步数据
-            if (int.TryParse(DataCount, out int count) && count > 0)
+            using (Transaction tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
             {
-                DataStatus = "数据导出中...";
-                
-                // 获取选中的数据类型
-                string typeName = SelectedDataType?.Name ?? "未知数据";
-                
-                // 导出逻辑
-                MessageBox.Show($"已成功导出 {count} 条{typeName}！", "导出成功", MessageBoxButton.OK, MessageBoxImage.Information);
-                DataStatus = "导出完成";
-                
-                // 触发导出完成事件
-                ExportCompleted?.Invoke(this, EventArgs.Empty);
+
+                try
+                {
+                    // 获取选中的数据类型
+                    string typeName = SelectedDataType?.Name ?? "未知数据";
+                    if (typeName == "管道数据")
+                    {
+                        List<ObjectId> pipeNumObjectIds = UtilsBlock.UtilsGetAllObjectIdsByBlockName(new List<string> { "PipeArrowLeft", "PipeArrowRight" }).ToList();
+                        if (pipeNumObjectIds != null && pipeNumObjectIds.Count > 0)
+                        {
+                            SyncGsLcPipeData(pipeNumObjectIds);
+                            // 同步管道数据
+                            DataStatus = "同步完成";
+                            // 触发导出完成事件
+                            ExportCompleted?.Invoke(this, EventArgs.Empty);
+                        }
+                        else
+                        {
+                            DataStatus = "没有找到要同步的块...";
+                        }
+                        
+                    }
+                    else if (typeName == "仪表数据")
+                    {
+                        // 同步仪表数据
+                    }
+                    else if (typeName == "设备数据")
+                    {
+                        // 同步设备数据
+                    }
+                    else if (typeName == "阀门管件数据")
+                    {
+                        // 同步阀门管件数据
+                    }
+                    
+                    tr.Commit();
+                }
+                catch (System.Exception ex)
+                {
+                    UtilsCADActive.Editor.WriteMessage($"\n同步发生错误: {ex.Message}");
+                    tr.Abort();
+                }
             }
-            else
-            {
-                MessageBox.Show("没有选择任何数据，请先选择数据！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+
+            // if (int.TryParse(DataCount, out int count) && count > 0)
+            // {
+            //     DataStatus = "同步中...";
+                
+            //     // 导出逻辑
+            //     MessageBox.Show($"已成功导出 {count} 条{typeName}！", "导出成功", MessageBoxButton.OK, MessageBoxImage.Information);
+            // }
+            // else
+            // {
+            //     MessageBox.Show("没有选择任何数据，请先选择数据！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+            // }
         }
         
         public void CancelOperation()
@@ -114,6 +154,19 @@ namespace dataflow_cs.Presentation.ViewModel
             // 触发取消事件
             ExportCancelled?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// 同步管道数据
+        /// </summary>
+        private void SyncGsLcPipeData(List<ObjectId> pipeNumObjectIds)
+        {
+            pipeNumObjectIds.ForEach(pipeNumObjectId => {
+                // 获取管道编号
+                string pipeNum = UtilsBlock.UtilsGetPropertyValueByPropertyName(pipeNumObjectId, "PipeNum");
+                UtilsCADActive.UtilsDeleteEntity(pipeNumObjectId);
+            });
+        }
+
     }
     
     // 数据类型类

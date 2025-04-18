@@ -377,6 +377,28 @@ namespace dataflow_cs.Utils.CADUtils
             }
             return blockIds;
         }
+        /// <summary>
+        /// 获取当前图纸中指定名称的所有块的ObjectId列表
+        /// </summary>
+        /// <param name="blockNameList">块名称列表</param>
+        /// <param name="isIdentical">是否完全匹配，true为完全匹配，false为包含匹配</param>
+        /// <returns>匹配的块ObjectId列表</returns>
+        public static List<ObjectId> UtilsGetAllObjectIdsByBlockName(List<string> blockNameList, bool isIdentical = true)
+        {
+            // 任务1: 在AutoCAD中获得块实体对象的选择集
+            SelectionSet selSet = UtilsSelectionSet.UtilsGetAllBlockSelectionSet();
+            List<ObjectId> blockIds = new List<ObjectId>();
+
+            // 任务2: 根据块实体对象的选择集获取所有块实体对象的所有属性值
+            if (selSet != null)
+            {
+                foreach (string blockName in blockNameList)
+                {
+                    blockIds.AddRange(UtilsGetAllObjectIdsByBlockName(blockName, isIdentical));
+                }
+            }
+            return blockIds.Distinct().ToList(); // 返回去重后的结果
+        }
 
         /// <summary>
         /// 从指定的块ObjectId列表中筛选出指定名称的块
