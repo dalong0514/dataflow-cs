@@ -171,67 +171,67 @@
             {
               "Title": "插入SIS仪表",
               "IconKey": "SIS仪表.bmp",
-              "Command": "DLGsLcInsertBlockInstrumentSIS"
+              "Command": "DLGsLcInsertInstrumentSISBlock"
             },
             {
               "Title": "插入SIS回路",
               "IconKey": "SIS回路.bmp",
-              "Command": "DLGsLcInsertBlockInstrumentSIS"
+              "Command": "xx"
             },
             {
               "Title": "插入开关阀",
               "IconKey": "开关阀.bmp",
-              "Command": "DLGsLcInsertValveOnOff"
+              "Command": "xx"
             },
             {
               "Title": "插入调节阀",
               "IconKey": "调节阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入自力式调节阀",
               "IconKey": "自力式调节阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入底阀",
               "IconKey": "底阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入隔膜调节阀",
               "IconKey": "隔膜调节阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入三通调节阀",
               "IconKey": "三通调节阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入三通开关阀",
               "IconKey": "三通开关阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入三通隔膜开关阀",
               "IconKey": "三通隔膜开关阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入蝶阀开关阀",
               "IconKey": "蝶阀开关阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入隔膜开关阀",
               "IconKey": "隔膜开关阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入插板开关阀",
               "IconKey": "插板开关阀.bmp",
-              "Command": "DLGsLcInsertValveControl"
+              "Command": "xx"
             },
             {
               "Title": "插入球阀",
@@ -241,102 +241,102 @@
             {
               "Title": "插入三通球阀",
               "IconKey": "三通球阀.bmp",
-              "Command": "DLGsLcInsertGlobalBlock"
+              "Command": "DLGsLcInsertValveBallTeeBlock"
             },
             {
               "Title": "插入截止阀",
               "IconKey": "截止阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveGlobeBlock"
             },
             {
               "Title": "插入波纹管截止阀",
               "IconKey": "波纹管截止阀.bmp",
-              "Command": "LINE"
+              "Command": "xx"
             },
             {
               "Title": "插入减压阀",
               "IconKey": "减压阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValvePressureReduceBlock"
             },
             {
               "Title": "插入止回阀",
               "IconKey": "止回阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveCheckBlock"
             },
             {
               "Title": "插入旋启式止回阀",
               "IconKey": "旋启式止回阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveCheckSwingBlock"
             },
             {
               "Title": "插入旋塞阀",
               "IconKey": "旋塞阀",
-              "Command": "CIRCLE"
+              "Command": "DLGsLcInsertValveCockBlock"
             },
             {
               "Title": "插入柱塞阀",
               "IconKey": "柱塞阀",
-              "Command": "CIRCLE"
+              "Command": "DLGsLcInsertValvePlungerBlock"
             },
             {
               "Title": "插入针型阀",
               "IconKey": "针型阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveNeedleBlock"
             },
             {
               "Title": "插入闸阀",
               "IconKey": "闸阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveGateBlock"
             },
             {
               "Title": "插入插板阀",
               "IconKey": "插板阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveFlapperBlock"
             },
             {
               "Title": "插入隔膜阀",
               "IconKey": "隔膜阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveDiaphragmBlock"
             },
             {
               "Title": "插入蝶阀",
               "IconKey": "蝶阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveButterflyBlock"
             },
             {
               "Title": "插入安全阀",
               "IconKey": "安全阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveSafetyBlock"
             },
             {
               "Title": "插入爆破片",
               "IconKey": "爆破片.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveBlastBlock"
             },
             {
               "Title": "插入疏水阀",
               "IconKey": "疏水阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveTrapBlock"
             },
             {
               "Title": "插入呼吸阀",
               "IconKey": "呼吸阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveBreathBlock"
             },
             {
               "Title": "插入带阻火器呼吸阀",
               "IconKey": "带阻火器呼吸阀.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveBreathFlameArrestBlock"
             },
             {
               "Title": "插入金属软管",
               "IconKey": "金属软管.bmp",
-              "Command": "LINE"
+              "Command": "DLGsLcInsertValveMetalHoseBlock"
             },
             {
               "Title": "插入挠性软管",
               "IconKey": "挠性软管.bmp",
-              "Command": "LINE"
+              "Command": "xx"
             }
           ]
         },

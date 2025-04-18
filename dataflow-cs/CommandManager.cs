@@ -33,13 +33,51 @@ namespace dataflow_cs
                 RegisterCommandHandler(new TestCommand());
                 // 工艺二维配管
                 RegisterCommandHandler(new GsPgBatchSyncPipeDataCommand());
+                
                 // 工艺流程图
                 RegisterCommandHandler(new GsAddMenuCommand());
                 RegisterCommandHandler(new GsLcSysDataFromClientCommand());
                 RegisterCommandHandler(new GsLcInsertAllElementBlockCommand());
+
+                // 仪表类
                 RegisterCommandHandler(new GsLcInsertInstrumentLBlockCommand());
                 RegisterCommandHandler(new GsLcInsertInstrumentPBlockCommand());
+                RegisterCommandHandler(new GsLcInsertInstrumentSISBlockCommand());
+                
+                // 阀门类
                 RegisterCommandHandler(new GsLcInsertGlobalBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBallTeeBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveGlobeBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValvePressureReduceBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveCheckBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveCheckSwingBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveCockBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValvePlungerBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveNeedleBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveGateBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFlapperBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveDiaphragmBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveButterflyBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveSafetyBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBlastBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveTrapBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBreathBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBreathFlameArrestBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFlameArrestBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveMetalHoseBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFilterYBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFilterTBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFilterConeBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFilterBasketBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFlangeCoverBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveRestrictOrificeSingleBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveGlassBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBlindBoard8OffBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBlindBoard8OnBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBlindBoardOffBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveBlindBoardOnBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValvePipeClassChangeBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveReducerBlockCommand());
 
                 // 将来可在此处添加更多命令
                 
@@ -213,6 +251,306 @@ namespace dataflow_cs
         public void DLGsLcInsertGlobalBlock()
         {
             ExecuteCommand("DLGsLcInsertGlobalBlock");
+        }
+
+        // 新增命令方法
+        // 仪表类
+        /// <summary>
+        /// 动态插入SIS仪表块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertInstrumentSISBlock")]
+        public void DLGsLcInsertInstrumentSISBlock()
+        {
+            ExecuteCommand("DLGsLcInsertInstrumentSISBlock");
+        }
+
+        // 阀门类
+        /// <summary>
+        /// 动态插入三通球阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBallTeeBlock")]
+        public void DLGsLcInsertValveBallTeeBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBallTeeBlock");
+        }
+
+        /// <summary>
+        /// 动态插入截止阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveGlobeBlock")]
+        public void DLGsLcInsertValveGlobeBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveGlobeBlock");
+        }
+
+        /// <summary>
+        /// 动态插入减压阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValvePressureReduceBlock")]
+        public void DLGsLcInsertValvePressureReduceBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValvePressureReduceBlock");
+        }
+
+        /// <summary>
+        /// 动态插入止回阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveCheckBlock")]
+        public void DLGsLcInsertValveCheckBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveCheckBlock");
+        }
+
+        /// <summary>
+        /// 动态插入旋启式止回阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveCheckSwingBlock")]
+        public void DLGsLcInsertValveCheckSwingBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveCheckSwingBlock");
+        }
+
+        /// <summary>
+        /// 动态插入旋塞阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveCockBlock")]
+        public void DLGsLcInsertValveCockBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveCockBlock");
+        }
+
+        /// <summary>
+        /// 动态插入柱塞阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValvePlungerBlock")]
+        public void DLGsLcInsertValvePlungerBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValvePlungerBlock");
+        }
+
+        /// <summary>
+        /// 动态插入针型阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveNeedleBlock")]
+        public void DLGsLcInsertValveNeedleBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveNeedleBlock");
+        }
+
+        /// <summary>
+        /// 动态插入闸阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveGateBlock")]
+        public void DLGsLcInsertValveGateBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveGateBlock");
+        }
+
+        /// <summary>
+        /// 动态插入插板阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFlapperBlock")]
+        public void DLGsLcInsertValveFlapperBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFlapperBlock");
+        }
+
+        /// <summary>
+        /// 动态插入隔膜阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveDiaphragmBlock")]
+        public void DLGsLcInsertValveDiaphragmBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveDiaphragmBlock");
+        }
+
+        /// <summary>
+        /// 动态插入蝶阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveButterflyBlock")]
+        public void DLGsLcInsertValveButterflyBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveButterflyBlock");
+        }
+
+        /// <summary>
+        /// 动态插入安全阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveSafetyBlock")]
+        public void DLGsLcInsertValveSafetyBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveSafetyBlock");
+        }
+
+        /// <summary>
+        /// 动态插入爆破片块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBlastBlock")]
+        public void DLGsLcInsertValveBlastBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBlastBlock");
+        }
+
+        /// <summary>
+        /// 动态插入疏水阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveTrapBlock")]
+        public void DLGsLcInsertValveTrapBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveTrapBlock");
+        }
+
+        /// <summary>
+        /// 动态插入呼吸阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBreathBlock")]
+        public void DLGsLcInsertValveBreathBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBreathBlock");
+        }
+
+        /// <summary>
+        /// 动态插入带阻火器呼吸阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBreathFlameArrestBlock")]
+        public void DLGsLcInsertValveBreathFlameArrestBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBreathFlameArrestBlock");
+        }
+
+        /// <summary>
+        /// 动态插入阻火器块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFlameArrestBlock")]
+        public void DLGsLcInsertValveFlameArrestBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFlameArrestBlock");
+        }
+
+        /// <summary>
+        /// 动态插入金属软件块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveMetalHoseBlock")]
+        public void DLGsLcInsertValveMetalHoseBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveMetalHoseBlock");
+        }
+
+        /// <summary>
+        /// 动态插入Y型过滤器块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFilterYBlock")]
+        public void DLGsLcInsertValveFilterYBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFilterYBlock");
+        }
+
+        /// <summary>
+        /// 动态插入T型过滤器块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFilterTBlock")]
+        public void DLGsLcInsertValveFilterTBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFilterTBlock");
+        }
+
+        /// <summary>
+        /// 动态插入锥型过滤器块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFilterConeBlock")]
+        public void DLGsLcInsertValveFilterConeBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFilterConeBlock");
+        }
+
+        /// <summary>
+        /// 动态插入罐式（篮式）型过滤器块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFilterBasketBlock")]
+        public void DLGsLcInsertValveFilterBasketBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFilterBasketBlock");
+        }
+
+        /// <summary>
+        /// 动态插入法兰盖块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFlangeCoverBlock")]
+        public void DLGsLcInsertValveFlangeCoverBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFlangeCoverBlock");
+        }
+
+        /// <summary>
+        /// 动态插入单板限流孔板块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveRestrictOrificeSingleBlock")]
+        public void DLGsLcInsertValveRestrictOrificeSingleBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveRestrictOrificeSingleBlock");
+        }
+
+        /// <summary>
+        /// 动态插入视镜块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveGlassBlock")]
+        public void DLGsLcInsertValveGlassBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveGlassBlock");
+        }
+
+        /// <summary>
+        /// 动态插入8字盲板（正常关闭）块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBlindBoard8OffBlock")]
+        public void DLGsLcInsertValveBlindBoard8OffBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBlindBoard8OffBlock");
+        }
+
+        /// <summary>
+        /// 动态插入8字盲板（正常开启）块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBlindBoard8OnBlock")]
+        public void DLGsLcInsertValveBlindBoard8OnBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBlindBoard8OnBlock");
+        }
+
+        /// <summary>
+        /// 动态插入圆形盲板（正常关闭）块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBlindBoardOffBlock")]
+        public void DLGsLcInsertValveBlindBoardOffBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBlindBoardOffBlock");
+        }
+
+        /// <summary>
+        /// 动态插入圆形盲板（正常开启）块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveBlindBoardOnBlock")]
+        public void DLGsLcInsertValveBlindBoardOnBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveBlindBoardOnBlock");
+        }
+
+        /// <summary>
+        /// 动态插入变管道等级块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValvePipeClassChangeBlock")]
+        public void DLGsLcInsertValvePipeClassChangeBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValvePipeClassChangeBlock");
+        }
+
+        /// <summary>
+        /// 动态插入同心异径管块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveReducerBlock")]
+        public void DLGsLcInsertValveReducerBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveReducerBlock");
         }
 
         // 在这里添加更多命令定义...

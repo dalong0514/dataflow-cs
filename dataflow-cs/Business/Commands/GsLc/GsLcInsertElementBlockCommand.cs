@@ -188,4 +188,796 @@ namespace dataflow_cs.Business.Commands.GsLc
             );
         }
     }
+
+    internal class GsLcInsertInstrumentSISBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertInstrumentSISBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcInstrumentSIS,
+                ConstLayerName.GsLcLayerNameInstrument
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBallTeeBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBallTeeBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBallTee,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveGlobeBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveGlobeBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveGlobe,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValvePressureReduceBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValvePressureReduceBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValvePressureReduce,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveCheckBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveCheckBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveCheck,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveCheckSwingBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveCheckSwingBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveCheckSwing,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveCockBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveCockBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveCock,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValvePlungerBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValvePlungerBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValvePlunger,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveNeedleBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveNeedleBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveNeedle,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveGateBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveGateBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveGate,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFlapperBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFlapperBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFlapper,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveDiaphragmBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveDiaphragmBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveDiaphragm,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveButterflyBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveButterflyBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveButterfly,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveSafetyBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveSafetyBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveSafety,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBlastBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBlastBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBlast,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveTrapBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveTrapBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveTrap,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBreathBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBreathBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBreath,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBreathFlameArrestBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBreathFlameArrestBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBreathFlameArrest,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFlameArrestBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFlameArrestBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFlameArrest,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveMetalHoseBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveMetalHoseBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveMetalHose,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFilterYBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFilterYBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFilterY,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFilterTBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFilterTBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFilterT,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFilterConeBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFilterConeBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFilterCone,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFilterBasketBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFilterBasketBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFilterBasket,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveFlangeCoverBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveFlangeCoverBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveFlangeCover,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveRestrictOrificeSingleBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveRestrictOrificeSingleBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveRestrictOrificeSingle,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveGlassBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveGlassBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveGlass,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBlindBoard8OffBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBlindBoard8OffBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBlindBoard8Off,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBlindBoard8OnBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBlindBoard8OnBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBlindBoard8On,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBlindBoardOffBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBlindBoardOffBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBlindBoardOff,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveBlindBoardOnBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveBlindBoardOnBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBlindBoardOn,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValvePipeClassChangeBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValvePipeClassChangeBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValvePipeClassChange,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
+
+    internal class GsLcInsertValveReducerBlockCommand : CommandHandlerBase
+    {
+        /// <summary>
+        /// 命令名称
+        /// </summary>
+        public override string CommandName => "DLGsLcInsertValveReducerBlock";
+
+        /// <summary>
+        /// 执行命令核心逻辑
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <returns>命令执行结果</returns>
+        protected override bool ExecuteCore(Editor editor, Database database)
+        {
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveReducer,
+                ConstLayerName.GsLcLayerNameValve
+            );
+        }
+    }
 }
