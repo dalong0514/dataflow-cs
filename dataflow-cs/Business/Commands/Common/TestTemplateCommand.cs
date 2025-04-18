@@ -30,8 +30,6 @@ namespace dataflow_cs.Business.Commands.Common
         {
             try
             {
-                editor.WriteMessage("\n正在显示数据导出面板...");
-
                 // 创建TestTemplateWindow实例并设置事件处理
                 var window = new TestTemplateWindow();
 

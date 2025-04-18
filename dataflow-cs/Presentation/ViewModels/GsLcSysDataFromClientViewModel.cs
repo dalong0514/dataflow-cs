@@ -6,8 +6,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using dataflow_cs.Utils.CADUtils;
+using dataflow_cs.Utils.ConstUtils;
 
 namespace dataflow_cs.Presentation.ViewModel
 {
@@ -160,10 +164,60 @@ namespace dataflow_cs.Presentation.ViewModel
         /// </summary>
         private void SyncGsLcPipeData(List<ObjectId> pipeNumObjectIds)
         {
+            // 1. 读取本地JSON文件
+            string jsonFilePath = ConstFileName.GsLcPipeDataImportPath;
+            if (!File.Exists(jsonFilePath))
+            {
+                UtilsCADActive.Editor.WriteMessage($"\n找不到文件: {jsonFilePath}");
+                return;
+            }
+
+            string jsonContent = File.ReadAllText(jsonFilePath);
+            
+            // 2. 将JSON数据转换为对象列表
+            JArray jsonArray = JArray.Parse(jsonContent);
+            
+            // 3. 筛选出管道数据并转换为Dictionary<string, string>
+            List<Dictionary<string, string>> pipeDataList = new List<Dictionary<string, string>>();
+            foreach (JObject item in jsonArray)
+            {
+                if (item["data_class"]?.ToString() == "pipeline")
+                {
+                    Dictionary<string, string> pipeData = new Dictionary<string, string>();
+                    foreach (var property in item.Properties())
+                    {
+                        pipeData[property.Name] = property.Value.ToString();
+                    }
+                    pipeDataList.Add(pipeData);
+                }
+            }
             pipeNumObjectIds.ForEach(pipeNumObjectId => {
                 // 获取管道编号
                 string pipeNum = UtilsBlock.UtilsGetPropertyValueByPropertyName(pipeNumObjectId, "PipeNum");
-                UtilsCADActive.UtilsDeleteEntity(pipeNumObjectId);
+                try
+                {
+                    // 4. 获取当前管道的ObjectId的句柄值
+                    string currentHandle = pipeNumObjectId.Handle.ToString();
+                    
+                    // 5. 查找匹配的管道数据
+                    Dictionary<string, string> matchedPipeData = pipeDataList.FirstOrDefault(
+                        data => data.ContainsKey("entityhandle") && data["entityhandle"] == currentHandle);
+                    
+                    if (matchedPipeData != null)
+                    {
+                        // 6. 调用函数修改块属性值
+                        UtilsBlock.UtilsSetPropertyValueByDictData(pipeNumObjectId, matchedPipeData);
+                        // UtilsCADActive.Editor.WriteMessage($"\n已同步管道数据: {pipeNum}");
+                    }
+                    // else
+                    // {
+                    //     UtilsCADActive.Editor.WriteMessage($"\n未找到匹配的管道数据: {pipeNum}, 句柄: {currentHandle}");
+                    // }
+                }
+                catch (Exception ex)
+                {
+                    UtilsCADActive.Editor.WriteMessage($"\n同步管道数据时发生错误: {ex.Message}");
+                }
             });
         }
 
