@@ -10,12 +10,12 @@ namespace dataflow_cs.Utils.ConstUtils
         /// <summary>
         /// 工艺流程阀门块所在图层
         /// </summary>
-        public const string GsLcValveLayerName = "0DataFlow-GsLcValve";
+        public const string GsLcLayerNameValve = "0DataFlow-GsLcValve";
 
         /// <summary>
         /// 工艺流程仪表块所在图层
         /// </summary>
-        public const string GsLcInstrumentLayerName = "0DataFlow-GsLcInstrument";
+        public const string GsLcLayerNameInstrument = "0DataFlow-GsLcInstrument";
 
     }
 }

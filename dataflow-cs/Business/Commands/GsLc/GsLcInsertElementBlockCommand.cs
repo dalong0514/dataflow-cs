@@ -87,8 +87,10 @@ namespace dataflow_cs.Business.Commands.GsLc
             try
             {
                 string blockName = ConstBlockName.GsLcValveBall;
+                string layerName = ConstLayerName.GsLcLayerNameValve;
                 // 引入球阀块定义
                 ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -100,7 +102,9 @@ namespace dataflow_cs.Business.Commands.GsLc
                     editor,
                     database,
                     blockName,
-                    blockId
+                    blockId,
+                    0,
+                    layerName
                 );
 
                 return result;
@@ -131,9 +135,10 @@ namespace dataflow_cs.Business.Commands.GsLc
             try
             {
                 string blockName = ConstBlockName.GsLcInstrumentP;
-                
+                string layerName = ConstLayerName.GsLcLayerNameInstrument;
                 // 引入仪表P块定义
                 ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -145,7 +150,9 @@ namespace dataflow_cs.Business.Commands.GsLc
                     editor,
                     database,
                     blockName,
-                    blockId
+                    blockId,
+                    0,
+                    layerName
                 );
 
                 return result;
@@ -176,9 +183,10 @@ namespace dataflow_cs.Business.Commands.GsLc
             try
             {
                 string blockName = ConstBlockName.GsLcInstrumentL;
-                
-                // 引入仪表L块定义
+                string layerName = ConstLayerName.GsLcLayerNameInstrument;
+                    // 引入仪表L块定义
                 ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -190,7 +198,9 @@ namespace dataflow_cs.Business.Commands.GsLc
                     editor,
                     database,
                     blockName,
-                    blockId
+                    blockId,
+                    0,
+                    layerName
                 );
 
                 return result;

@@ -586,6 +586,122 @@ namespace dataflow_cs.Utils.CADUtils
             return blockId;
         }
 
-
+        /// <summary>
+        /// 从外部CAD文件引用特定的图层到当前图形中
+        /// </summary>
+        /// <param name="sourceDwgPath">源CAD文件的完整路径</param>
+        /// <param name="layerName">要引用的图层名称</param>
+        /// <returns>如果成功，返回true；如果失败，返回false</returns>
+        public static bool UtilsImportLayerFromExternalDwg(string sourceDwgPath, string layerName)
+        {
+            // 获取当前数据库
+            Database destDb = UtilsCADActive.Database;
+            bool success = false;
+            
+            // 创建一个新的数据库对象来读取源DWG文件
+            using (Database sourceDb = new Database(false, true))
+            {
+                try
+                {
+                    // 读取源DWG文件到sourceDb
+                    sourceDb.ReadDwgFile(sourceDwgPath, FileOpenMode.OpenForReadAndAllShare, false, "");
+                    
+                    // 开始当前数据库的事务
+                    using (Transaction destTr = destDb.TransactionManager.StartTransaction())
+                    {
+                        // 打开目标数据库的图层表以供写入
+                        LayerTable destLayerTable = destTr.GetObject(destDb.LayerTableId, OpenMode.ForWrite) as LayerTable;
+                        
+                        // 如果目标数据库中已存在同名图层，则跳过导入
+                        if (destLayerTable.Has(layerName))
+                        {
+                            UtilsCADActive.WriteMessage($"\n图层 '{layerName}' 已存在于当前图形中，将使用现有图层。");
+                            destTr.Commit();
+                            return true;
+                        }
+                        
+                        // 开始源数据库的事务
+                        using (Transaction sourceTr = sourceDb.TransactionManager.StartTransaction())
+                        {
+                            // 打开源数据库的图层表以供读取
+                            LayerTable sourceLayerTable = sourceTr.GetObject(sourceDb.LayerTableId, OpenMode.ForRead) as LayerTable;
+                            
+                            // 检查源数据库中是否存在指定的图层
+                            if (!sourceLayerTable.Has(layerName))
+                            {
+                                UtilsCADActive.WriteMessage($"\n在源文件中找不到图层 '{layerName}'。");
+                                sourceTr.Commit();
+                                destTr.Commit();
+                                return false;
+                            }
+                            
+                            // 更简单的方法：直接通过WblockCloneObjects复制整个图层对象
+                            try {
+                                // 创建要复制的对象ID集合
+                                ObjectIdCollection layerIds = new ObjectIdCollection();
+                                layerIds.Add(sourceLayerTable[layerName]);
+                                
+                                // 复制图层及其依赖对象（如线型）到目标数据库
+                                IdMapping idMap = new IdMapping();
+                                sourceDb.WblockCloneObjects(layerIds, destLayerTable.ObjectId, idMap, DuplicateRecordCloning.Replace, false);
+                                
+                                success = true;
+                                UtilsCADActive.WriteMessage($"\n成功导入图层 '{layerName}'。");
+                            }
+                            catch (Exception ex) {
+                                UtilsCADActive.WriteMessage($"\n复制图层时出错: {ex.Message}");
+                                
+                                // 尝试使用手动创建的方式
+                                try {
+                                    // 获取源图层记录
+                                    LayerTableRecord sourceLayer = sourceTr.GetObject(sourceLayerTable[layerName], OpenMode.ForRead) as LayerTableRecord;
+                                    
+                                    // 创建新的图层记录
+                                    using (LayerTableRecord newLayer = new LayerTableRecord())
+                                    {
+                                        // 复制源图层的基本属性
+                                        newLayer.Name = layerName;
+                                        newLayer.Color = sourceLayer.Color;
+                                        newLayer.LineWeight = sourceLayer.LineWeight;
+                                        
+                                        // 获取标准线型
+                                        LinetypeTable destLinetypeTable = destTr.GetObject(destDb.LinetypeTableId, OpenMode.ForRead) as LinetypeTable;
+                                        newLayer.LinetypeObjectId = destLinetypeTable["Continuous"];
+                                        
+                                        // 只复制其他基本属性
+                                        newLayer.IsFrozen = sourceLayer.IsFrozen;
+                                        newLayer.IsOff = sourceLayer.IsOff;
+                                        newLayer.IsLocked = sourceLayer.IsLocked;
+                                        newLayer.IsPlottable = sourceLayer.IsPlottable;
+                                        
+                                        // 将新图层添加到目标图层表
+                                        destLayerTable.Add(newLayer);
+                                        destTr.AddNewlyCreatedDBObject(newLayer, true);
+                                        
+                                        success = true;
+                                        UtilsCADActive.WriteMessage($"\n使用备用方法成功导入图层 '{layerName}'。");
+                                    }
+                                }
+                                catch (Exception fallbackEx) {
+                                    UtilsCADActive.WriteMessage($"\n备用方法导入图层时出错: {fallbackEx.Message}");
+                                    success = false;
+                                }
+                            }
+                            
+                            sourceTr.Commit();
+                        }
+                        
+                        destTr.Commit();
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    UtilsCADActive.WriteMessage($"\n导入图层时发生错误: {ex.Message}");
+                    return false;
+                }
+            }
+            
+            return success;
+        }
     }
 } 
