@@ -56,6 +56,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                     UtilsBlock.UtilsExplodeBlock(insertedBlockId, tr);
                     // 方法2: 使用带连字符的命令版本以避免显示对话框
                     UtilsCADActive.Document.SendStringToExecute("WIPEOUT F OFF ", true, false, false);
+                    UtilsBlock.UtilsSetAllBlocksWipeoutBackward();
                     
                     tr.Commit();
                 }

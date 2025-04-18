@@ -10,6 +10,6 @@ namespace dataflow_cs.Utils.ConstUtils
         /// <summary>
         /// 工艺数据流组件块文件路径
         /// </summary>
-        public const string GsLcBlocksPath = @"D:\dataflowcad\dataflowcad\allBlocks\GsLcBlocks.dwg";
+        public const string GsLcBlocksPath = @"D:\fsd-cad\allBlocks\GsLcBlocks.dwg";
     }
 }

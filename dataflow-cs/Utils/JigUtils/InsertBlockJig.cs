@@ -217,6 +217,7 @@ namespace dataflow_cs.Utils.JigUtils
                                 layerName, // 设置指定图层
                                 tr // 传入当前事务
                             );
+                            UtilsBlock.UtilsSetBlockWipeoutBackward(newBlockId, tr);
 
                             // 提交事务，使块立即显示
                             tr.Commit();

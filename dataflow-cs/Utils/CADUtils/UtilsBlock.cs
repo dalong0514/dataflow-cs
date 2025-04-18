@@ -965,5 +965,225 @@ namespace dataflow_cs.Utils.CADUtils
             
             return explodedEntityIds;
         }
+
+        /// <summary>
+        /// 设置块定义中WIPEOUT实体的绘制顺序为最底层
+        /// </summary>
+        /// <param name="blockTableRecordId">块表记录的ObjectId</param>
+        /// <param name="transaction">外部传入的事务对象，如果为null则使用活动事务</param>
+        /// <returns>处理的WIPEOUT实体数量</returns>
+        public static int UtilsSetBlockTableRecordWipeoutBackward(ObjectId blockTableRecordId, Transaction transaction = null)
+        {
+            // 处理的WIPEOUT实体数量
+            int wipeoutCount = 0;
+            
+            try
+            {
+                // 检查是否提供了事务对象
+                bool externalTransaction = transaction != null;
+                Transaction tr = externalTransaction ? transaction : UtilsCADActive.Database.TransactionManager.TopTransaction;
+                
+                if (tr == null)
+                {
+                    UtilsCADActive.WriteMessage("\n错误：未提供有效的事务对象，且当前没有活动的事务。");
+                    return 0;
+                }
+                
+                // 获取块表记录
+                BlockTableRecord blockDef = tr.GetObject(blockTableRecordId, OpenMode.ForRead) as BlockTableRecord;
+                if (blockDef == null)
+                {
+                    UtilsCADActive.WriteMessage("\n错误：无效的块表记录ObjectId。");
+                    return 0;
+                }
+                
+                // 获取绘制顺序表
+                DrawOrderTable drawOrderTable = tr.GetObject(blockDef.DrawOrderTableId, OpenMode.ForWrite) as DrawOrderTable;
+                if (drawOrderTable == null)
+                {
+                    UtilsCADActive.WriteMessage("\n错误：无法获取绘制顺序表。");
+                    return 0;
+                }
+                
+                // 获取所有实体的绘制顺序
+                // 使用参数1表示忽略排序实体掩码
+                ObjectIdCollection allEntityIds = drawOrderTable.GetFullDrawOrder(1);
+                if (allEntityIds.Count == 0)
+                {
+                    return 0;
+                }
+                
+                // 查找所有WIPEOUT实体
+                List<ObjectId> wipeoutIds = new List<ObjectId>();
+                foreach (ObjectId entityId in allEntityIds)
+                {
+                    if (entityId.ObjectClass.DxfName == "WIPEOUT")
+                    {
+                        wipeoutIds.Add(entityId);
+                        wipeoutCount++;
+                    }
+                }
+                
+                // 如果没有WIPEOUT实体，则直接返回
+                if (wipeoutIds.Count == 0)
+                {
+                    return 0;
+                }
+                
+                // 从绘制顺序中移除WIPEOUT实体
+                ObjectIdCollection nonWipeoutIds = new ObjectIdCollection();
+                foreach (ObjectId entityId in allEntityIds)
+                {
+                    if (!wipeoutIds.Contains(entityId))
+                    {
+                        nonWipeoutIds.Add(entityId);
+                    }
+                }
+                
+                // 设置新的绘制顺序，WIPEOUT实体放在最底层（先绘制）
+                ObjectIdCollection newOrder = new ObjectIdCollection();
+                foreach (ObjectId wipeoutId in wipeoutIds)
+                {
+                    newOrder.Add(wipeoutId);
+                }
+                foreach (ObjectId entityId in nonWipeoutIds)
+                {
+                    newOrder.Add(entityId);
+                }
+                
+                // 应用新的绘制顺序
+                drawOrderTable.SetRelativeDrawOrder(newOrder);
+                
+                return wipeoutCount;
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.WriteMessage($"\n设置块内WIPEOUT后置时发生错误: {ex.Message}");
+                return 0;
+            }
+        }
+        
+        /// <summary>
+        /// 设置块参照中WIPEOUT实体的绘制顺序为最底层
+        /// </summary>
+        /// <param name="blockReferenceId">块参照的ObjectId</param>
+        /// <param name="transaction">外部传入的事务对象，如果为null则使用活动事务</param>
+        /// <returns>处理的WIPEOUT实体数量</returns>
+        public static int UtilsSetBlockWipeoutBackward(ObjectId blockReferenceId, Transaction transaction = null)
+        {
+            try
+            {
+                // 检查是否提供了事务对象
+                bool externalTransaction = transaction != null;
+                Transaction tr = externalTransaction ? transaction : UtilsCADActive.Database.TransactionManager.TopTransaction;
+                
+                if (tr == null)
+                {
+                    UtilsCADActive.WriteMessage("\n错误：未提供有效的事务对象，且当前没有活动的事务。");
+                    return 0;
+                }
+                
+                // 获取块参照对象
+                BlockReference blockRef = tr.GetObject(blockReferenceId, OpenMode.ForRead) as BlockReference;
+                if (blockRef == null)
+                {
+                    UtilsCADActive.WriteMessage("\n错误：无效的块参照ObjectId。");
+                    return 0;
+                }
+                
+                // 获取块表记录ID
+                ObjectId blockDefId = blockRef.IsDynamicBlock ? blockRef.DynamicBlockTableRecord : blockRef.BlockTableRecord;
+                
+                // 处理块表记录 - 使用不同名称的方法避免二义性
+                int count = UtilsSetBlockTableRecordWipeoutBackward(blockDefId, tr);
+                
+                // 如果处理了WIPEOUT实体，则更新块参照显示
+                if (count > 0)
+                {
+                    // 升级块参照以允许修改
+                    blockRef.UpgradeOpen();
+                    // 通知CAD需要重新绘制块参照
+                    blockRef.RecordGraphicsModified(true);
+                    // 降级块参照以防止进一步修改
+                    blockRef.DowngradeOpen();
+                }
+                
+                return count;
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.WriteMessage($"\n处理块参照WIPEOUT后置时发生错误: {ex.Message}");
+                return 0;
+            }
+        }
+        
+        /// <summary>
+        /// 设置当前图纸中所有块内的WIPEOUT实体后置
+        /// </summary>
+        /// <returns>处理的块数量</returns>
+        public static int UtilsSetAllBlocksWipeoutBackward()
+        {
+            int processedBlocksCount = 0;
+            
+            try
+            {
+                using (Transaction tr = UtilsCADActive.Database.TransactionManager.StartTransaction())
+                {
+                    // 获取当前图纸中所有块
+                    List<ObjectId> blockIds = UtilsGetAllBlockObjectIds();
+                    
+                    // 获取所有不重复的块表记录
+                    Dictionary<ObjectId, List<ObjectId>> blockTableRecords = new Dictionary<ObjectId, List<ObjectId>>();
+                    
+                    foreach (ObjectId blockId in blockIds)
+                    {
+                        BlockReference blockRef = tr.GetObject(blockId, OpenMode.ForRead) as BlockReference;
+                        if (blockRef == null) continue;
+                        
+                        ObjectId blockDefId = blockRef.IsDynamicBlock ? blockRef.DynamicBlockTableRecord : blockRef.BlockTableRecord;
+                        
+                        if (!blockTableRecords.ContainsKey(blockDefId))
+                        {
+                            blockTableRecords[blockDefId] = new List<ObjectId>();
+                        }
+                        
+                        blockTableRecords[blockDefId].Add(blockId);
+                    }
+                    
+                    // 处理每个块表记录 - 使用不同名称的方法避免二义性
+                    foreach (var pair in blockTableRecords)
+                    {
+                        int count = UtilsSetBlockTableRecordWipeoutBackward(pair.Key, tr);
+                        
+                        // 如果块表记录中有WIPEOUT实体，则更新所有引用它的块参照
+                        if (count > 0)
+                        {
+                            foreach (ObjectId refId in pair.Value)
+                            {
+                                BlockReference blockRef = tr.GetObject(refId, OpenMode.ForWrite) as BlockReference;
+                                if (blockRef != null)
+                                {
+                                    // 通知CAD需要重新绘制块参照
+                                    blockRef.RecordGraphicsModified(true);
+                                    processedBlocksCount++;
+                                }
+                            }
+                        }
+                    }
+                    
+                    tr.Commit();
+                }
+                
+                // 更新显示
+                UtilsCADActive.Editor.UpdateScreen();
+                
+                return processedBlocksCount;
+            }
+            catch (Exception ex)
+            {
+                UtilsCADActive.WriteMessage($"\n处理所有块WIPEOUT后置时发生错误: {ex.Message}");
+                return processedBlocksCount;
+            }
+        }
     }
 }
