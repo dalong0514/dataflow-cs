@@ -161,12 +161,12 @@
             {
               "Title": "插入就地仪表",
               "IconKey": "就地仪表.bmp",
-              "Command": "DLGsLcInsertBlockInstrumentL"
+              "Command": "DLGsLcInsertInstrumentLBlock"
             },
             {
               "Title": "插入集中仪表",
               "IconKey": "集中仪表.bmp",
-              "Command": "DLGsLcInsertBlockInstrumentP"
+              "Command": "DLGsLcInsertInstrumentPBlock"
             },
             {
               "Title": "插入SIS仪表",

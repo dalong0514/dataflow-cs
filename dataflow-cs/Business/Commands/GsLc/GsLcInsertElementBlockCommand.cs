@@ -35,8 +35,6 @@ namespace dataflow_cs.Business.Commands.GsLc
 
                 try
                 {
-                    editor.WriteMessage("\n正在插入工艺数据流组件块...");
-                    
                     // 引入工艺数据流组件块定义
                     ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, ConstBlockName.GsLcAllBlocks);
                     if (blockId == ObjectId.Null)
@@ -88,10 +86,9 @@ namespace dataflow_cs.Business.Commands.GsLc
         {
             try
             {
-                editor.WriteMessage("\n正在插入球阀块...");
-                
+                string blockName = ConstBlockName.GsLcValveBall;
                 // 引入球阀块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, "GsLcValveBall");
+                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -102,14 +99,8 @@ namespace dataflow_cs.Business.Commands.GsLc
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
-                    "GsLcValveBall",
-                    blockId,
-                    0, // 初始旋转角度为0
-                    "0", // 图层设置为"0"
-                    "请选择插入点或输入[旋转(R)]:",
-                    "命令已取消。",
-                    "球阀已插入，继续拖动放置新的球阀，输入\"R\"可旋转，ESC退出",
-                    "球阀已旋转，当前角度: {1}度"
+                    blockName,
+                    blockId
                 );
 
                 return result;
@@ -139,10 +130,10 @@ namespace dataflow_cs.Business.Commands.GsLc
         {
             try
             {
-                editor.WriteMessage("\n正在插入仪表P块...");
+                string blockName = ConstBlockName.GsLcInstrumentP;
                 
                 // 引入仪表P块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, "GsLcInstrumentP");
+                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -153,14 +144,8 @@ namespace dataflow_cs.Business.Commands.GsLc
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
-                    "仪表P",
-                    blockId,
-                    0, // 初始旋转角度为0
-                    "0", // 图层设置为"0"
-                    "请选择插入点或输入[旋转(R)]:",
-                    "命令已取消。",
-                    "仪表P已插入，继续拖动放置新的仪表P，输入\"R\"可旋转，ESC退出",
-                    "仪表P已旋转，当前角度: {1}度"
+                    blockName,
+                    blockId
                 );
 
                 return result;
@@ -190,10 +175,10 @@ namespace dataflow_cs.Business.Commands.GsLc
         {
             try
             {
-                editor.WriteMessage("\n正在插入仪表L块...");
+                string blockName = ConstBlockName.GsLcInstrumentL;
                 
                 // 引入仪表L块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, "GsLcInstrumentL");
+                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -204,14 +189,8 @@ namespace dataflow_cs.Business.Commands.GsLc
                 bool result = InsertBlockJig.DragAndInsertBlock(
                     editor,
                     database,
-                    "仪表L",
-                    blockId,
-                    0, // 初始旋转角度为0
-                    "0", // 图层设置为"0"
-                    "请选择插入点或输入[旋转(R)]:",
-                    "命令已取消。",
-                    "仪表L已插入，继续拖动放置新的仪表L，输入\"R\"可旋转，ESC退出",
-                    "仪表L已旋转，当前角度: {1}度"
+                    blockName,
+                    blockId
                 );
 
                 return result;
