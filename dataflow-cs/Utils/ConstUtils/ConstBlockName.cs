@@ -12,20 +12,7 @@ namespace dataflow_cs.Utils.ConstUtils
         /// <summary>
         /// 流程图所有组件块
         /// </summary>
-        public const string GsLcAllBlocks = "GsLcAllBlocks";
-        /// <summary>
-        /// 就地仪表
-        /// </summary>
-        public const string GsLcInstrumentL = "InstrumentL";
-        /// <summary>
-        /// 集中仪表
-        /// </summary>
-        public const string GsLcInstrumentP = "InstrumentP";
-        /// <summary>
-        /// SIS仪表
-        /// </summary>
-        public const string GsLcInstrumentSIS = "InstrumentSIS";
-        
+        public const string GsLcAllBlocks = "GsLcAllBlocks";        
         /// <summary>
         /// 球阀
         /// </summary>
@@ -158,6 +145,80 @@ namespace dataflow_cs.Utils.ConstUtils
         /// 同心异径管
         /// </summary>
         public const string GsLcValveReducer = "GsLcValveReducer";
+        /// <summary>
+        /// 挠性软管
+        /// </summary>
+        public const string GsLcValveFlexibleHose = "GsLcValveFlexibleHose";
+        /// <summary>
+        /// 波纹管截止阀
+        /// </summary>
+        public const string GsLcValveGlobeRipple = "GsLcValveGlobeRipple";
+
+        /// <summary>
+        /// 就地仪表
+        /// </summary>
+        public const string GsLcInstrumentL = "InstrumentL";
+        /// <summary>
+        /// 集中仪表
+        /// </summary>
+        public const string GsLcInstrumentP = "InstrumentP";
+        /// <summary>
+        /// SIS仪表
+        /// </summary>
+        public const string GsLcInstrumentSIS = "InstrumentSIS";
+        /// <summary>
+        /// 调节阀
+        /// </summary>
+        public const string GsLcValveControl = "GsLcValveControl";
+        /// <summary>
+        /// 开关阀
+        /// </summary>
+        public const string GsLcValveOnOff = "GsLcValveOnOff";
+        /// <summary>
+        /// DCS回路号
+        /// </summary>
+        public const string GsLcinstrumentElementinterLockLogic = "GsLcinstrumentElementinterLockLogic";
+        /// <summary>
+        /// SIS回路号
+        /// </summary>
+        public const string GsLcinstrumentElementinterLockLogicSIS = "GsLcinstrumentElementinterLockLogicSIS";
+        /// <summary>
+        /// 插板开关阀
+        /// </summary>
+        public const string GsLcValveOnOffFlapper = "GsLcValveOnOffFlapper";
+        /// <summary>
+        /// 隔膜开关阀
+        /// </summary>
+        public const string GsLcValveOnOffDiaphragm = "GsLcValveOnOffDiaphragm";
+        /// <summary>
+        /// 蝶阀开关阀
+        /// </summary>
+        public const string GsLcValveOnOffButterfly = "GsLcValveOnOffButterfly";
+        /// <summary>
+        /// 三通隔膜开关阀
+        /// </summary>
+        public const string GsLcValveOnOffTeeDiaphragm = "GsLcValveOnOffTeeDiaphragm";
+        /// <summary>
+        /// 三通开关阀
+        /// </summary>
+        public const string GsLcValveOnOffTee = "GsLcValveOnOffTee";
+        /// <summary>
+        /// 三通调节阀
+        /// </summary>
+        public const string GsLcValveControlTee = "GsLcValveControlTee";
+        /// <summary>
+        /// 隔膜调节阀
+        /// </summary>
+        public const string GsLcValveControlDiaphragm = "GsLcValveControlDiaphragm";
+        /// <summary>
+        /// 底阀
+        /// </summary>
+        public const string GsLcValveAutoBottom = "GsLcValveAutoBottom";
+        /// <summary>
+        /// 自力式调节阀
+        /// </summary>
+        public const string GsLcValveControlSelfOperate = "GsLcValveControlSelfOperate";
+
 
         ///<summary>
         ///设备大类

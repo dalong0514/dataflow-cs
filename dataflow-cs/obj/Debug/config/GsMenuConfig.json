@@ -150,7 +150,7 @@
           ]
         },
         {
-          "Title": "插入组件块功能",
+          "Title": "插入仪表相关块",
           "IconKey": "xx.bmp",
           "Items": [
             {
@@ -174,64 +174,80 @@
               "Command": "DLGsLcInsertInstrumentSISBlock"
             },
             {
-              "Title": "插入SIS回路",
+              "Title": "插入DCS回路号",
+              "IconKey": "DCS回路.bmp",
+              "Command": "DLGsLcInsertInstrumentElementinterLockLogicBlock"
+            },
+            {
+              "Title": "插入SIS回路号",
               "IconKey": "SIS回路.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertInstrumentElementinterLockLogicSISBlock"
             },
             {
               "Title": "插入开关阀",
               "IconKey": "开关阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveOnOffBlock"
             },
             {
               "Title": "插入调节阀",
               "IconKey": "调节阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveControlBlock"
             },
             {
               "Title": "插入自力式调节阀",
               "IconKey": "自力式调节阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveControlSelfOperateBlock"
             },
             {
               "Title": "插入底阀",
               "IconKey": "底阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveAutoBottomBlock"
             },
             {
               "Title": "插入隔膜调节阀",
               "IconKey": "隔膜调节阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveControlDiaphragmBlock"
             },
             {
               "Title": "插入三通调节阀",
               "IconKey": "三通调节阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveControlTeeBlock"
             },
             {
               "Title": "插入三通开关阀",
               "IconKey": "三通开关阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveOnOffTeeBlock"
             },
             {
               "Title": "插入三通隔膜开关阀",
               "IconKey": "三通隔膜开关阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveOnOffTeeDiaphragmBlock"
             },
             {
               "Title": "插入蝶阀开关阀",
               "IconKey": "蝶阀开关阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveOnOffButterflyBlock"
             },
             {
               "Title": "插入隔膜开关阀",
               "IconKey": "隔膜开关阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveOnOffDiaphragmBlock"
             },
             {
               "Title": "插入插板开关阀",
               "IconKey": "插板开关阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveOnOffFlapperBlock"
+            }
+          ]
+        },
+        {
+          "Title": "插入阀门管件块",
+          "IconKey": "xx.bmp",
+          "Items": [
+            {
+              "Title": "插入所有组件块",
+              "IconKey": "xx.bmp",
+              "Command": "DLGsLcInsertAllElementBlock"
             },
             {
               "Title": "插入球阀",
@@ -251,7 +267,7 @@
             {
               "Title": "插入波纹管截止阀",
               "IconKey": "波纹管截止阀.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveGlobeRippleBlock"
             },
             {
               "Title": "插入减压阀",
@@ -336,7 +352,7 @@
             {
               "Title": "插入挠性软管",
               "IconKey": "挠性软管.bmp",
-              "Command": "xx"
+              "Command": "DLGsLcInsertValveFlexibleHoseBlock"
             }
           ]
         },

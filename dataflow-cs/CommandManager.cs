@@ -43,7 +43,8 @@ namespace dataflow_cs
                 RegisterCommandHandler(new GsLcInsertInstrumentLBlockCommand());
                 RegisterCommandHandler(new GsLcInsertInstrumentPBlockCommand());
                 RegisterCommandHandler(new GsLcInsertInstrumentSISBlockCommand());
-                
+                RegisterCommandHandler(new GsLcInsertInstrumentElementinterLockLogicBlockCommand());
+                RegisterCommandHandler(new GsLcInsertInstrumentElementinterLockLogicSISBlockCommand());
                 // 阀门类
                 RegisterCommandHandler(new GsLcInsertGlobalBlockCommand());
                 RegisterCommandHandler(new GsLcInsertValveBallTeeBlockCommand());
@@ -78,6 +79,19 @@ namespace dataflow_cs
                 RegisterCommandHandler(new GsLcInsertValveBlindBoardOnBlockCommand());
                 RegisterCommandHandler(new GsLcInsertValvePipeClassChangeBlockCommand());
                 RegisterCommandHandler(new GsLcInsertValveReducerBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveFlexibleHoseBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveGlobeRippleBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveOnOffFlapperBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveOnOffDiaphragmBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveOnOffButterflyBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveOnOffTeeDiaphragmBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveOnOffTeeBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveControlTeeBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveControlDiaphragmBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveAutoBottomBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveControlSelfOperateBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveControlBlockCommand());
+                RegisterCommandHandler(new GsLcInsertValveOnOffBlockCommand());
 
                 // 将来可在此处添加更多命令
                 
@@ -551,6 +565,143 @@ namespace dataflow_cs
         public void DLGsLcInsertValveReducerBlock()
         {
             ExecuteCommand("DLGsLcInsertValveReducerBlock");
+        }
+
+        // 新增 - 仪表块
+        /// <summary>
+        /// 动态插入DCS回路号块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertInstrumentElementinterLockLogicBlock")]
+        public void DLGsLcInsertInstrumentElementinterLockLogicBlock()
+        {
+            ExecuteCommand("DLGsLcInsertInstrumentElementinterLockLogicBlock");
+        }
+
+        /// <summary>
+        /// 动态插入SIS回路号块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertInstrumentElementinterLockLogicSISBlock")]
+        public void DLGsLcInsertInstrumentElementinterLockLogicSISBlock()
+        {
+            ExecuteCommand("DLGsLcInsertInstrumentElementinterLockLogicSISBlock");
+        }
+
+        // 新增 - 阀门块
+        /// <summary>
+        /// 动态插入挠性软管块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveFlexibleHoseBlock")]
+        public void DLGsLcInsertValveFlexibleHoseBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveFlexibleHoseBlock");
+        }
+
+        /// <summary>
+        /// 动态插入波纹管截止阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveGlobeRippleBlock")]
+        public void DLGsLcInsertValveGlobeRippleBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveGlobeRippleBlock");
+        }
+
+        /// <summary>
+        /// 动态插入插板开关阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveOnOffFlapperBlock")]
+        public void DLGsLcInsertValveOnOffFlapperBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveOnOffFlapperBlock");
+        }
+
+        /// <summary>
+        /// 动态插入隔膜开关阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveOnOffDiaphragmBlock")]
+        public void DLGsLcInsertValveOnOffDiaphragmBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveOnOffDiaphragmBlock");
+        }
+
+        /// <summary>
+        /// 动态插入蝶阀开关阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveOnOffButterflyBlock")]
+        public void DLGsLcInsertValveOnOffButterflyBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveOnOffButterflyBlock");
+        }
+
+        /// <summary>
+        /// 动态插入三通隔膜开关阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveOnOffTeeDiaphragmBlock")]
+        public void DLGsLcInsertValveOnOffTeeDiaphragmBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveOnOffTeeDiaphragmBlock");
+        }
+
+        /// <summary>
+        /// 动态插入三通开关阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveOnOffTeeBlock")]
+        public void DLGsLcInsertValveOnOffTeeBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveOnOffTeeBlock");
+        }
+
+        /// <summary>
+        /// 动态插入三通调节阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveControlTeeBlock")]
+        public void DLGsLcInsertValveControlTeeBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveControlTeeBlock");
+        }
+
+        /// <summary>
+        /// 动态插入隔膜调节阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveControlDiaphragmBlock")]
+        public void DLGsLcInsertValveControlDiaphragmBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveControlDiaphragmBlock");
+        }
+
+        /// <summary>
+        /// 动态插入底阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveAutoBottomBlock")]
+        public void DLGsLcInsertValveAutoBottomBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveAutoBottomBlock");
+        }
+
+        /// <summary>
+        /// 动态插入自力式调节阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveControlSelfOperateBlock")]
+        public void DLGsLcInsertValveControlSelfOperateBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveControlSelfOperateBlock");
+        }
+
+        /// <summary>
+        /// 动态插入调节阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveControlBlock")]
+        public void DLGsLcInsertValveControlBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveControlBlock");
+        }
+
+        /// <summary>
+        /// 动态插入开关阀块
+        /// </summary>
+        [CommandMethod("DLGsLcInsertValveOnOffBlock")]
+        public void DLGsLcInsertValveOnOffBlock()
+        {
+            ExecuteCommand("DLGsLcInsertValveOnOffBlock");
         }
 
         // 在这里添加更多命令定义...
