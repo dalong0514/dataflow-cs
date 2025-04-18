@@ -17,16 +17,6 @@ namespace dataflow_cs.Utils.CADUtils
     /// </summary>
     public static class UtilsCommon
     {
-        /// <summary>
-        /// 修改实体的颜色
-        /// </summary>
-        /// <param name="objectId">要修改的实体的ObjectId</param>
-        /// <param name="colorIndex">颜色索引值</param>
-        public static void UtilsChangeColor(ObjectId objectId, int colorIndex)
-        {
-            Polyline polyline = objectId.GetObject(OpenMode.ForWrite) as Polyline;
-            polyline.ColorIndex = colorIndex;
-        }
 
         /// <summary>
         /// 将字符串转换为双精度浮点数

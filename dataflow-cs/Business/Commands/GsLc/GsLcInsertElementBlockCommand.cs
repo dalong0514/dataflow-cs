@@ -36,7 +36,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                 try
                 {
                     // 引入工艺数据流组件块定义
-                    ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, ConstBlockName.GsLcAllBlocks);
+                    ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, ConstBlockName.GsLcAllBlocks);
                     if (blockId == ObjectId.Null)
                     {
                         editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -88,7 +88,7 @@ namespace dataflow_cs.Business.Commands.GsLc
             {
                 string blockName = ConstBlockName.GsLcValveBall;
                 // 引入球阀块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -133,7 +133,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                 string blockName = ConstBlockName.GsLcInstrumentP;
                 
                 // 引入仪表P块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
@@ -178,7 +178,7 @@ namespace dataflow_cs.Business.Commands.GsLc
                 string blockName = ConstBlockName.GsLcInstrumentL;
                 
                 // 引入仪表L块定义
-                ObjectId blockId = UtilsBlock.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
                 if (blockId == ObjectId.Null)
                 {
                     editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
