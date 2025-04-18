@@ -69,6 +69,54 @@ namespace dataflow_cs.Business.Commands.GsLc
         }
     }
 
+    /// <summary>
+    /// 通用块插入辅助类
+    /// </summary>
+    internal static class BlockInsertHelper
+    {
+        /// <summary>
+        /// 通用块插入方法
+        /// </summary>
+        /// <param name="editor">编辑器</param>
+        /// <param name="database">数据库</param>
+        /// <param name="blockName">块名称</param>
+        /// <param name="layerName">图层名称</param>
+        /// <param name="rotation">旋转角度</param>
+        /// <returns>是否插入成功</returns>
+        public static bool InsertBlockGeneric(Editor editor, Database database, string blockName, string layerName, double rotation = 0)
+        {
+            try
+            {
+                // 引入块定义
+                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
+                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
+                
+                if (blockId == ObjectId.Null)
+                {
+                    editor.WriteMessage($"\n导入块定义失败，请检查块文件路径和块名称。");
+                    return false;
+                }
+
+                // 使用封装的拖拽插入方法（自动计算初始点）
+                bool result = InsertBlockJig.DragAndInsertBlock(
+                    editor,
+                    database,
+                    blockName,
+                    blockId,
+                    rotation,
+                    layerName
+                );
+
+                return result;
+            }
+            catch (System.Exception ex)
+            {
+                editor.WriteMessage($"\n插入块时发生错误: {ex.Message}");
+                return false;
+            }
+        }
+    }
+
     internal class GsLcInsertGlobalBlockCommand : CommandHandlerBase
     {
         /// <summary>
@@ -84,36 +132,12 @@ namespace dataflow_cs.Business.Commands.GsLc
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
-            try
-            {
-                string blockName = ConstBlockName.GsLcValveBall;
-                string layerName = ConstLayerName.GsLcLayerNameValve;
-                // 引入球阀块定义
-                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
-                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
-                if (blockId == ObjectId.Null)
-                {
-                    editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
-                    return false;
-                }
-
-                // 使用封装的拖拽插入方法（自动计算初始点）
-                bool result = InsertBlockJig.DragAndInsertBlock(
-                    editor,
-                    database,
-                    blockName,
-                    blockId,
-                    0,
-                    layerName
-                );
-
-                return result;
-            }
-            catch (System.Exception ex)
-            {
-                editor.WriteMessage($"\n插入块时发生错误: {ex.Message}");
-                return false;
-            }
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcValveBall,
+                ConstLayerName.GsLcLayerNameValve
+            );
         }
     }
 
@@ -132,36 +156,12 @@ namespace dataflow_cs.Business.Commands.GsLc
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
-            try
-            {
-                string blockName = ConstBlockName.GsLcInstrumentP;
-                string layerName = ConstLayerName.GsLcLayerNameInstrument;
-                // 引入仪表P块定义
-                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
-                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
-                if (blockId == ObjectId.Null)
-                {
-                    editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
-                    return false;
-                }
-
-                // 使用封装的拖拽插入方法（自动计算初始点）
-                bool result = InsertBlockJig.DragAndInsertBlock(
-                    editor,
-                    database,
-                    blockName,
-                    blockId,
-                    0,
-                    layerName
-                );
-
-                return result;
-            }
-            catch (System.Exception ex)
-            {
-                editor.WriteMessage($"\n插入仪表P块时发生错误: {ex.Message}");
-                return false;
-            }
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcInstrumentP,
+                ConstLayerName.GsLcLayerNameInstrument
+            );
         }
     }
 
@@ -180,36 +180,12 @@ namespace dataflow_cs.Business.Commands.GsLc
         /// <returns>命令执行结果</returns>
         protected override bool ExecuteCore(Editor editor, Database database)
         {
-            try
-            {
-                string blockName = ConstBlockName.GsLcInstrumentL;
-                string layerName = ConstLayerName.GsLcLayerNameInstrument;
-                    // 引入仪表L块定义
-                ObjectId blockId = UtilsGeometry.UtilsImportBlockFromExternalDwg(ConstFileName.GsLcBlocksPath, blockName);
-                UtilsGeometry.UtilsImportLayerFromExternalDwg(ConstFileName.GsLcBlocksPath, layerName);
-                if (blockId == ObjectId.Null)
-                {
-                    editor.WriteMessage("\n导入块定义失败，请检查块文件路径和块名称。");
-                    return false;
-                }
-
-                // 使用封装的拖拽插入方法（自动计算初始点）
-                bool result = InsertBlockJig.DragAndInsertBlock(
-                    editor,
-                    database,
-                    blockName,
-                    blockId,
-                    0,
-                    layerName
-                );
-
-                return result;
-            }
-            catch (System.Exception ex)
-            {
-                editor.WriteMessage($"\n插入仪表L块时发生错误: {ex.Message}");
-                return false;
-            }
+            return BlockInsertHelper.InsertBlockGeneric(
+                editor,
+                database,
+                ConstBlockName.GsLcInstrumentL,
+                ConstLayerName.GsLcLayerNameInstrument
+            );
         }
     }
 }
