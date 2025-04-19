@@ -18,6 +18,39 @@ namespace dataflow_cs.Utils.CADUtils
     /// </summary>
     public static class UtilsCommon
     {
+
+        /// <summary>
+        /// 获取程序集所在目录
+        /// </summary>
+        /// <returns>程序集所在目录</returns>
+        public static string UtilsGetAssemblyDirectory()
+        {
+            return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        }
+
+        /// <summary>
+        /// 获取程序集所在目录的上级目录
+        /// </summary>
+        /// <returns>程序集所在目录的上级目录</returns>
+        public static string UtilsGetAssemblyParentDirectory()
+        {
+            string assemblyDirectory = UtilsGetAssemblyDirectory();
+            string parentDir = Directory.GetParent(assemblyDirectory)?.FullName;
+            return parentDir;
+        }
+
+        /// <summary>
+        /// 获取程序集所在目录的上级目录的上级目录
+        /// </summary>
+        /// <returns>程序集所在目录的上级目录的上级目录</returns>
+        public static string UtilsGetAssemblyParentParentDirectory()
+        {
+            string assemblyParentDirectory = UtilsGetAssemblyParentDirectory();
+            string parentParentDir = Directory.GetParent(assemblyParentDirectory)?.FullName;
+            return parentParentDir;
+        }
+
+
         /// <summary>
         /// 读取本地JSON数据转换为对象列表
         /// </summary>
