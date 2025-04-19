@@ -136,17 +136,6 @@ namespace dataflow_cs.Presentation.ViewModel
                 }
             }
 
-            // if (int.TryParse(DataCount, out int count) && count > 0)
-            // {
-            //     DataStatus = "同步中...";
-                
-            //     // 导出逻辑
-            //     MessageBox.Show($"已成功导出 {count} 条{typeName}！", "导出成功", MessageBoxButton.OK, MessageBoxImage.Information);
-            // }
-            // else
-            // {
-            //     MessageBox.Show("没有选择任何数据，请先选择数据！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
-            // }
         }
         
         public void CancelOperation()
@@ -172,10 +161,7 @@ namespace dataflow_cs.Presentation.ViewModel
                 return;
             }
 
-            string jsonContent = File.ReadAllText(jsonFilePath);
-            
-            // 2. 将JSON数据转换为对象列表
-            JArray jsonArray = JArray.Parse(jsonContent);
+            List<JObject> jsonArray = UtilsCommon.UtilsReadLocalJsonData<JObject>(jsonFilePath);
             
             // 3. 筛选出管道数据并转换为Dictionary<string, string>
             List<Dictionary<string, string>> pipeDataList = new List<Dictionary<string, string>>();
@@ -192,8 +178,6 @@ namespace dataflow_cs.Presentation.ViewModel
                 }
             }
             pipeNumObjectIds.ForEach(pipeNumObjectId => {
-                // 获取管道编号
-                string pipeNum = UtilsBlock.UtilsGetPropertyValueByPropertyName(pipeNumObjectId, "PipeNum");
                 try
                 {
                     // 4. 获取当前管道的ObjectId的句柄值
@@ -209,10 +193,6 @@ namespace dataflow_cs.Presentation.ViewModel
                         UtilsBlock.UtilsSetPropertyValueByDictData(pipeNumObjectId, matchedPipeData);
                         // UtilsCADActive.Editor.WriteMessage($"\n已同步管道数据: {pipeNum}");
                     }
-                    // else
-                    // {
-                    //     UtilsCADActive.Editor.WriteMessage($"\n未找到匹配的管道数据: {pipeNum}, 句柄: {currentHandle}");
-                    // }
                 }
                 catch (Exception ex)
                 {

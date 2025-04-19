@@ -28,8 +28,6 @@ namespace dataflow_cs.Business.Commands.GsLc
         {
             try
             {
-                editor.WriteMessage("\n正在显示数据导出面板...");
-
                 // 创建GsLcSysDataWindow实例并设置事件处理
                 var window = new GsLcSysDataFromClient();
 

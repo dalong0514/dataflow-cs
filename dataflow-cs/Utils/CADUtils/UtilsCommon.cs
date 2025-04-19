@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Autodesk.AutoCAD.ApplicationServices;
+using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
@@ -17,7 +18,18 @@ namespace dataflow_cs.Utils.CADUtils
     /// </summary>
     public static class UtilsCommon
     {
-
+        /// <summary>
+        /// 读取本地JSON数据转换为对象列表
+        /// </summary>
+        /// <param name="filePath">JSON文件路径</param>
+        /// <returns>转换后的对象列表</returns>
+        public static List<T> UtilsReadLocalJsonData<T>(string filePath)
+        {
+            string jsonContent = File.ReadAllText(filePath);
+            // 2. 将JSON数据转换为对象列表
+            JArray jsonArray = JArray.Parse(jsonContent);
+            return jsonArray.ToObject<List<T>>();
+        }
         /// <summary>
         /// 将字符串转换为双精度浮点数
         /// </summary>
