@@ -219,17 +219,6 @@ namespace dataflow_cs.Utils.ConstUtils
         /// </summary>
         public const string GsLcValveControlSelfOperate = "GsLcValveControlSelfOperate";
 
-
-        ///<summary>
-        ///设备大类
-        ///</summary>summary>
-        public const string Reactor = "Reactor";
-        public const string Tank = "Tank";
-        public const string Heater = "Heater";
-        public const string Pump = "Pump";
-        public const string Centrifuge = "Centrifuge";
-        public const string CustomEquip = "CustomEquip";
-
         /// <summary>
         /// Item1 块名,Item2 块中文名
         /// </summary>
@@ -307,6 +296,44 @@ namespace dataflow_cs.Utils.ConstUtils
             new Tuple<string, string>(GsLcPipeElementQuickConnector,"快接头"),
             new Tuple<string, string>(GsLcPipeElementSection,"断线符号"),
             new Tuple<string, string>(GsLcPipeElementVent,"对外放空管"),
+        };
+
+        ///<summary>
+        ///设备大类
+        ///</summary>summary>
+        public const string Reactor = "Reactor";
+        public const string Tank = "Tank";
+        public const string Heater = "Heater";
+        public const string Pump = "Pump";
+        public const string Centrifuge = "Centrifuge";
+        public const string CustomEquip = "CustomEquip";
+        public static List<string> GsLcEquipmentClassList = new List<string>
+        {
+            Reactor,
+            Tank,
+            Heater,
+            Pump,
+            Centrifuge,
+            CustomEquip,
+        };
+
+        ///<summary>
+        ///管道
+        ///</summary>summary>
+        public static List<string> GsLcPipeClassList = new List<string>
+        {
+            "PipeArrowLeft",
+            "PipeArrowRight",
+        };
+
+        ///<summary>
+        ///仪表大类
+        ///</summary>summary>
+        public static List<string> GsLcInstrumentClassList = new List<string>
+        {
+            GsLcInstrumentL,
+            GsLcInstrumentP,
+            GsLcInstrumentSIS,
         };
 
     }

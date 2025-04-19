@@ -29,9 +29,22 @@ namespace dataflow_cs.Utils.ConstUtils
 
 
         /// <summary>
-        /// 工艺数据流管道数据导入文件路径
+        /// 工艺管道数据导入文件路径
         /// </summary>
         public static string GsLcPipeDataImportPath = Path.Combine(AssemblyParentParentDirectory, "tempdata", "GsLcPipeImport.json");
         // public const string GsLcPipeDataImportPath = @"D:\fsd-cad\tempdata\GsLcPipeImport.json";
+
+        /// <summary>
+        /// 工艺设备数据导入文件路径
+        /// </summary>
+        public static string GsLcEquipmentDataImportPath = Path.Combine(AssemblyParentParentDirectory, "tempdata", "GsLcEquipmentImport.json");
+
+
+        /// <summary>
+        /// 工艺仪表数据导入文件路径
+        /// </summary>
+        public static string GsLcInstrumentDataImportPath = Path.Combine(AssemblyParentParentDirectory, "tempdata", "GsLcInstrumentImport.json");
+
+
     }
 }
