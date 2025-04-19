@@ -21,8 +21,6 @@ namespace dataflow_cs.Utils.ConstUtils
         /// </summary>
         public static string AssemblyParentParentDirectory = UtilsCommon.UtilsGetAssemblyParentParentDirectory();
 
-
-
         /// <summary>
         /// 工艺数据流组件块文件路径
         /// </summary>
